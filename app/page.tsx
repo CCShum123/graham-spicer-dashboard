@@ -7,8 +7,8 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Tabs: 'next' | 'fixtures' | 'roster' | 'standings' | 'misc'
-  const [activeTab, setActiveTab] = useState<'next' | 'fixtures' | 'roster' | 'standings' | 'misc'>('next');
+  // Tabs: 'next' | 'fixtures' | 'player' | 'standings' | 'misc'
+  const [activeTab, setActiveTab] = useState<'next' | 'fixtures' | 'player' | 'standings' | 'misc'>('next');
 
   // Availability State
   const [selectedPlayer, setSelectedPlayer] = useState('');
@@ -17,9 +17,9 @@ export default function Home() {
     cantGo: string[];
     tbc: string[];
   }>({
-    going: ['WM', 'Buddha', 'Bur', 'Luen Mo', 'Wa Diu', 'Ryan', 'Donald', 'Microsoft', 'Tap', 'Andy', 'Q', 'Eddy'],
-    cantGo: ['Nam', 'Yg', 'Roy', 'Puti', 'Macro', 'Wa', 'Wai', 'Cheuk', 'Sesame', '軒仔', 'Zyut'],
-    tbc: ['WL']
+    going: [],
+    cantGo: [],
+    tbc: ['Tim', 'Aleksei', 'CC', 'Kit','Jin Su', 'Cass','Andi','Sam']
   });
 
   useEffect(() => {
@@ -99,15 +99,15 @@ export default function Home() {
                 <>GRAHAM SPICER <span className="text-blue-500">2</span></>
               )}
               {activeTab === 'fixtures' && 'Fixtures'}
-              {activeTab === 'roster' && 'Roster'}
+              {activeTab === 'player' && 'Player'}
               {activeTab === 'standings' && 'Standings'}
               {activeTab === 'misc' && 'Misc'}
             </h1>
           </div>
 
-          {/* Select dropdowns */}
+          {/* Select dropdowns matching original screenshot */}
           <div className="flex items-center gap-2">
-            <select className="bg-[#121929] text-xs text-gray-200 border border-gray-700/60 rounded-lg px-2.5 py-1.5 font-medium outline-none focus:border-blue-500 appearance-none pr-6 bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23A0AEC0%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E')] bg-[length:9px_9px] bg-[right_8px_center] bg-no-repeat">
+            <select className="bg-[#121929] text-xs text-gray-200 border border-gray-700/60 rounded-lg px-2.5 py-1.5 font-medium outline-none focus:border-blue-500 appearance-none pr-6 relative bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23A0AEC0%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E')] bg-[length:9px_9px] bg-[right_8px_center] bg-no-repeat">
               <option>2026-2027</option>
               <option>2025-2026</option>
             </select>
@@ -116,9 +116,9 @@ export default function Home() {
                 <option>Team: All</option>
               </select>
             )}
-            {activeTab === 'roster' && (
+            {activeTab === 'player' && (
               <select className="bg-[#121929] text-xs text-gray-200 border border-gray-700/60 rounded-lg px-2 py-1.5 font-medium outline-none">
-                <option>Sort: Name</option>
+                <option>Sort: Jersey</option>
               </select>
             )}
           </div>
@@ -170,8 +170,8 @@ export default function Home() {
                   className="w-full bg-[#121a2d] border border-gray-700/80 rounded-lg p-2.5 text-xs text-gray-200 outline-none focus:border-blue-500"
                 >
                   <option value="">Select your name...</option>
-                  {data?.players?.map((p: any, idx: number) => (
-                    <option key={idx} value={p.name}>{p.name}</option>
+                  {data?.players?.map((p: any) => (
+                    <option key={p.number} value={p.name}>{p.name}</option>
                   ))}
                 </select>
 
@@ -249,33 +249,32 @@ export default function Home() {
           </div>
         )}
 
-        {/* ================= TAB 3: ROSTER (TABLE TENNIS NO JERSEY NUMBER) ================= */}
-        {activeTab === 'roster' && (
+        {/* ================= TAB 3: PLAYER ================= */}
+        {activeTab === 'player' && (
           <div className="space-y-2.5">
-            {data?.players?.map((player: any, idx: number) => (
-              <div key={idx} className="bg-[#0f1626] border border-gray-800/80 rounded-2xl p-3.5 flex justify-between items-center shadow-md relative overflow-hidden">
+            {data?.players?.map((player: any) => (
+              <div key={player.number} className="bg-[#0f1626] border border-gray-800/80 rounded-2xl p-3 flex justify-between items-center shadow-md relative overflow-hidden">
                 <div className="flex items-center gap-3">
-                  {/* Table Tennis Paddle Icon Indicator */}
-                  <div className="bg-[#080c16] border border-gray-800 rounded-xl w-10 h-10 flex items-center justify-center relative">
-                    <span className="absolute left-0 top-1.5 bottom-1.5 w-1 bg-blue-500 rounded-r"></span>
-                    <span className="text-base">🏓</span>
+                  {/* Jersey Number Box with Accent Strip */}
+                  <div className="bg-[#080c16] border border-gray-800 rounded-xl w-12 h-12 flex items-center justify-center relative">
+                    <span className="absolute left-0 top-1.5 bottom-1.5 w-1 bg-emerald-400 rounded-r"></span>
+                    <span className="text-lg font-black text-white">{player.number}</span>
                   </div>
                   <div>
                     <div className="flex items-center gap-1.5">
                       <h3 className="text-sm font-bold text-white">{player.name}</h3>
-                      <span className="bg-blue-950 text-blue-400 border border-blue-800/60 text-[9px] font-bold px-1.5 py-0.5 rounded">
-                        SQUAD
-                      </span>
+                      <span className="bg-emerald-950 text-emerald-400 text-[9px] font-bold px-1.5 py-0.5 rounded">B</span>
                     </div>
                     <p className="text-[10px] font-medium text-gray-400 tracking-wider uppercase">{player.subName}</p>
                   </div>
                 </div>
 
-                {/* Player Status Tag */}
+                {/* Position / Stats Tag */}
                 <div className="text-right space-y-1">
                   <span className="bg-[#162035] border border-gray-700/60 text-gray-300 text-[9px] font-bold px-2 py-0.5 rounded uppercase">
-                    PLAYER
+                    {player.number === 1 ? 'GK' : 'FIELD'}
                   </span>
+                  <p className="text-[9px] font-mono text-gray-400">0 M 0 G 0 A</p>
                 </div>
               </div>
             ))}
@@ -326,8 +325,7 @@ export default function Home() {
             <h2 className="text-lg font-bold text-white">Miscellaneous & Rules</h2>
             <p className="text-xs text-gray-400 leading-relaxed">
               Graham Spicer Table Tennis Club • Season 2026-2027<br />
-              All match standings are updated automatically.
-            </p>
+              </p>
           </div>
         )}
 
@@ -350,17 +348,17 @@ export default function Home() {
             <span className="text-[9px] font-bold tracking-wider">FIXTURES</span>
           </button>
 
-          {/* Left Tab 2: ROSTER */}
+          {/* Left Tab 2: PLAYER */}
           <button
-            onClick={() => setActiveTab('roster')}
+            onClick={() => setActiveTab('player')}
             className={`flex flex-col items-center justify-center w-12 transition ${
-              activeTab === 'roster' ? 'text-blue-500' : 'text-gray-500 hover:text-gray-300'
+              activeTab === 'player' ? 'text-blue-500' : 'text-gray-500 hover:text-gray-300'
             }`}
           >
             <svg className="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
             </svg>
-            <span className="text-[9px] font-bold tracking-wider">ROSTER</span>
+            <span className="text-[9px] font-bold tracking-wider">PLAYER</span>
           </button>
 
           {/* Center Main Floating Logo Button (NEXT MATCH) */}
