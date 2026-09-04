@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
 
-// 初始完整資料庫（結合咗你個 update-standing 嘅完整賽程與球員資料）
 const initialData = {
   success: true,
   data: {
@@ -35,11 +34,7 @@ const initialData = {
       { pos: 8, team: 'Malden 1', p: 0, w: 0, d: 0, l: 0, pts: 0 },
     ],
     fixtures: [],
-    availability: {
-      going: [],
-      cantGo: [],
-      tbc: ['Tim', 'Aleksei', 'CC', 'Kit', 'Jin Su', 'Cass', 'Andi', 'Sam']
-    },
+    availabilityMap: {}, // 支援儲存每一場比賽獨立嘅 availability
     lineup: ['', '', ''],
     opponentNames: ['', '', ''],
     gameScores: {}
@@ -53,29 +48,32 @@ export async function GET() {
     const today = new Date('2026-09-04');
 
     const rawFixtures = [
-      { dateStr: '2026-09-29', homeTeam: 'Cheam', awayTeam: 'Graham Spicer 2', month: 'SEP', date: '29', day: 'Tue', time: '19:30', venue: 'Cheam Social Club' },
-      { dateStr: '2026-10-08', homeTeam: 'Graham Spicer 2', awayTeam: 'Graham Spicer 3', month: 'OCT', date: '8', day: 'Thu', time: '19:30', venue: 'Graham Spicer Table Tennis Club' },
-      { dateStr: '2026-10-13', homeTeam: 'Graham Spicer 5', awayTeam: 'Graham Spicer 2', month: 'OCT', date: '13', day: 'Tue', time: '19:30', venue: 'Away Venue' },
-      { dateStr: '2026-10-29', homeTeam: 'Graham Spicer 2', awayTeam: 'Malden 1', month: 'OCT', date: '29', day: 'Thu', time: '19:30', venue: 'Graham Spicer Table Tennis Club' },
-      { dateStr: '2026-11-04', homeTeam: 'Graham Spicer 4', awayTeam: 'Graham Spicer 2', month: 'NOV', date: '4', day: 'Wed', time: '19:30', venue: 'Away Venue' },
-      { dateStr: '2026-11-19', homeTeam: 'Graham Spicer 2', awayTeam: 'Teddington 1', month: 'NOV', date: '19', day: 'Thu', time: '19:30', venue: 'Graham Spicer Table Tennis Club' },
-      { dateStr: '2026-12-08', homeTeam: 'Graham Spicer 1', awayTeam: 'Graham Spicer 2', month: 'DEC', date: '8', day: 'Tue', time: '19:30', venue: 'Away Venue' },
-      { dateStr: '2027-01-14', homeTeam: 'Graham Spicer 2', awayTeam: 'Cheam', month: 'JAN', date: '14', day: 'Thu', time: '19:30', venue: 'Graham Spicer Table Tennis Club' },
-      { dateStr: '2027-01-28', homeTeam: 'Graham Spicer 3', awayTeam: 'Graham Spicer 2', month: 'JAN', date: '28', day: 'Thu', time: '19:30', venue: 'Away Venue' },
-      { dateStr: '2027-02-04', homeTeam: 'Graham Spicer 2', awayTeam: 'Graham Spicer 5', month: 'FEB', date: '4', day: 'Thu', time: '19:30', venue: 'Graham Spicer Table Tennis Club' },
-      { dateStr: '2027-02-17', homeTeam: 'Malden 1', awayTeam: 'Graham Spicer 2', month: 'FEB', date: '17', day: 'Wed', time: '19:30', venue: 'Away Venue' },
-      { dateStr: '2027-02-25', homeTeam: 'Graham Spicer 2', awayTeam: 'Graham Spicer 4', month: 'FEB', date: '25', day: 'Thu', time: '19:30', venue: 'Graham Spicer Table Tennis Club' },
-      { dateStr: '2027-03-09', homeTeam: 'Teddington 1', awayTeam: 'Graham Spicer 2', month: 'MAR', date: '9', day: 'Tue', time: '19:30', venue: 'Away Venue' },
-      { dateStr: '2027-03-25', homeTeam: 'Graham Spicer 2', awayTeam: 'Graham Spicer 1', month: 'MAR', date: '25', day: 'Thu', time: '19:30', venue: 'Graham Spicer Table Tennis Club' },
+      { dateStr: '2026-09-29', homeTeam: 'Cheam', awayTeam: 'Graham Spicer 2', month: 'SEP', date: '29', day: 'Tue', time: '19:30' },
+      { dateStr: '2026-10-08', homeTeam: 'Graham Spicer 2', awayTeam: 'Graham Spicer 3', month: 'OCT', date: '8', day: 'Thu', time: '19:30' },
+      { dateStr: '2026-10-13', homeTeam: 'Graham Spicer 5', awayTeam: 'Graham Spicer 2', month: 'OCT', date: '13', day: 'Tue', time: '19:30' },
+      { dateStr: '2026-10-29', homeTeam: 'Graham Spicer 2', awayTeam: 'Malden 1', month: 'OCT', date: '29', day: 'Thu', time: '19:30' },
+      { dateStr: '2026-11-04', homeTeam: 'Graham Spicer 4', awayTeam: 'Graham Spicer 2', month: 'NOV', date: '4', day: 'Wed', time: '19:30' },
+      { dateStr: '2026-11-19', homeTeam: 'Graham Spicer 2', awayTeam: 'Teddington 1', month: 'NOV', date: '19', day: 'Thu', time: '19:30' },
+      { dateStr: '2026-12-08', homeTeam: 'Graham Spicer 1', awayTeam: 'Graham Spicer 2', month: 'DEC', date: '8', day: 'Tue', time: '19:30' },
+      { dateStr: '2027-01-14', homeTeam: 'Graham Spicer 2', awayTeam: 'Cheam', month: 'JAN', date: '14', day: 'Thu', time: '19:30' },
+      { dateStr: '2027-01-28', homeTeam: 'Graham Spicer 3', awayTeam: 'Graham Spicer 2', month: 'JAN', date: '28', day: 'Thu', time: '19:30' },
+      { dateStr: '2027-02-04', homeTeam: 'Graham Spicer 2', awayTeam: 'Graham Spicer 5', month: 'FEB', date: '4', day: 'Thu', time: '19:30' },
+      { dateStr: '2027-02-17', homeTeam: 'Malden 1', awayTeam: 'Graham Spicer 2', month: 'FEB', date: '17', day: 'Wed', time: '19:30' },
+      { dateStr: '2027-02-25', homeTeam: 'Graham Spicer 2', awayTeam: 'Graham Spicer 4', month: 'FEB', date: '25', day: 'Thu', time: '19:30' },
+      { dateStr: '2027-03-09', homeTeam: 'Teddington 1', awayTeam: 'Graham Spicer 2', month: 'MAR', date: '9', day: 'Tue', time: '19:30' },
+      { dateStr: '2027-03-25', homeTeam: 'Graham Spicer 2', awayTeam: 'Graham Spicer 1', month: 'MAR', date: '25', day: 'Thu', time: '19:30' },
     ];
 
-    const fixtures = rawFixtures.map(f => {
+    const fixtures = rawFixtures.map((f, idx) => {
       const fixtureDate = new Date(f.dateStr);
       const isPast = fixtureDate < today;
+      const isHome = f.homeTeam.toLowerCase().includes('graham spicer');
       return {
+        id: `fix-${idx}`,
         ...f,
         status: isPast ? 'COMPLETED' : 'UPCOMING',
-        type: f.homeTeam === 'Graham Spicer 2' ? 'HOME' : 'AWAY'
+        type: isHome ? 'HOME' : 'AWAY',
+        venue: isHome ? 'Graham Spicer Table Tennis Club' : 'Away Venue'
       };
     });
 
@@ -84,6 +82,7 @@ export async function GET() {
 
     cloudMemoryData.data.fixtures = fixtures;
     cloudMemoryData.data.nextFixture = {
+      id: upcomingFixture.id,
       opponent: opponentName,
       date: `${upcomingFixture.day} ${upcomingFixture.date} ${upcomingFixture.month}`,
       time: upcomingFixture.time,
@@ -101,7 +100,7 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
     
-    if (body.availability) cloudMemoryData.data.availability = body.availability;
+    if (body.availabilityMap) cloudMemoryData.data.availabilityMap = body.availabilityMap;
     if (body.lineup) cloudMemoryData.data.lineup = body.lineup;
     if (body.opponentNames) cloudMemoryData.data.opponentNames = body.opponentNames;
     if (body.gameScores) cloudMemoryData.data.gameScores = body.gameScores;
