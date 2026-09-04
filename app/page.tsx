@@ -70,7 +70,7 @@ export default function Home() {
     opponentNames?: any;
   }) => {
     try {
-      await fetch('/api/team-`data`', {
+      await fetch('/api/team-data', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -117,7 +117,7 @@ export default function Home() {
     });
   };
 
-  // 將長隊名縮寫，確保用大字體時都夠位一行過顯示
+  // 只將 Graham Spicer 縮寫為 GS，其他隊名（Cheam, Malden 1, Teddington 1 等）保持原樣完整顯示
   const formatTeamNameShort = (name: string) => {
     if (!name) return '';
     let formatted = name;
@@ -127,8 +127,6 @@ export default function Home() {
     formatted = formatted.replace(/Graham\s*Spicer\s*4/gi, 'GS 4');
     formatted = formatted.replace(/Graham\s*Spicer\s*1/gi, 'GS 1');
     formatted = formatted.replace(/Graham\s*Spicer/gi, 'GS');
-    formatted = formatted.replace(/Teddington\s*1/gi, 'Ted 1');
-    formatted = formatted.replace(/Malden\s*1/gi, 'Mal 1');
     return formatted;
   };
 
@@ -195,7 +193,7 @@ export default function Home() {
                     {isHomeTeam ? 'HOME' : 'AWAY'}
                   </span>
                 </div>
-                {/* 放大字體至 text-sm，並用 formatTeamNameShort 確保夠位一行過 */}
+                {/* Heading 放大至 text-sm，Graham Spicer 變 GS，其他隊（如 Cheam, Teddington 1）保留原名，確保靚同埋一行過 */}
                 <h2 className="text-sm font-black text-white tracking-tight whitespace-nowrap overflow-x-auto">
                   {formatTeamNameShort(currentMatchTarget?.homeTeam)} vs {formatTeamNameShort(currentMatchTarget?.awayTeam)}
                 </h2>
@@ -294,7 +292,7 @@ export default function Home() {
                   <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded uppercase ${item.type === 'HOME' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400'}`}>
                     {item.type}
                   </span>
-                  {/* Fixtures 列表一樣放大字體至 text-sm 保持一目瞭然 */}
+                  {/* Fixtures 列表一樣放大字體至 text-sm */}
                   <h3 className="text-sm font-black text-gray-100 mt-1 whitespace-nowrap overflow-x-auto">
                     {formatTeamNameShort(item.homeTeam)} vs {formatTeamNameShort(item.awayTeam)}
                   </h3>
