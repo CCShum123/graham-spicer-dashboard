@@ -34,7 +34,7 @@ const initialData = {
       { pos: 8, team: 'Malden 1', p: 0, w: 0, d: 0, l: 0, pts: 0 },
     ],
     fixtures: [],
-    availabilityMap: {}, // 支援儲存每一場比賽獨立嘅 availability
+    availabilityMap: {}, 
     lineup: ['', '', ''],
     opponentNames: ['', '', ''],
     gameScores: {}
@@ -42,6 +42,23 @@ const initialData = {
 };
 
 let cloudMemoryData = JSON.parse(JSON.stringify(initialData));
+
+// 場地自動對應函數：根據邊個係主場（homeTeam）去決定場地
+const getVenue = (homeTeam: string) => {
+  if (homeTeam.toLowerCase().includes('graham spicer')) {
+    return 'Graham Spicer Table Tennis Club';
+  }
+  if (homeTeam.includes('Cheam')) {
+    return 'Cheam Social Club';
+  }
+  if (homeTeam.includes('Malden 1')) {
+    return 'Malden Table Tennis Club';
+  }
+  if (homeTeam.includes('Teddington 1')) {
+    return 'Teddington Table Tennis Club';
+  }
+  return 'Away Venue';
+};
 
 export async function GET() {
   try {
@@ -67,14 +84,17 @@ export async function GET() {
     const fixtures = rawFixtures.map((f, idx) => {
       const fixtureDate = new Date(f.dateStr);
       const isPast = fixtureDate < today;
+      // 嚴格判定：只有當 homeTeam 係 "Graham Spicer 2" 先至係 HOME
       const isHome = f.homeTeam === 'Graham Spicer 2';
-      const year = f.dateStr.split('-')[0]; // 直接由 '2027-01-14' 抽出 '2027'
+      const year = f.dateStr.split('-')[0]; // 自動抽出 2026 或 2027
+
       return {
         id: `fix-${idx}`,
         ...f,
+        year,
         status: isPast ? 'COMPLETED' : 'UPCOMING',
         type: isHome ? 'HOME' : 'AWAY',
-        venue: isHome ? 'Graham Spicer Table Tennis Club' : 'Away Venue'
+        venue: getVenue(f.homeTeam) // 帶入對應場地
       };
     });
 
