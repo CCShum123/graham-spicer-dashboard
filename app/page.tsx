@@ -86,8 +86,6 @@ export default function Home() {
   };
 
   const currentMatchTarget = data?.fixtures?.find((f: any) => f.id === selectedFixtureId) || data?.nextFixture;
-  
-  // 嚴格跟從後端 API 畀出嚟嘅 type ('HOME' 抑或 'AWAY')
   const isHomeTeam = currentMatchTarget?.type === 'HOME';
 
   const allPlayerNames = data?.players?.map((p: any) => p.subName) || [];
@@ -166,7 +164,7 @@ export default function Home() {
     }
   };
 
-  if (loading) return <div className="flex min-h-screen items-center justify-center bg-[#070a12] text-white text-sm">Loading...</div>;
+  if (loading) return <div className="flex min-h-screen items-center justify-center bg-[#070a12] text-white text-xs">Loading...</div>;
 
   return (
     <main className="min-h-screen bg-[#070a12] text-white pb-24 font-sans text-xs">
@@ -180,39 +178,39 @@ export default function Home() {
         <span className="bg-[#121929] text-xs text-gray-300 px-3 py-1 rounded-md border border-gray-700/60 font-semibold">{data?.season}</span>
       </header>
 
-      <div className="max-w-md mx-auto px-4 pt-4 space-y-4">
+      {/* 將整體容器兩邊嘅 padding 微微縮細 (px-3 替代 px-4)，令入面空間稍微擴闊 */}
+      <div className="max-w-md mx-auto px-3 pt-3 space-y-3">
 
         {activeTab === 'next' && (
-          <div className="bg-[#0f1626] border border-gray-800/80 rounded-2xl p-4.5 space-y-4 shadow-xl">
+          <div className="bg-[#0f1626] border border-gray-800/80 rounded-2xl p-3.5 space-y-3 shadow-xl">
             
-            {/* Top Info Section: Teams on single line + Venue below + Date/Time on right */}
-            <div className="flex justify-between items-start border-b border-gray-800/80 pb-3.5 gap-2">
+            {/* Top Info Section: 稍微將對陣字體縮細至 [11.5px] 左右或精簡 spacing，令長隊名夠位一行過顯示 */}
+            <div className="flex justify-between items-start border-b border-gray-800/80 pb-3 gap-1.5">
               <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-1.5 mb-1.5">
+                <div className="flex items-center gap-1.5 mb-1">
                   <span className="text-[10px] font-bold text-blue-400 uppercase tracking-wider">
                     {selectedFixtureId === data?.nextFixture?.id ? 'NEXT FIXTURE' : 'SELECTED FIXTURE'}
                   </span>
-                  <span className={`text-[10px] font-black px-2 py-0.5 rounded ${isHomeTeam ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-amber-500/20 text-amber-400 border border-amber-500/30'}`}>
+                  <span className={`text-[9px] font-black px-1.5 py-0.5 rounded ${isHomeTeam ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-amber-500/20 text-amber-400 border border-amber-500/30'}`}>
                     {isHomeTeam ? 'HOME' : 'AWAY'}
                   </span>
                 </div>
-                {/* 1) 隊伍對陣一行過，唔要換行 (whitespace-nowrap overflow-x-auto) */}
-                <h2 className="text-sm font-black text-white tracking-tight whitespace-nowrap overflow-x-auto pb-0.5">
+                {/* 隊名改用少少縮細嘅字體 (text-[11.5px] / font-black) 同埋 whitespace-nowrap 確保一行過睇晒 */}
+                <h2 className="text-[11.5px] font-black text-white tracking-tight whitespace-nowrap overflow-x-auto">
                   {currentMatchTarget?.homeTeam} vs {currentMatchTarget?.awayTeam}
                 </h2>
-                {/* 2) 場地放喺隊伍下面 */}
-                <p className="text-xs text-gray-400 mt-1">📍 {currentMatchTarget?.venue}</p>
+                <p className="text-[11px] text-gray-400 mt-0.5">📍 {currentMatchTarget?.venue}</p>
               </div>
 
-              <div className="text-right shrink-0 space-y-1">
-                <p className="text-xs text-gray-200 font-semibold">🕒 {currentMatchTarget?.day} {currentMatchTarget?.date} {currentMatchTarget?.month} {currentMatchTarget?.year} {currentMatchTarget?.time}</p>
+              <div className="text-right shrink-0 space-y-0.5">
+                <p className="text-[11px] text-gray-200 font-semibold whitespace-nowrap">🕒 {currentMatchTarget?.day} {currentMatchTarget?.date} {currentMatchTarget?.month} {currentMatchTarget?.year} {currentMatchTarget?.time}</p>
               </div>
             </div>
 
             {/* Availability Section */}
-            <div className="bg-[#0a0e19] border border-gray-800/60 rounded-xl p-3.5 space-y-3">
+            <div className="bg-[#0a0e19] border border-gray-800/60 rounded-xl p-3 space-y-2.5">
               <div className="flex justify-between items-center">
-                <span className="text-xs font-bold tracking-wider text-gray-300 uppercase">
+                <span className="text-[11px] font-bold tracking-wider text-gray-300 uppercase">
                   PLAYER AVAILABILITY ({currentAvailability.going.length})
                 </span>
               </div>
@@ -220,7 +218,7 @@ export default function Home() {
               <select
                 value={selectedPlayer}
                 onChange={(e) => setSelectedPlayer(e.target.value)}
-                className="w-full bg-[#121a2d] border border-gray-700/80 rounded-xl p-2.5 text-xs text-gray-100 font-medium outline-none"
+                className="w-full bg-[#121a2d] border border-gray-700/80 rounded-xl p-2 text-xs text-gray-100 font-medium outline-none"
               >
                 <option value="">Select your name...</option>
                 {data?.players?.map((p: any) => (
@@ -229,35 +227,35 @@ export default function Home() {
               </select>
 
               <div className="grid grid-cols-3 gap-2">
-                <button onClick={() => handleStatusChange('going')} className="bg-[#1c273c] hover:bg-emerald-600/30 text-emerald-400 border border-emerald-500/40 py-2 rounded-xl font-bold text-xs">Going</button>
-                <button onClick={() => handleStatusChange('cantGo')} className="bg-[#1c273c] hover:bg-rose-600/30 text-rose-400 border border-rose-500/40 py-2 rounded-xl font-bold text-xs">Can't Go</button>
-                <button onClick={() => handleStatusChange('tbc')} className="bg-[#1c273c] hover:bg-amber-600/30 text-amber-400 border border-amber-500/40 py-2 rounded-xl font-bold text-xs">TBC</button>
+                <button onClick={() => handleStatusChange('going')} className="bg-[#1c273c] hover:bg-emerald-600/30 text-emerald-400 border border-emerald-500/40 py-1.5 rounded-xl font-bold text-xs">Going</button>
+                <button onClick={() => handleStatusChange('cantGo')} className="bg-[#1c273c] hover:bg-rose-600/30 text-rose-400 border border-rose-500/40 py-1.5 rounded-xl font-bold text-xs">Can't Go</button>
+                <button onClick={() => handleStatusChange('tbc')} className="bg-[#1c273c] hover:bg-amber-600/30 text-amber-400 border border-amber-500/40 py-1.5 rounded-xl font-bold text-xs">TBC</button>
               </div>
 
-              <div className="space-y-1.5 text-xs pt-2.5 border-t border-gray-800/80">
+              <div className="space-y-1 text-[11px] pt-2 border-t border-gray-800/80">
                 <p><strong className="text-emerald-400 uppercase">GOING:</strong> <span className="text-gray-200 font-medium">{currentAvailability.going.join(', ') || 'None'}</span></p>
                 <p><strong className="text-rose-400 uppercase">CAN'T GO:</strong> <span className="text-gray-200 font-medium">{currentAvailability.cantGo.join(', ') || 'None'}</span></p>
                 <p><strong className="text-amber-400 uppercase">TBC:</strong> <span className="text-gray-200 font-medium">{currentAvailability.tbc.join(', ') || 'None'}</span></p>
               </div>
             </div>
 
-            {/* 3) Team Lineup 移咗去任何 selected fixture 下面都可以顯示 */}
-            <div className="bg-[#0a0e19] border border-gray-800/60 rounded-xl p-3.5 space-y-3">
+            {/* Team Lineup Section */}
+            <div className="bg-[#0a0e19] border border-gray-800/60 rounded-xl p-3 space-y-2.5">
               <div className="flex justify-between items-center">
-                <span className="text-xs font-bold tracking-wider text-emerald-400 uppercase">TEAM LINEUP</span>
+                <span className="text-[11px] font-bold tracking-wider text-emerald-400 uppercase">TEAM LINEUP</span>
                 
                 <button
                   onClick={() => setShowMatchCard(true)}
-                  className="bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold px-3.5 py-2 rounded-xl shadow flex items-center gap-1.5"
+                  className="bg-blue-600 hover:bg-blue-500 text-white text-[11px] font-bold px-3 py-1.5 rounded-xl shadow flex items-center gap-1.5"
                 >
                   <span>📋 Match Card</span>
                 </button>
               </div>
 
-              <div className="grid grid-cols-3 gap-2.5">
+              <div className="grid grid-cols-3 gap-2">
                 {[0, 1, 2].map((i) => (
-                  <div key={i} className="space-y-1.5">
-                    <label className="text-xs font-bold text-blue-400 block">Player {i + 1}</label>
+                  <div key={i} className="space-y-1">
+                    <label className="text-[10px] font-bold text-blue-400 block">Player {i + 1}</label>
                     <select
                       value={selectedLineup[i]}
                       onChange={(e) => {
@@ -266,7 +264,7 @@ export default function Home() {
                         setSelectedLineup(updated);
                         syncDataToBackend({ lineup: updated });
                       }}
-                      className="w-full bg-[#121a2d] border border-gray-700 rounded-xl p-2 text-xs text-gray-100 font-medium outline-none"
+                      className="w-full bg-[#121a2d] border border-gray-700 rounded-xl p-1.5 text-xs text-gray-100 font-medium outline-none"
                     >
                       <option value="">Select...</option>
                       {currentAvailability.going.map((name: string) => (
@@ -282,7 +280,7 @@ export default function Home() {
         )}
 
         {activeTab === 'fixtures' && (
-          <div className="space-y-3">
+          <div className="space-y-2.5">
             {data?.fixtures?.map((item: any) => (
               <div
                 key={item.id}
@@ -290,18 +288,18 @@ export default function Home() {
                   setSelectedFixtureId(item.id);
                   setActiveTab('next');
                 }}
-                className="bg-[#0f1626] border border-gray-800/80 hover:border-blue-500/60 cursor-pointer transition rounded-2xl p-4 flex justify-between items-center shadow gap-2"
+                className="bg-[#0f1626] border border-gray-800/80 hover:border-blue-500/60 cursor-pointer transition rounded-2xl p-3.5 flex justify-between items-center shadow gap-2"
               >
                 <div className="min-w-0 flex-1">
-                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded uppercase ${item.type === 'HOME' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400'}`}>
+                  <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded uppercase ${item.type === 'HOME' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400'}`}>
                     {item.type}
                   </span>
-                  {/* Fixtures 列表一樣單行唔換行 */}
-                  <h3 className="text-xs font-black text-gray-100 mt-1.5 whitespace-nowrap overflow-x-auto pb-0.5">{item.homeTeam} vs {item.awayTeam}</h3>
-                  <p className="text-xs text-gray-400 mt-1">📍 {item.venue}</p>
+                  {/* Fixtures 列表一樣微調字體，確保一行過睇晒 */}
+                  <h3 className="text-[11.5px] font-black text-gray-100 mt-1 whitespace-nowrap overflow-x-auto">{item.homeTeam} vs {item.awayTeam}</h3>
+                  <p className="text-[11px] text-gray-400 mt-0.5">📍 {item.venue}</p>
                 </div>
                 <div className="text-right shrink-0">
-                  <span className="text-[10px] text-blue-400 font-bold">{item.day} {item.date} {item.month} {item.year}</span>
+                  <span className="text-[10px] text-blue-400 font-bold whitespace-nowrap">{item.day} {item.date} {item.month} {item.year}</span>
                 </div>
               </div>
             )) || <p className="text-center text-gray-400">No fixtures available</p>}
@@ -309,13 +307,13 @@ export default function Home() {
         )}
 
         {activeTab === 'player' && (
-          <div className="space-y-3">
+          <div className="space-y-2.5">
             {data?.players?.map((player: any) => (
-              <div key={player.number} className="bg-[#0f1626] border border-gray-800/80 rounded-2xl p-3.5 flex items-center justify-between">
+              <div key={player.number} className="bg-[#0f1626] border border-gray-800/80 rounded-2xl p-3 flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <span className="w-9 h-9 rounded-xl bg-[#080c16] flex items-center justify-center font-black text-sm">{player.number}</span>
+                  <span className="w-8 h-8 rounded-xl bg-[#080c16] flex items-center justify-center font-black text-xs">{player.number}</span>
                   <div>
-                    <h3 className="text-sm font-bold">{player.subName} <span className="text-xs text-gray-400 font-normal">({player.name})</span></h3>
+                    <h3 className="text-xs font-bold">{player.subName} <span className="text-[11px] text-gray-400 font-normal">({player.name})</span></h3>
                   </div>
                 </div>
               </div>
