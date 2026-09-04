@@ -35,17 +35,17 @@ let gsBData = {
     { id: 'b-18', day: 'Mon', date: '22', month: 'MAR', year: '2027', time: '19:30', type: 'HOME', homeTeam: 'Graham Spicers B', awayTeam: 'Eldon A', venue: 'Graham Spicer Table Tennis Club' }
   ],
   players: [
-    { number: 1, name: 'Chi Cheung Shum', subName: 'Chi Cheung Shum' },
-    { number: 2, name: 'Daniel Heo', subName: 'Daniel Heo' },
-    { number: 3, name: 'Tsz-Kit Chan', subName: 'Tsz-Kit Chan' },
-    { number: 4, name: 'James Ng Hing Cheung', subName: 'James Ng' },
-    { number: 5, name: 'Rohit Kumar', subName: 'Rohit Kumar' },
-    { number: 6, name: 'Peter Lyall', subName: 'Peter Lyall' },
-    { number: 7, name: 'AJAY SHAH', subName: 'Ajay Shah' },
-    { number: 8, name: 'Benjamin Richmond', subName: 'Ben Richmond' },
+    { number: 1, name: 'Chi Cheung Shum', subName: 'CC' },
+    { number: 2, name: 'Daniel Heo', subName: 'Daniel' },
+    { number: 3, name: 'Tsz-Kit Chan', subName: 'Kit' },
+    { number: 4, name: 'James Ng Hing Cheung', subName: 'James' },
+    { number: 5, name: 'Rohit Kumar', subName: 'Rohit' },
+    { number: 6, name: 'Peter Lyall', subName: 'Peter' },
+    { number: 7, name: 'AJAY SHAH', subName: 'Ajay' },
+    { number: 8, name: 'Benjamin Richmond', subName: 'Benjamin' },
     { number: 9, name: 'Kostiantyn Motovilin', subName: 'Kostiantyn' },
-    { number: 10, name: 'Hojeong Yoon', subName: 'Hojeong Yoon' },
-    { number: 11, name: 'Brandon Cann', subName: 'Brandon Cann' }
+    { number: 10, name: 'Hojeong Yoon', subName: 'Hojeong' },
+    { number: 11, name: 'Brandon Cann', subName: 'Brandon' }
   ],
   availabilityMap: {},
   lineup: ['', '', ''],
