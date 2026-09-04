@@ -21,7 +21,7 @@ export default function Home() {
     tbc: []
   });
 
-  // Lineup State (3位球員打橫擺)
+  // Lineup State
   const [selectedLineup, setSelectedLineup] = useState<string[]>(['', '', '']);
   
   // Match Card Modal 狀態
@@ -52,8 +52,8 @@ export default function Home() {
         if (json.success && json.data) {
           setData(json.data);
           if (json.data.players) {
-            const allSubNames = json.data.players.map((p: any) => p.subName);
-            setAvailability(prev => ({ ...prev, tbc: allSubNames }));
+            const allNames = json.data.players.map((p: any) => p.name);
+            setAvailability(prev => ({ ...prev, tbc: allNames }));
           }
           if (json.data.availability) setAvailability(json.data.availability);
           if (json.data.lineup) setSelectedLineup(json.data.lineup);
@@ -96,17 +96,15 @@ export default function Home() {
       alert('Please select your name first!');
       return;
     }
-    const playerObj = data?.players?.find((p: any) => p.name === selectedPlayer);
-    const subName = playerObj ? playerObj.subName : selectedPlayer;
 
     setAvailability((prev) => {
-      const newGoing = prev.going.filter((p) => p !== subName);
-      const newCantGo = prev.cantGo.filter((p) => p !== subName);
-      const newTbc = prev.tbc.filter((p) => p !== subName);
+      const newGoing = prev.going.filter((p) => p !== selectedPlayer);
+      const newCantGo = prev.cantGo.filter((p) => p !== selectedPlayer);
+      const newTbc = prev.tbc.filter((p) => p !== selectedPlayer);
 
-      if (status === 'going') newGoing.push(subName);
-      if (status === 'cantGo') newCantGo.push(subName);
-      if (status === 'tbc') newTbc.push(subName);
+      if (status === 'going') newGoing.push(selectedPlayer);
+      if (status === 'cantGo') newCantGo.push(selectedPlayer);
+      if (status === 'tbc') newTbc.push(selectedPlayer);
 
       const updated = { going: newGoing, cantGo: newCantGo, tbc: newTbc };
       syncDataToBackend({ availability: updated });
@@ -114,7 +112,7 @@ export default function Home() {
     });
   };
 
-  // 確保正確判斷主客場：如果 homeTeam 包含 graham spicer 或者 gs，即係主場
+  // 修正 Home/Away 判斷
   const rawHomeTeam = data?.nextFixture?.homeTeam || '';
   const isHomeTeam = rawHomeTeam.toLowerCase().includes('graham spicer') || rawHomeTeam.toLowerCase().includes('gs');
 
@@ -203,6 +201,7 @@ export default function Home() {
                 <span className="text-xs font-bold tracking-wider text-gray-300 uppercase">PLAYER AVAILABILITY ({availability.going.length})</span>
               </div>
 
+              {/* 1) 索性唔要哂括號裏面嘅名 */}
               <select
                 value={selectedPlayer}
                 onChange={(e) => setSelectedPlayer(e.target.value)}
@@ -210,7 +209,7 @@ export default function Home() {
               >
                 <option value="">Select your name...</option>
                 {data?.players?.map((p: any) => (
-                  <option key={p.number} value={p.name}>{p.name} ({p.subName})</option>
+                  <option key={p.number} value={p.name}>{p.name}</option>
                 ))}
               </select>
 
@@ -275,11 +274,11 @@ export default function Home() {
                   <h3 className="text-sm font-bold text-gray-100 mt-1.5">{formatTeamName(item.homeTeam)} vs {formatTeamName(item.awayTeam)}</h3>
                 </div>
                 <div className="text-right">
-                  <span className="text-[10px] text-blue-400 font-bold">{item.day} {item.month}</span>
-                  <p className="text-base font-black">{item.date}</p>
+                  <span className="text-[10px] text-blue-400 font-bold">{item.date}</span>
+                  <p className="text-xs text-gray-400 mt-1">📍 {item.venue}</p>
                 </div>
               </div>
-            ))}
+            )) || <p className="text-center text-gray-400">No fixtures available</p>}
           </div>
         )}
 
@@ -291,7 +290,6 @@ export default function Home() {
                   <span className="w-9 h-9 rounded-xl bg-[#080c16] flex items-center justify-center font-black text-sm">{player.number}</span>
                   <div>
                     <h3 className="text-sm font-bold">{player.name}</h3>
-                    <p className="text-[10px] text-gray-400 uppercase font-semibold">{player.subName}</p>
                   </div>
                 </div>
               </div>
@@ -322,7 +320,6 @@ export default function Home() {
                     </th>
                     <th className="border border-gray-700 p-1 w-5 font-bold">{isHomeTeam ? 'H' : 'A'}</th>
                     
-                    {/* 3) 刪除多餘字眼，只留 Games 標題 */}
                     <th className="border border-gray-700 p-1 font-bold text-[10px]" colSpan={5}>Games Score</th>
                     
                     <th className="border border-gray-700 p-1 w-5 font-bold">{!isHomeTeam ? 'H' : 'A'}</th>
@@ -352,13 +349,11 @@ export default function Home() {
                         
                         {isHomeTeam ? (
                           <>
-                            {/* 1) 名字支援 wrap text (whitespace-normal break-words) */}
                             <td className="border border-gray-700 p-1 text-left font-bold text-white whitespace-normal break-words max-w-[90px]">{m.our}</td>
                             <td className="border border-gray-700 p-1 font-bold text-blue-400">{m.ourRole}</td>
                           </>
                         ) : (
                           <>
-                            {/* 1) 對手頭三格手動輸入，支援 wrap text */}
                             <td className="border border-gray-700 p-1 text-left whitespace-normal break-words max-w-[90px]">
                               {index < 3 ? (
                                 <input
@@ -381,7 +376,6 @@ export default function Home() {
                           </>
                         )}
                         
-                        {/* 比分格子 */}
                         {[0, 1, 2, 3, 4].map((gIdx) => (
                           <td key={gIdx} className="border border-gray-700 p-0.5">
                             <div className="flex items-center justify-center gap-0 bg-[#121a2d] border border-gray-700 rounded p-0.5">
@@ -400,7 +394,6 @@ export default function Home() {
                                     return updatedScores;
                                   });
                                 }}
-                                placeholder=""
                                 className="w-3.5 bg-transparent text-center text-[11px] font-bold text-white outline-none"
                               />
                               <span className="text-gray-400 font-bold text-[10px]">:</span>
@@ -419,7 +412,6 @@ export default function Home() {
                                     return updatedScores;
                                   });
                                 }}
-                                placeholder=""
                                 className="w-3.5 bg-transparent text-center text-[11px] font-bold text-white outline-none"
                               />
                             </div>
