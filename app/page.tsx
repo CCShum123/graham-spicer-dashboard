@@ -70,7 +70,7 @@ export default function Home() {
     opponentNames?: any;
   }) => {
     try {
-      await fetch('/api/team-data', {
+      await fetch('/api/team-`data`', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -117,7 +117,8 @@ export default function Home() {
     });
   };
 
-  const formatTeamNameForMatchCard = (name: string) => {
+  // 將長隊名縮寫，確保用大字體時都夠位一行過顯示
+  const formatTeamNameShort = (name: string) => {
     if (!name) return '';
     let formatted = name;
     formatted = formatted.replace(/Graham\s*Spicer\s*2/gi, 'GS 2');
@@ -178,13 +179,12 @@ export default function Home() {
         <span className="bg-[#121929] text-xs text-gray-300 px-3 py-1 rounded-md border border-gray-700/60 font-semibold">{data?.season}</span>
       </header>
 
-      {/* 將整體容器兩邊嘅 padding 微微縮細 (px-3 替代 px-4)，令入面空間稍微擴闊 */}
       <div className="max-w-md mx-auto px-3 pt-3 space-y-3">
 
         {activeTab === 'next' && (
           <div className="bg-[#0f1626] border border-gray-800/80 rounded-2xl p-3.5 space-y-3 shadow-xl">
             
-            {/* Top Info Section: 稍微將對陣字體縮細至 [11.5px] 左右或精簡 spacing，令長隊名夠位一行過顯示 */}
+            {/* Top Info Section */}
             <div className="flex justify-between items-start border-b border-gray-800/80 pb-3 gap-1.5">
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-1.5 mb-1">
@@ -195,11 +195,11 @@ export default function Home() {
                     {isHomeTeam ? 'HOME' : 'AWAY'}
                   </span>
                 </div>
-                {/* 隊名改用少少縮細嘅字體 (text-[11.5px] / font-black) 同埋 whitespace-nowrap 確保一行過睇晒 */}
-                <h2 className="text-[11.5px] font-black text-white tracking-tight whitespace-nowrap overflow-x-auto">
-                  {currentMatchTarget?.homeTeam} vs {currentMatchTarget?.awayTeam}
+                {/* 放大字體至 text-sm，並用 formatTeamNameShort 確保夠位一行過 */}
+                <h2 className="text-sm font-black text-white tracking-tight whitespace-nowrap overflow-x-auto">
+                  {formatTeamNameShort(currentMatchTarget?.homeTeam)} vs {formatTeamNameShort(currentMatchTarget?.awayTeam)}
                 </h2>
-                <p className="text-[11px] text-gray-400 mt-0.5">📍 {currentMatchTarget?.venue}</p>
+                <p className="text-[11px] text-gray-400 mt-1">📍 {currentMatchTarget?.venue}</p>
               </div>
 
               <div className="text-right shrink-0 space-y-0.5">
@@ -294,9 +294,11 @@ export default function Home() {
                   <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded uppercase ${item.type === 'HOME' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400'}`}>
                     {item.type}
                   </span>
-                  {/* Fixtures 列表一樣微調字體，確保一行過睇晒 */}
-                  <h3 className="text-[11.5px] font-black text-gray-100 mt-1 whitespace-nowrap overflow-x-auto">{item.homeTeam} vs {item.awayTeam}</h3>
-                  <p className="text-[11px] text-gray-400 mt-0.5">📍 {item.venue}</p>
+                  {/* Fixtures 列表一樣放大字體至 text-sm 保持一目瞭然 */}
+                  <h3 className="text-sm font-black text-gray-100 mt-1 whitespace-nowrap overflow-x-auto">
+                    {formatTeamNameShort(item.homeTeam)} vs {formatTeamNameShort(item.awayTeam)}
+                  </h3>
+                  <p className="text-[11px] text-gray-400 mt-1">📍 {item.venue}</p>
                 </div>
                 <div className="text-right shrink-0">
                   <span className="text-[10px] text-blue-400 font-bold whitespace-nowrap">{item.day} {item.date} {item.month} {item.year}</span>
@@ -339,7 +341,7 @@ export default function Home() {
                     <th className="border border-gray-700 p-1 w-6">#</th>
                     
                     <th className="border border-gray-700 p-1 text-left font-bold text-[11px]">
-                      Home: {isHomeTeam ? 'GS 2' : formatTeamNameForMatchCard(currentMatchTarget?.homeTeam)}
+                      Home: {isHomeTeam ? 'GS 2' : formatTeamNameShort(currentMatchTarget?.homeTeam)}
                     </th>
                     <th className="border border-gray-700 p-1 w-5 font-bold">{isHomeTeam ? 'H' : 'A'}</th>
                     
@@ -348,7 +350,7 @@ export default function Home() {
                     <th className="border border-gray-700 p-1 w-5 font-bold">{!isHomeTeam ? 'H' : 'A'}</th>
                     
                     <th className="border border-gray-700 p-1 text-left font-bold text-[11px]">
-                      Away: {!isHomeTeam ? 'GS 2' : formatTeamNameForMatchCard(currentMatchTarget?.awayTeam)}
+                      Away: {!isHomeTeam ? 'GS 2' : formatTeamNameShort(currentMatchTarget?.awayTeam)}
                     </th>
                   </tr>
                   <tr className="bg-[#0a0e19] text-gray-400 text-[9px]">
