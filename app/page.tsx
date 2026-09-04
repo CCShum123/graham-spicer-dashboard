@@ -8,25 +8,16 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
 
   const [activeTab, setActiveTab] = useState<'next' | 'fixtures' | 'player'>('next');
-
-  // 目前正在檢視/填寫 Availability 嘅目標比賽 ID（預設為 Next Fixture）
   const [selectedFixtureId, setSelectedFixtureId] = useState<string>('');
 
-  // 儲存所有比賽嘅 Availability 狀態: { [fixtureId]: { going: [], cantGo: [], tbc: [] } }
+  // 儲存所有比賽嘅 Availability 狀態
   const [availabilityMap, setAvailabilityMap] = useState<{ [key: string]: { going: string[]; cantGo: string[]; tbc: string[] } }>({});
 
   const [selectedPlayer, setSelectedPlayer] = useState('');
-
-  // Lineup State
   const [selectedLineup, setSelectedLineup] = useState<string[]>(['', '', '']);
-  
-  // Match Card Modal 狀態
   const [showMatchCard, setShowMatchCard] = useState(false);
-
-  // 對手頭三格球員名稱狀態
   const [opponentNames, setOpponentNames] = useState<string[]>(['', '', '']);
 
-  // 實時記分狀態
   const [gameScores, setGameScores] = useState<{ [key: number]: { left: string; right: string }[] }>({
     1: Array(5).fill({ left: '', right: '' }),
     2: Array(5).fill({ left: '', right: '' }),
@@ -50,7 +41,17 @@ export default function Home() {
           if (json.data.nextFixture?.id) {
             setSelectedFixtureId(json.data.nextFixture.id);
           }
-          if (json.data.availabilityMap) setAvailabilityMap(json.data.availabilityMap);
+          if (json.data.availabilityMap) {
+            setAvailabilityMap(json.data.availabilityMap);
+          } else if (json.data.fixtures && json.data.players) {
+            // 如果後端未有 availabilityMap，幫所有球員預設全部放入 TBC
+            const initialMap: any = {};
+            const allPlayerNames = json.data.players.map((p: any) => p.subName);
+            json.data.fixtures.forEach((f: any) => {
+              initialMap[f.id] = { going: [], cantGo: [], tbc: [...allPlayerNames] };
+            });
+            setAvailabilityMap(initialMap);
+          }
           if (json.data.lineup) setSelectedLineup(json.data.lineup);
           if (json.data.gameScores) setGameScores(json.data.gameScores);
           if (json.data.opponentNames) setOpponentNames(json.data.opponentNames);
@@ -86,13 +87,15 @@ export default function Home() {
     }
   };
 
-  // 找出當前正在檢視緊邊場比賽
+  // 取得當前檢視嘅比賽
   const currentMatchTarget = data?.fixtures?.find((f: any) => f.id === selectedFixtureId) || data?.nextFixture;
-  const rawHomeTeam = currentMatchTarget?.homeTeam || '';
-  const isHomeTeam = rawHomeTeam.toLowerCase().includes('graham spicer');
+  
+  // 嚴格跟從 route.ts 畀出嚟嘅 type (HOME / AWAY)，唔自己亂改
+  const isHomeTeam = currentMatchTarget?.type === 'HOME';
 
-  // 取得當前比賽嘅 availability 資料（若果未有就畀預設空陣列）
-  const currentAvailability = availabilityMap[selectedFixtureId] || { going: [], cantGo: [], tbc: [] };
+  // 取得當前比賽 availability，若果冇就預設全部球員喺 TBC
+  const allPlayerNames = data?.players?.map((p: any) => p.subName) || [];
+  const currentAvailability = availabilityMap[selectedFixtureId] || { going: [], cantGo: [], tbc: [...allPlayerNames] };
 
   const handleStatusChange = (status: 'going' | 'cantGo' | 'tbc') => {
     if (!selectedPlayer) {
@@ -101,7 +104,7 @@ export default function Home() {
     }
 
     setAvailabilityMap((prev) => {
-      const targetAvail = prev[selectedFixtureId] || { going: [], cantGo: [], tbc: [] };
+      const targetAvail = prev[selectedFixtureId] || { going: [], cantGo: [], tbc: [...allPlayerNames] };
       const newGoing = targetAvail.going.filter((p: string) => p !== selectedPlayer);
       const newCantGo = targetAvail.cantGo.filter((p: string) => p !== selectedPlayer);
       const newTbc = targetAvail.tbc.filter((p: string) => p !== selectedPlayer);
@@ -201,7 +204,8 @@ export default function Home() {
                 </h2>
               </div>
               <div className="text-right space-y-1">
-                <p className="text-xs text-gray-200 font-semibold">🕒 {currentMatchTarget?.day} {currentMatchTarget?.date} {currentMatchTarget?.month} {currentMatchTarget?.time}</p>
+                {/* 顯示年份 (例如 2026/2027) */}
+                <p className="text-xs text-gray-200 font-semibold">🕒 {currentMatchTarget?.day} {currentMatchTarget?.date} {currentMatchTarget?.month} {currentMatchTarget?.year || '2026'} {currentMatchTarget?.time}</p>
                 <p className="text-xs text-gray-400">📍 {currentMatchTarget?.venue}</p>
               </div>
             </div>
@@ -237,7 +241,6 @@ export default function Home() {
               </div>
             </div>
 
-            {/* 只有當前檢視係 Next Match 嗰陣至顯示 Lineup 陣容板面 */}
             {selectedFixtureId === data?.nextFixture?.id && (
               <div className="bg-[#0a0e19] border border-gray-800/60 rounded-xl p-3.5 space-y-3">
                 <div className="flex justify-between items-center">
@@ -291,13 +294,14 @@ export default function Home() {
                 className="bg-[#0f1626] border border-gray-800/80 hover:border-blue-500/60 cursor-pointer transition rounded-2xl p-4 flex justify-between items-center shadow"
               >
                 <div>
-                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded uppercase ${item.type === 'HOME' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-blue-600/30 text-blue-400'}`}>
+                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded uppercase ${item.type === 'HOME' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400'}`}>
                     {item.type}
                   </span>
                   <h3 className="text-sm font-bold text-gray-100 mt-1.5">{item.homeTeam} vs {item.awayTeam}</h3>
                 </div>
                 <div className="text-right">
-                  <span className="text-[10px] text-blue-400 font-bold">{item.day} {item.date} {item.month}</span>
+                  {/* 顯示年份 */}
+                  <span className="text-[10px] text-blue-400 font-bold">{item.day} {item.date} {item.month} {item.year || '2026'}</span>
                   <p className="text-xs text-gray-400 mt-1">📍 {item.venue}</p>
                 </div>
               </div>
@@ -322,7 +326,6 @@ export default function Home() {
 
       </div>
 
-      {/* ================= THAMES VALLEY MATCH CARD 彈出視窗 ================= */}
       {showMatchCard && (
         <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-center justify-center p-2">
           <div className="bg-[#0f1626] border border-gray-700 w-full max-w-xl rounded-2xl p-3 space-y-3 max-h-[95vh] overflow-y-auto shadow-2xl">
