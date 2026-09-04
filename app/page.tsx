@@ -27,7 +27,10 @@ export default function Home() {
   // Match Card Modal 狀態
   const [showMatchCard, setShowMatchCard] = useState(false);
 
-  // 實時記分狀態：9場入面每一場嘅 5 個 Game 分數，每個 Game 分左邊 (left) 同右邊 (right) 數字
+  // 1) 對手頭三格球員名稱狀態（第 4-9 格會自動聯動）
+  const [opponentNames, setOpponentNames] = useState<string[]>(['', '', '']);
+
+  // 實時記分狀態：9場入面每一場嘅 5 個 Game 分數（壓縮闊度後嘅雙框結構）
   const [gameScores, setGameScores] = useState<{ [key: number]: { left: string; right: string }[] }>({
     1: Array(5).fill({ left: '', right: '' }),
     2: Array(5).fill({ left: '', right: '' }),
@@ -52,6 +55,10 @@ export default function Home() {
             const allSubNames = json.data.players.map((p: any) => p.subName);
             setAvailability(prev => ({ ...prev, tbc: allSubNames }));
           }
+          if (json.data.availability) setAvailability(json.data.availability);
+          if (json.data.lineup) setSelectedLineup(json.data.lineup);
+          if (json.data.gameScores) setGameScores(json.data.gameScores);
+          if (json.data.opponentNames) setOpponentNames(json.data.opponentNames);
         }
       } catch (err: any) {
         setError(err.message || 'Failed to load team data');
@@ -61,6 +68,29 @@ export default function Home() {
     }
     fetchData();
   }, []);
+
+  // 3) 同步更新至伺服器儲存庫函數（確保隊友即時見到最新情況）
+  const syncDataToBackend = async (updatedState: {
+    availability?: any;
+    lineup?: any;
+    gameScores?: any;
+    opponentNames?: any;
+  }) => {
+    try {
+      await fetch('/api/team-data', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          availability: updatedState.availability || availability,
+          lineup: updatedState.lineup || selectedLineup,
+          gameScores: updatedState.gameScores || gameScores,
+          opponentNames: updatedState.opponentNames || opponentNames,
+        }),
+      });
+    } catch (err) {
+      console.error('Failed to sync data to backend:', err);
+    }
+  };
 
   const handleStatusChange = (status: 'going' | 'cantGo' | 'tbc') => {
     if (!selectedPlayer) {
@@ -79,15 +109,15 @@ export default function Home() {
       if (status === 'cantGo') newCantGo.push(subName);
       if (status === 'tbc') newTbc.push(subName);
 
-      return { going: newGoing, cantGo: newCantGo, tbc: newTbc };
+      const updated = { going: newGoing, cantGo: newCantGo, tbc: newTbc };
+      syncDataToBackend({ availability: updated });
+      return updated;
     });
   };
 
-  // 檢查下一場究竟我地係 Home 定係 Away
   const rawHomeTeam = data?.nextFixture?.homeTeam || '';
   const isHomeTeam = rawHomeTeam.toLowerCase().includes('graham spicer') || rawHomeTeam.toLowerCase().includes('gs');
 
-  // 縮短球隊名稱函數
   const formatTeamName = (name: string) => {
     if (!name) return '';
     let formatted = name;
@@ -100,34 +130,40 @@ export default function Home() {
 
   const opponentTeamNameFormatted = formatTeamName(data?.nextFixture?.opponent || 'Opponent');
 
-  // 根據相片入面 Thames Valley 賽例嘅 9 場對陣藍圖
+  // 1) 根據賽例自動對應對手名字（第 4-9 格根據前三格自動對應）
   const getMatchStructure = () => {
     const [p1, p2, p3] = selectedLineup;
-    const names = [p1 || 'Player 1', p2 || 'Player 2', p3 || 'Player 3'];
+    const ourNames = [p1 || 'Player 1', p2 || 'Player 2', p3 || 'Player 3'];
+    const [opp1, opp2, opp3] = opponentNames;
+    const oppNamesList = [opp1 || 'Opp 1', opp2 || 'Opp 2', opp3 || 'Opp 3'];
 
+    // 聯賽 9 場對陣藍圖：
+    // Home Team 時對手係 X, Y, Z：Match 1(X), 2(Y), 3(Z), 4(X), 5(Z), 6(Y), 7(Z), 8(X), 9(Y)
+    // 對應對手陣容索引：X=0, Y=1, Z=2
     if (isHomeTeam) {
       return [
-        { match: 1, our: names[0], ourRole: 'A', oppRole: 'X' },
-        { match: 2, our: names[1], ourRole: 'B', oppRole: 'Y' },
-        { match: 3, our: names[2], ourRole: 'C', oppRole: 'Z' },
-        { match: 4, our: names[1], ourRole: 'B', oppRole: 'X' },
-        { match: 5, our: names[0], ourRole: 'A', oppRole: 'Z' },
-        { match: 6, our: names[2], ourRole: 'C', oppRole: 'Y' },
-        { match: 7, our: names[1], ourRole: 'B', oppRole: 'Z' },
-        { match: 8, our: names[2], ourRole: 'C', oppRole: 'X' },
-        { match: 9, our: names[0], ourRole: 'A', oppRole: 'Y' },
+        { match: 1, our: ourNames[0], ourRole: 'A', oppName: oppNamesList[0], oppRole: 'X' },
+        { match: 2, our: ourNames[1], ourRole: 'B', oppName: oppNamesList[1], oppRole: 'Y' },
+        { match: 3, our: ourNames[2], ourRole: 'C', oppName: oppNamesList[2], oppRole: 'Z' },
+        { match: 4, our: ourNames[1], ourRole: 'B', oppName: oppNamesList[0], oppRole: 'X' },
+        { match: 5, our: ourNames[0], ourRole: 'A', oppName: oppNamesList[2], oppRole: 'Z' },
+        { match: 6, our: ourNames[2], ourRole: 'C', oppName: oppNamesList[1], oppRole: 'Y' },
+        { match: 7, our: ourNames[1], ourRole: 'B', oppName: oppNamesList[2], oppRole: 'Z' },
+        { match: 8, our: ourNames[2], ourRole: 'C', oppName: oppNamesList[0], oppRole: 'X' },
+        { match: 9, our: ourNames[0], ourRole: 'A', oppName: oppNamesList[1], oppRole: 'Y' },
       ];
     } else {
+      // Away Team 時：我方係 X,Y,Z，對手係 A,B,C (A=0, B=1, C=2)
       return [
-        { match: 1, our: names[0], ourRole: 'X', oppRole: 'A' },
-        { match: 2, our: names[1], ourRole: 'Y', oppRole: 'B' },
-        { match: 3, our: names[2], ourRole: 'Z', oppRole: 'C' },
-        { match: 4, our: names[0], ourRole: 'X', oppRole: 'B' },
-        { match: 5, our: names[2], ourRole: 'Z', oppRole: 'A' },
-        { match: 6, our: names[1], ourRole: 'Y', oppRole: 'C' },
-        { match: 7, our: names[2], ourRole: 'Z', oppRole: 'B' },
-        { match: 8, our: names[0], ourRole: 'X', oppRole: 'C' },
-        { match: 9, our: names[1], ourRole: 'Y', oppRole: 'A' },
+        { match: 1, our: ourNames[0], ourRole: 'X', oppName: oppNamesList[0], oppRole: 'A' },
+        { match: 2, our: ourNames[1], ourRole: 'Y', oppName: oppNamesList[1], oppRole: 'B' },
+        { match: 3, our: ourNames[2], ourRole: 'Z', oppName: oppNamesList[2], oppRole: 'C' },
+        { match: 4, our: ourNames[0], ourRole: 'X', oppName: oppNamesList[1], oppRole: 'B' },
+        { match: 5, our: ourNames[2], ourRole: 'Z', oppName: oppNamesList[0], oppRole: 'A' },
+        { match: 6, our: ourNames[1], ourRole: 'Y', oppName: oppNamesList[2], oppRole: 'C' },
+        { match: 7, our: ourNames[2], ourRole: 'Z', oppName: oppNamesList[1], oppRole: 'B' },
+        { match: 8, our: ourNames[0], ourRole: 'X', oppName: oppNamesList[2], oppRole: 'C' },
+        { match: 9, our: ourNames[1], ourRole: 'Y', oppName: oppNamesList[0], oppRole: 'A' },
       ];
     }
   };
@@ -137,7 +173,7 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-[#070a12] text-white pb-24 font-sans text-xs">
 
-      {/* Header (字體加大) */}
+      {/* Header */}
       <header className="sticky top-0 z-20 bg-[#070a12]/90 px-4 py-3 border-b border-gray-800/40 flex justify-between items-center">
         <h1 className="text-base font-black tracking-tight text-white">
           {activeTab === 'next' && <>GRAHAM SPICER <span className="text-blue-500">2</span></>}
@@ -153,7 +189,7 @@ export default function Home() {
         {activeTab === 'next' && (
           <div className="bg-[#0f1626] border border-gray-800/80 rounded-2xl p-4.5 space-y-4 shadow-xl">
             
-            {/* 第一行：vs 隊名 + 日期地點放喺右手邊 (字體全面加大) */}
+            {/* 第一行：vs 隊名 + 日期地點 */}
             <div className="flex justify-between items-start border-b border-gray-800/80 pb-3.5">
               <div>
                 <div className="flex items-center gap-1.5 mb-1">
@@ -170,7 +206,7 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Player Availability 區塊 (字體加大) */}
+            {/* Player Availability 區塊 */}
             <div className="bg-[#0a0e19] border border-gray-800/60 rounded-xl p-3.5 space-y-3">
               <div className="flex justify-between items-center">
                 <span className="text-xs font-bold tracking-wider text-gray-300 uppercase">PLAYER AVAILABILITY ({availability.going.length})</span>
@@ -193,7 +229,6 @@ export default function Home() {
                 <button onClick={() => handleStatusChange('tbc')} className="bg-[#1c273c] hover:bg-amber-600/30 text-amber-400 border border-amber-500/40 py-2 rounded-xl font-bold text-xs">TBC</button>
               </div>
 
-              {/* 顯示 Going, Can't Go, TBC 名單 (字體加大清晰) */}
               <div className="space-y-1.5 text-xs pt-2.5 border-t border-gray-800/80">
                 <p><strong className="text-emerald-400 uppercase">GOING:</strong> <span className="text-gray-200 font-medium">{availability.going.join(', ') || 'None'}</span></p>
                 <p><strong className="text-rose-400 uppercase">CAN'T GO:</strong> <span className="text-gray-200 font-medium">{availability.cantGo.join(', ') || 'None'}</span></p>
@@ -201,12 +236,11 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Team Lineup 區塊 (字體加大) */}
+            {/* Team Lineup 區塊 */}
             <div className="bg-[#0a0e19] border border-gray-800/60 rounded-xl p-3.5 space-y-3">
               <div className="flex justify-between items-center">
                 <span className="text-xs font-bold tracking-wider text-emerald-400 uppercase">TEAM LINEUP</span>
                 
-                {/* Match Card 掣 */}
                 <button
                   onClick={() => setShowMatchCard(true)}
                   className="bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold px-3.5 py-2 rounded-xl shadow flex items-center gap-1.5"
@@ -215,7 +249,6 @@ export default function Home() {
                 </button>
               </div>
 
-              {/* 打橫擺 3 個 Player，選項在各自下面 */}
               <div className="grid grid-cols-3 gap-2.5">
                 {[0, 1, 2].map((i) => (
                   <div key={i} className="space-y-1.5">
@@ -226,6 +259,7 @@ export default function Home() {
                         const updated = [...selectedLineup];
                         updated[i] = e.target.value;
                         setSelectedLineup(updated);
+                        syncDataToBackend({ lineup: updated });
                       }}
                       className="w-full bg-[#121a2d] border border-gray-700 rounded-xl p-2 text-xs text-gray-100 font-medium outline-none"
                     >
@@ -277,129 +311,178 @@ export default function Home() {
 
       </div>
 
-      {/* ================= THAMES VALLEY MATCH CARD 彈出視窗（比分中間固定 ":"） ================= */}
+      {/* ================= THAMES VALLEY MATCH CARD 彈出視窗 ================= */}
       {showMatchCard && (
         <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-center justify-center p-2">
-          <div className="bg-[#0f1626] border border-gray-700 w-full max-w-xl rounded-2xl p-4 space-y-3.5 max-h-[95vh] overflow-y-auto shadow-2xl">
+          <div className="bg-[#0f1626] border border-gray-700 w-full max-w-xl rounded-2xl p-3 space-y-3 max-h-[95vh] overflow-y-auto shadow-2xl">
             
-            <div className="flex justify-between items-center border-b border-gray-800 pb-2.5">
+            <div className="flex justify-between items-center border-b border-gray-800 pb-2">
               <h3 className="text-xs font-black tracking-wider text-white uppercase">THAMES VALLEY TABLE TENNIS LEAGUE - MATCH CARD</h3>
               <button onClick={() => setShowMatchCard(false)} className="bg-gray-800 hover:bg-gray-700 text-gray-300 w-7 h-7 rounded-full font-bold text-xs flex items-center justify-center">✕</button>
             </div>
 
-            {/* Match Card 表格 */}
+            {/* Match Card 表格 (壓縮比分格闊度，對手頭三格可手動輸入並聯動) */}
             <div className="overflow-x-auto">
               <table className="w-full text-center border-collapse border border-gray-700 text-xs">
                 <thead>
                   <tr className="bg-[#121929] text-gray-300">
-                    <th className="border border-gray-700 p-1.5 w-7">#</th>
+                    <th className="border border-gray-700 p-1 w-6">#</th>
                     
-                    <th className="border border-gray-700 p-1.5 text-left font-bold">
+                    <th className="border border-gray-700 p-1 text-left font-bold text-[11px]">
                       Home: {isHomeTeam ? 'GS 2' : formatTeamName(data?.nextFixture?.homeTeam || opponentTeamNameFormatted)}
                     </th>
-                    <th className="border border-gray-700 p-1.5 w-6 font-bold">{isHomeTeam ? 'H' : 'A'}</th>
+                    <th className="border border-gray-700 p-1 w-5 font-bold">{isHomeTeam ? 'H' : 'A'}</th>
                     
-                    <th className="border border-gray-700 p-1.5 font-bold" colSpan={5}>Best of 5 Games Score (e.g. 11 : 7)</th>
+                    {/* 2) 壓縮比分標題區寬度 */}
+                    <th className="border border-gray-700 p-1 font-bold text-[10px]" colSpan={5}>Best of 5 (e.g. 11:7)</th>
                     
-                    <th className="border border-gray-700 p-1.5 w-6 font-bold">{!isHomeTeam ? 'H' : 'A'}</th>
+                    <th className="border border-gray-700 p-1 w-5 font-bold">{!isHomeTeam ? 'H' : 'A'}</th>
                     
-                    <th className="border border-gray-700 p-1.5 text-left font-bold">
+                    <th className="border border-gray-700 p-1 text-left font-bold text-[11px]">
                       Away: {!isHomeTeam ? 'GS 2' : opponentTeamNameFormatted}
                     </th>
                   </tr>
-                  <tr className="bg-[#0a0e19] text-gray-400 text-[10px]">
-                    <th className="border border-gray-700 p-1"></th>
-                    <th className="border border-gray-700 p-1 text-left">Name</th>
-                    <th className="border border-gray-700 p-1"></th>
-                    <th className="border border-gray-700 p-1 w-14">1st</th>
-                    <th className="border border-gray-700 p-1 w-14">2nd</th>
-                    <th className="border border-gray-700 p-1 w-14">3rd</th>
-                    <th className="border border-gray-700 p-1 w-14">4th</th>
-                    <th className="border border-gray-700 p-1 w-14">5th</th>
-                    <th className="border border-gray-700 p-1"></th>
-                    <th className="border border-gray-700 p-1 text-left">Name</th>
+                  <tr className="bg-[#0a0e19] text-gray-400 text-[9px]">
+                    <th className="border border-gray-700 p-0.5"></th>
+                    <th className="border border-gray-700 p-0.5 text-left">Name</th>
+                    <th className="border border-gray-700 p-0.5"></th>
+                    <th className="border border-gray-700 p-0.5 w-10">1st</th>
+                    <th className="border border-gray-700 p-0.5 w-10">2nd</th>
+                    <th className="border border-gray-700 p-0.5 w-10">3rd</th>
+                    <th className="border border-gray-700 p-0.5 w-10">4th</th>
+                    <th className="border border-gray-700 p-0.5 w-10">5th</th>
+                    <th className="border border-gray-700 p-0.5"></th>
+                    <th className="border border-gray-700 p-0.5 text-left">Name</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {getMatchStructure().map((m) => (
-                    <tr key={m.match} className="hover:bg-gray-800/30">
-                      <td className="border border-gray-700 p-1.5 font-black">{m.match}</td>
-                      
-                      {isHomeTeam ? (
-                        <>
-                          <td className="border border-gray-700 p-1.5 text-left font-bold text-white truncate max-w-[90px]">{m.our}</td>
-                          <td className="border border-gray-700 p-1.5 font-bold text-blue-400">{m.ourRole}</td>
-                        </>
-                      ) : (
-                        <>
-                          <td className="border border-gray-700 p-1.5 text-left font-semibold text-gray-400 truncate max-w-[90px]">Opponent</td>
-                          <td className="border border-gray-700 p-1.5 font-bold text-amber-400">{m.oppRole}</td>
-                        </>
-                      )}
-                      
-                      {/* 5個 Game 的比分格子：左右輸入框，中間固定冒號 ":" */}
-                      {[0, 1, 2, 3, 4].map((gIdx) => (
-                        <td key={gIdx} className="border border-gray-700 p-1">
-                          <div className="flex items-center justify-center gap-0.5 bg-[#121a2d] border border-gray-700 rounded p-0.5">
-                            <input
-                              type="text"
-                              inputMode="numeric"
-                              maxLength={2}
-                              value={gameScores[m.match]?.[gIdx]?.left || ''}
-                              onChange={(e) => {
-                                const val = e.target.value;
-                                setGameScores(prev => {
-                                  const currentMatchGames = [...(prev[m.match] || Array(5).fill({ left: '', right: '' }))];
-                                  currentMatchGames[gIdx] = { ...currentMatchGames[gIdx], left: val };
-                                  return { ...prev, [m.match]: currentMatchGames };
-                                });
-                              }}
-                              placeholder=""
-                              className="w-5 bg-transparent text-center text-xs font-bold text-white outline-none placeholder:text-gray-600"
-                            />
-                            <span className="text-gray-400 font-bold">:</span>
-                            <input
-                              type="text"
-                              inputMode="numeric"
-                              maxLength={2}
-                              value={gameScores[m.match]?.[gIdx]?.right || ''}
-                              onChange={(e) => {
-                                const val = e.target.value;
-                                setGameScores(prev => {
-                                  const currentMatchGames = [...(prev[m.match] || Array(5).fill({ left: '', right: '' }))];
-                                  currentMatchGames[gIdx] = { ...currentMatchGames[gIdx], right: val };
-                                  return { ...prev, [m.match]: currentMatchGames };
-                                });
-                              }}
-                              placeholder=""
-                              className="w-5 bg-transparent text-center text-xs font-bold text-white outline-none placeholder:text-gray-600"
-                            />
-                          </div>
-                        </td>
-                      ))}
+                  {getMatchStructure().map((m, index) => {
+                    // 1) 判斷邊個係對手嘅行：如果係 Home Team，Away 嗰邊係對手；如果係 Away Team，Home 嗰邊係對手
+                    const isOpponentSideHome = !isHomeTeam; 
+                    const isOpponentRow = isOpponentSideHome ? (index < 3) : (index < 3); // 頭 3 行係對手球員輸入框
 
-                      {isHomeTeam ? (
-                        <>
-                          <td className="border border-gray-700 p-1.5 font-bold text-amber-400">{m.oppRole}</td>
-                          <td className="border border-gray-700 p-1.5 text-left text-gray-400 truncate max-w-[90px]">Opponent</td>
-                        </>
-                      ) : (
-                        <>
-                          <td className="border border-gray-700 p-1.5 font-bold text-blue-400">{m.ourRole}</td>
-                          <td className="border border-gray-700 p-1.5 text-left font-bold text-white truncate max-w-[90px]">{m.our}</td>
-                        </>
-                      )}
-                    </tr>
-                  ))}
+                    return (
+                      <tr key={m.match} className="hover:bg-gray-800/30">
+                        <td className="border border-gray-700 p-1 font-black">{m.match}</td>
+                        
+                        {isHomeTeam ? (
+                          <>
+                            <td className="border border-gray-700 p-1 text-left font-bold text-white truncate max-w-[80px]">{m.our}</td>
+                            <td className="border border-gray-700 p-1 font-bold text-blue-400">{m.ourRole}</td>
+                          </>
+                        ) : (
+                          <>
+                            {/* 1) 頭三格比對手自己輸入名字，下面自動聯動 */}
+                            <td className="border border-gray-700 p-1 text-left">
+                              {index < 3 ? (
+                                <input
+                                  type="text"
+                                  value={opponentNames[index]}
+                                  onChange={(e) => {
+                                    const updatedOpp = [...opponentNames];
+                                    updatedOpp[index] = e.target.value;
+                                    setOpponentNames(updatedOpp);
+                                    syncDataToBackend({ opponentNames: updatedOpp });
+                                  }}
+                                  placeholder={`Opponent ${index + 1}`}
+                                  className="w-full bg-[#121a2d] border border-gray-700 rounded p-0.5 text-[10px] font-semibold text-white outline-none"
+                                />
+                              ) : (
+                                <span className="font-semibold text-gray-300">{m.oppName}</span>
+                              )}
+                            </td>
+                            <td className="border border-gray-700 p-1 font-bold text-amber-400">{m.oppRole}</td>
+                          </>
+                        )}
+                        
+                        {/* 2) 壓縮後嘅比分格子（左右數字 + 固定冒號） */}
+                        {[0, 1, 2, 3, 4].map((gIdx) => (
+                          <td key={gIdx} className="border border-gray-700 p-0.5">
+                            <div className="flex items-center justify-center gap-0 bg-[#121a2d] border border-gray-700 rounded p-0.5">
+                              <input
+                                type="text"
+                                inputMode="numeric"
+                                maxLength={2}
+                                value={gameScores[m.match]?.[gIdx]?.left || ''}
+                                onChange={(e) => {
+                                  const val = e.target.value;
+                                  setGameScores(prev => {
+                                    const currentMatchGames = [...(prev[m.match] || Array(5).fill({ left: '', right: '' }))];
+                                    currentMatchGames[gIdx] = { ...currentMatchGames[gIdx], left: val };
+                                    const updatedScores = { ...prev, [m.match]: currentMatchGames };
+                                    syncDataToBackend({ gameScores: updatedScores });
+                                    return updatedScores;
+                                  });
+                                }}
+                                placeholder=""
+                                className="w-3.5 bg-transparent text-center text-[11px] font-bold text-white outline-none"
+                              />
+                              <span className="text-gray-400 font-bold text-[10px]">:</span>
+                              <input
+                                type="text"
+                                inputMode="numeric"
+                                maxLength={2}
+                                value={gameScores[m.match]?.[gIdx]?.right || ''}
+                                onChange={(e) => {
+                                  const val = e.target.value;
+                                  setGameScores(prev => {
+                                    const currentMatchGames = [...(prev[m.match] || Array(5).fill({ left: '', right: '' }))];
+                                    currentMatchGames[gIdx] = { ...currentMatchGames[gIdx], right: val };
+                                    const updatedScores = { ...prev, [m.match]: currentMatchGames };
+                                    syncDataToBackend({ gameScores: updatedScores });
+                                    return updatedScores;
+                                  });
+                                }}
+                                placeholder=""
+                                className="w-3.5 bg-transparent text-center text-[11px] font-bold text-white outline-none"
+                              />
+                            </div>
+                          </td>
+                        ))}
+
+                        {isHomeTeam ? (
+                          <>
+                            <td className="border border-gray-700 p-1 font-bold text-amber-400">{m.oppRole}</td>
+                            <td className="border border-gray-700 p-1 text-left">
+                              {index < 3 ? (
+                                <input
+                                  type="text"
+                                  value={opponentNames[index]}
+                                  onChange={(e) => {
+                                    const updatedOpp = [...opponentNames];
+                                    updatedOpp[index] = e.target.value;
+                                    setOpponentNames(updatedOpp);
+                                    syncDataToBackend({ opponentNames: updatedOpp });
+                                  }}
+                                  placeholder={`Opponent ${index + 1}`}
+                                  className="w-full bg-[#121a2d] border border-gray-700 rounded p-0.5 text-[10px] font-semibold text-white outline-none"
+                                />
+                              ) : (
+                                <span className="font-semibold text-gray-300">{m.oppName}</span>
+                              )}
+                            </td>
+                          </>
+                        ) : (
+                          <>
+                            <td className="border border-gray-700 p-1 font-bold text-blue-400">{m.ourRole}</td>
+                            <td className="border border-gray-700 p-1 text-left font-bold text-white truncate max-w-[80px]">{m.our}</td>
+                          </>
+                        )}
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
 
             <button
-              onClick={() => setShowMatchCard(false)}
-              className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 rounded-xl text-xs shadow"
+              onClick={() => {
+                syncDataToBackend({});
+                setShowMatchCard(false);
+              }}
+              className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2 rounded-xl text-xs shadow"
             >
-              Save & Close
+              Save & Close (Sync to Cloud)
             </button>
           </div>
         </div>
