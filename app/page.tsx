@@ -7,8 +7,8 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Tabs: 'next' | 'fixtures' | 'player' | 'lineup'
-  const [activeTab, setActiveTab] = useState<'next' | 'fixtures' | 'player' | 'lineup'>('next');
+  // Tabs: 'next' | 'fixtures' | 'player'
+  const [activeTab, setActiveTab] = useState<'next' | 'fixtures' | 'player'>('next');
 
   // Availability State
   const [selectedPlayer, setSelectedPlayer] = useState('');
@@ -22,8 +22,14 @@ export default function Home() {
     tbc: []
   });
 
-  // Lineup Calculator State (選擇 3 位球員作為 A, B, C 或 X, Y, Z)
+  // Lineup Calculator State (選擇 3 位球員作為 A, B, C)
   const [selectedLineup, setSelectedLineup] = useState<string[]>(['', '', '']);
+  
+  // Match Card Modal 狀態 (控制彈出與否)
+  const [showMatchCard, setShowMatchCard] = useState(false);
+
+  // 實時記分狀態 (9場比賽嘅局數分數或勝負)
+  const [matchScores, setMatchScores] = useState<{ [key: number]: { home: string; away: string } }>({});
 
   useEffect(() => {
     async function fetchData() {
@@ -74,13 +80,8 @@ export default function Home() {
     });
   };
 
-  // 根據賽例生成 9 場 Match Card 對陣
-  // 假設下一場係 HOME 定 AWAY (可以從 data.nextFixture 判斷，暫以 HOME 預設或自動切換)
-  const isHomeTeam = true; // 之後可以動態對應
+  const isHomeTeam = true; // 預設主場
 
-  // 產生 9 場對陣對應表
-  // HOME 規例: A=1,5,9 | B=2,4,7 | C=3,6,8
-  // AWAY 規例: X=1,4,8 | Y=2,6,9 | Z=3,5,7
   const generateMatchCard = () => {
     const [p1, p2, p3] = selectedLineup;
     if (!p1 || !p2 || !p3) return [];
@@ -148,7 +149,6 @@ export default function Home() {
             {activeTab === 'next' && <>GRAHAM SPICER <span className="text-blue-500">2</span></>}
             {activeTab === 'fixtures' && 'FIXTURES'}
             {activeTab === 'player' && 'PLAYER'}
-            {activeTab === 'lineup' && 'MATCH CARD'}
           </h1>
           <div className="bg-[#121929] text-xs text-gray-200 border border-gray-700/60 rounded-lg px-3 py-1.5 font-medium">
             2026-2027
@@ -159,22 +159,22 @@ export default function Home() {
       {/* Main Container */}
       <div className="max-w-md mx-auto px-4 pt-4 space-y-4">
 
-        {/* ================= TAB 1: NEXT MATCH ================= */}
+        {/* ================= TAB 1: NEXT MATCH (含 Availability 及最底部的 Lineup) ================= */}
         {activeTab === 'next' && (
           <div className="space-y-4">
-            <div className="bg-[#0f1626] border border-gray-800/80 rounded-2xl p-5 shadow-xl">
-              <div className="flex justify-between items-center mb-3">
+            <div className="bg-[#0f1626] border border-gray-800/80 rounded-2xl p-5 shadow-xl space-y-4">
+              <div className="flex justify-between items-center">
                 <span className="bg-blue-600/30 text-blue-400 border border-blue-500/40 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">
                   NEXT FIXTURE
                 </span>
                 <span className="text-xs text-gray-400 font-semibold">{data?.teamName}</span>
               </div>
 
-              <h2 className="text-2xl font-black text-white tracking-tight mb-3">
+              <h2 className="text-2xl font-black text-white tracking-tight">
                 vs {data?.nextFixture?.opponent}
               </h2>
 
-              <div className="flex items-center gap-4 text-xs text-gray-400 font-medium border-b border-gray-800/80 pb-4 mb-4">
+              <div className="flex items-center gap-4 text-xs text-gray-400 font-medium border-b border-gray-800/80 pb-4">
                 <div className="flex items-center gap-1.5">
                   <span>🕒</span>
                   <span>{data?.nextFixture?.date} {data?.nextFixture?.time}</span>
@@ -185,7 +185,7 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* Player Availability Inner Box */}
+              {/* Player Availability Box */}
               <div className="bg-[#0a0e19] border border-gray-800/60 rounded-xl p-4 space-y-3">
                 <div className="flex justify-between items-center">
                   <span className="text-[11px] font-bold tracking-wider text-gray-400 uppercase">PLAYER AVAILABILITY</span>
@@ -220,6 +220,60 @@ export default function Home() {
                   <p className="leading-relaxed"><strong className="text-amber-400 font-bold uppercase">TBC: </strong><span className="text-gray-300">{availability.tbc.join(', ') || 'None'}</span></p>
                 </div>
               </div>
+
+              {/* ================= LINEUP PLANNER (放喺呢一版嘅最底) ================= */}
+              <div className="bg-[#0a0e19] border border-gray-800/60 rounded-xl p-4 space-y-3 pt-4 border-t border-gray-800">
+                <div className="flex justify-between items-center">
+                  <span className="text-[11px] font-bold tracking-wider text-emerald-400 uppercase">TEAM LINEUP (3 PLAYERS)</span>
+                  
+                  {/* Match Card 按鈕 */}
+                  <button
+                    onClick={() => setShowMatchCard(true)}
+                    className="bg-blue-600 hover:bg-blue-500 text-white text-[10px] font-bold px-3 py-1.5 rounded-lg shadow transition flex items-center gap-1"
+                  >
+                    <span>📋 View Match Card</span>
+                  </button>
+                </div>
+
+                <p className="text-[11px] text-gray-400">從已登記 Going 的球員中選出 3 位主力：</p>
+
+                <div className="space-y-2">
+                  {[0, 1, 2].map((i) => (
+                    <div key={i} className="flex items-center gap-2">
+                      <span className="text-[11px] font-bold text-blue-400 w-16">Player {i + 1}:</span>
+                      <select
+                        value={selectedLineup[i]}
+                        onChange={(e) => {
+                          const updated = [...selectedLineup];
+                          updated[i] = e.target.value;
+                          setSelectedLineup(updated);
+                        }}
+                        className="w-full bg-[#121a2d] border border-gray-700/80 rounded-lg p-2 text-xs text-gray-200 outline-none"
+                      >
+                        <option value="">Select player...</option>
+                        {availability.going.map((name) => (
+                          <option key={name} value={name}>{name}</option>
+                        ))}
+                      </select>
+                    </div>
+                  ))}
+                </div>
+
+                {/* 生成結果簡覽 */}
+                {selectedLineup[0] && selectedLineup[1] && selectedLineup[2] && (
+                  <div className="mt-3 pt-3 border-t border-gray-800/60 space-y-1.5">
+                    <p className="text-[10px] font-bold text-gray-400 uppercase">Generated Order Preview:</p>
+                    <div className="text-[11px] text-gray-300 bg-[#121a2d] p-2 rounded-lg grid grid-cols-3 gap-1">
+                      {generateMatchCard().map((m) => (
+                        <div key={m.match}>
+                          <span className="text-gray-500">#{m.match}({m.role}):</span> <span className="font-bold text-white">{m.ourPlayer}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
             </div>
           </div>
         )}
@@ -231,19 +285,18 @@ export default function Home() {
               <div key={idx} className="bg-[#0f1626] border border-gray-800/80 rounded-2xl p-4 flex justify-between items-center shadow-lg">
                 <div className="space-y-1.5">
                   <div className="flex items-center gap-2">
-                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded tracking-wider uppercase ${item.type === 'HOME' ? 'bg-blue-600/30 text-blue-400 border border-blue-500/40' : 'bg-purple-600/30 text-purple-400 border border-purple-500/40'}`}>
+                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded uppercase ${item.type === 'HOME' ? 'bg-blue-600/30 text-blue-400 border border-blue-500/40' : 'bg-purple-600/30 text-purple-400 border border-purple-500/40'}`}>
                       {item.type}
                     </span>
-                    <span className={`text-[9px] font-bold px-2 py-0.5 rounded ${item.status === 'COMPLETED' ? 'bg-gray-800 text-gray-400 border border-gray-700' : 'bg-emerald-950/80 text-emerald-400 border border-emerald-800/60'}`}>
+                    <span className={`text-[9px] font-bold px-2 py-0.5 rounded ${item.status === 'COMPLETED' ? 'bg-gray-800 text-gray-400' : 'bg-emerald-950/80 text-emerald-400'}`}>
                       {item.status}
                     </span>
                   </div>
-                  <h3 className="text-sm font-bold text-gray-100">{item.homeTeam} <span className="text-gray-500 font-normal">vs</span> {item.awayTeam}</h3>
+                  <h3 className="text-sm font-bold text-gray-100">{item.homeTeam} vs {item.awayTeam}</h3>
                 </div>
-                <div className="bg-[#080c16] border border-gray-800/90 rounded-xl p-2.5 min-w-[70px] text-center flex flex-col items-center justify-center">
-                  <span className="text-[9px] font-bold text-blue-400 tracking-wider uppercase">{item.day} {item.month}</span>
-                  <span className="text-xl font-black text-white leading-tight">{item.date}</span>
-                  <span className="text-[9px] text-gray-400 font-medium">{item.time}</span>
+                <div className="bg-[#080c16] border border-gray-800/90 rounded-xl p-2.5 min-w-[70px] text-center">
+                  <span className="text-[9px] font-bold text-blue-400 uppercase">{item.day} {item.month}</span>
+                  <span className="text-xl font-black text-white">{item.date}</span>
                 </div>
               </div>
             ))}
@@ -262,7 +315,7 @@ export default function Home() {
                   </div>
                   <div>
                     <h3 className="text-sm font-bold text-white">{player.name}</h3>
-                    <p className="text-[10px] font-medium text-gray-400 tracking-wider uppercase">{player.subName}</p>
+                    <p className="text-[10px] font-medium text-gray-400 uppercase">{player.subName}</p>
                   </div>
                 </div>
               </div>
@@ -270,60 +323,86 @@ export default function Home() {
           </div>
         )}
 
-        {/* ================= TAB 4: MATCH CARD CALCULATOR (排陣工具) ================= */}
-        {activeTab === 'lineup' && (
-          <div className="bg-[#0f1626] border border-gray-800/80 rounded-2xl p-5 space-y-4 shadow-xl">
-            <span className="bg-emerald-600/30 text-emerald-400 border border-emerald-500/40 text-[10px] font-bold px-3 py-1 rounded-full uppercase">
-              Match Card Lineup Planner
-            </span>
-            <p className="text-xs text-gray-400">請從已確定出席 (Going) 嘅球員中揀選 3 位主力，系統會自動生成 9 場出場次序：</p>
-
-            <div className="space-y-2">
-              {[0, 1, 2].map((i) => (
-                <div key={i} className="flex items-center gap-2">
-                  <span className="text-xs font-bold text-blue-400 w-16">Player {i + 1}:</span>
-                  <select
-                    value={selectedLineup[i]}
-                    onChange={(e) => {
-                      const updated = [...selectedLineup];
-                      updated[i] = e.target.value;
-                      setSelectedLineup(updated);
-                    }}
-                    className="w-full bg-[#121a2d] border border-gray-700/80 rounded-lg p-2 text-xs text-gray-200 outline-none"
-                  >
-                    <option value="">Select player...</option>
-                    {availability.going.map((name) => (
-                      <option key={name} value={name}>{name}</option>
-                    ))}
-                  </select>
-                </div>
-              ))}
-            </div>
-
-            {/* 生成結果 */}
-            {selectedLineup[0] && selectedLineup[1] && selectedLineup[2] && (
-              <div className="mt-4 pt-4 border-t border-gray-800 space-y-2">
-                <p className="text-xs font-bold text-emerald-400 uppercase">Generated Match Card Order:</p>
-                <div className="bg-[#080c16] rounded-xl p-3 space-y-1.5 text-xs">
-                  {generateMatchCard().map((m) => (
-                    <div key={m.match} className="flex justify-between border-b border-gray-800/50 pb-1">
-                      <span className="font-bold text-gray-400">Game {m.match} ({m.role}):</span>
-                      <span className="font-bold text-white">{m.ourPlayer}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-        )}
-
       </div>
 
-      {/* 底部導航欄 (加入 Match Card 專用按鈕) */}
+      {/* ================= MATCH CARD MODAL (實時記分卡彈出視窗) ================= */}
+      {showMatchCard && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-[#0f1626] border border-gray-700 w-full max-w-md rounded-2xl p-5 space-y-4 max-h-[90vh] overflow-y-auto shadow-2xl">
+            <div className="flex justify-between items-center border-b border-gray-800 pb-3">
+              <div>
+                <h3 className="text-base font-black text-white">LIVE MATCH CARD</h3>
+                <p className="text-[10px] text-gray-400">vs {data?.nextFixture?.opponent || 'Opponent'}</p>
+              </div>
+              <button 
+                onClick={() => setShowMatchCard(false)}
+                className="bg-gray-800 hover:bg-gray-700 text-gray-300 w-8 h-8 rounded-full font-bold text-xs flex items-center justify-center"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* 9場記分列表 */}
+            <div className="space-y-2.5">
+              {generateMatchCard().length === 0 ? (
+                <p className="text-xs text-amber-400 text-center py-4">請先在下方 Lineup 揀選 3 位出賽球員先至可以開啟 Match Card！</p>
+              ) : (
+                generateMatchCard().map((m) => (
+                  <div key={m.match} className="bg-[#0a0e19] border border-gray-800 rounded-xl p-3 flex items-center justify-between">
+                    <div className="w-20">
+                      <span className="text-[10px] font-bold text-blue-400">Game {m.match}</span>
+                      <p className="text-xs font-bold text-white">{m.ourPlayer} <span className="text-[10px] text-gray-500">({m.role})</span></p>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <input 
+                        type="text" 
+                        placeholder="Home" 
+                        value={matchScores[m.match]?.home || ''}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setMatchScores(prev => ({
+                            ...prev,
+                            [m.match]: { ...prev[m.match], home: val }
+                          }));
+                        }}
+                        className="w-12 bg-[#121a2d] border border-gray-700 text-center text-xs p-1.5 rounded text-white"
+                      />
+                      <span className="text-gray-500 text-xs">vs</span>
+                      <input 
+                        type="text" 
+                        placeholder="Away" 
+                        value={matchScores[m.match]?.away || ''}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setMatchScores(prev => ({
+                            ...prev,
+                            [m.match]: { ...prev[m.match], away: val }
+                          }));
+                        }}
+                        className="w-12 bg-[#121a2d] border border-gray-700 text-center text-xs p-1.5 rounded text-white"
+                      />
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+
+            <button
+              onClick={() => setShowMatchCard(false)}
+              className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 rounded-xl text-xs shadow-lg transition"
+            >
+              Save & Close
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* 底部導航欄 */}
       <nav className="fixed bottom-0 left-0 right-0 z-30 bg-[#070a12]/95 border-t border-gray-800/80 backdrop-blur-xl">
         <div className="max-w-md mx-auto flex justify-around items-center h-16 px-4 relative">
 
-          <button onClick={() => setActiveTab('fixtures')} className={`flex flex-col items-center justify-center w-14 transition ${activeTab === 'fixtures' ? 'text-blue-500' : 'text-gray-500'}`}>
+          <button onClick={() => setActiveTab('fixtures')} className={`flex flex-col items-center justify-center w-16 transition ${activeTab === 'fixtures' ? 'text-blue-500' : 'text-gray-500'}`}>
             <span className="text-[9px] font-bold tracking-wider">FIXTURES</span>
           </button>
 
@@ -333,11 +412,7 @@ export default function Home() {
             </button>
           </div>
 
-          <button onClick={() => setActiveTab('lineup')} className={`flex flex-col items-center justify-center w-14 transition ${activeTab === 'lineup' ? 'text-blue-500' : 'text-gray-500'}`}>
-            <span className="text-[9px] font-bold tracking-wider">LINEUP</span>
-          </button>
-
-          <button onClick={() => setActiveTab('player')} className={`flex flex-col items-center justify-center w-14 transition ${activeTab === 'player' ? 'text-blue-500' : 'text-gray-500'}`}>
+          <button onClick={() => setActiveTab('player')} className={`flex flex-col items-center justify-center w-16 transition ${activeTab === 'player' ? 'text-blue-500' : 'text-gray-500'}`}>
             <span className="text-[9px] font-bold tracking-wider">PLAYER</span>
           </button>
 
