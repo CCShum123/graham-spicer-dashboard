@@ -10,7 +10,7 @@ export default function Home() {
   // Tabs: 'next' | 'fixtures' | 'player'
   const [activeTab, setActiveTab] = useState<'next' | 'fixtures' | 'player'>('next');
 
-  // Availability State
+  // Availability State (儲存簡寫 subName)
   const [selectedPlayer, setSelectedPlayer] = useState('');
   const [availability, setAvailability] = useState<{
     going: string[];
@@ -19,7 +19,7 @@ export default function Home() {
   }>({
     going: [],
     cantGo: [],
-    tbc: ['Tim', 'Aleksei', 'CC', 'Kit','Jin Su', 'Cass','Andi','Sam']
+    tbc: []
   });
 
   useEffect(() => {
@@ -30,6 +30,14 @@ export default function Home() {
         const json = await res.json();
         if (json.success && json.data) {
           setData(json.data);
+          // 當 API 資料載入後，自動將所有球員嘅 subName 預設放入 TBC
+          if (json.data.players) {
+            const allSubNames = json.data.players.map((p: any) => p.subName);
+            setAvailability(prev => ({
+              ...prev,
+              tbc: allSubNames
+            }));
+          }
         } else {
           throw new Error('Data format error');
         }
@@ -48,14 +56,21 @@ export default function Home() {
       alert('Please select your name first!');
       return;
     }
-    setAvailability((prev) => {
-      const newGoing = prev.going.filter((p) => p !== selectedPlayer);
-      const newCantGo = prev.cantGo.filter((p) => p !== selectedPlayer);
-      const newTbc = prev.tbc.filter((p) => p !== selectedPlayer);
 
-      if (status === 'going') newGoing.push(selectedPlayer);
-      if (status === 'cantGo') newCantGo.push(selectedPlayer);
-      if (status === 'tbc') newTbc.push(selectedPlayer);
+    // 透過 full name 搵出對應嘅 subName (簡寫)
+    const playerObj = data?.players?.find((p: any) => p.name === selectedPlayer);
+    const subName = playerObj ? playerObj.subName : selectedPlayer;
+
+    setAvailability((prev) => {
+      // 確保從所有分類入面清走呢個簡寫
+      const newGoing = prev.going.filter((p) => p !== subName);
+      const newCantGo = prev.cantGo.filter((p) => p !== subName);
+      const newTbc = prev.tbc.filter((p) => p !== subName);
+
+      // 根據所選按鈕加入對應分類
+      if (status === 'going') newGoing.push(subName);
+      if (status === 'cantGo') newCantGo.push(subName);
+      if (status === 'tbc') newTbc.push(subName);
 
       return { going: newGoing, cantGo: newCantGo, tbc: newTbc };
     });
@@ -103,7 +118,6 @@ export default function Home() {
             </h1>
           </div>
 
-          {/* 右上角只保留 2026-2027，移除 Team:All 及舊年份 */}
           <div className="flex items-center gap-2">
             <div className="bg-[#121929] text-xs text-gray-200 border border-gray-700/60 rounded-lg px-3 py-1.5 font-medium">
               2026-2027
@@ -115,10 +129,9 @@ export default function Home() {
       {/* Main Container */}
       <div className="max-w-md mx-auto px-4 pt-4 space-y-4">
 
-        {/* ================= TAB 1: NEXT MATCH (主頁) ================= */}
+        {/* ================= TAB 1: NEXT MATCH ================= */}
         {activeTab === 'next' && (
           <div className="space-y-4">
-            {/* Main Fixture Card */}
             <div className="bg-[#0f1626] border border-gray-800/80 rounded-2xl p-5 shadow-xl">
               <div className="flex justify-between items-center mb-3">
                 <span className="bg-blue-600/30 text-blue-400 border border-blue-500/40 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">
@@ -186,7 +199,7 @@ export default function Home() {
                   </div>
                 </div>
 
-                {/* Response Summary Lists */}
+                {/* Response Summary Lists (使用簡寫 subName) */}
                 <div className="space-y-2 pt-2 text-[11px] border-t border-gray-800/60">
                   <p className="leading-relaxed">
                     <strong className="text-emerald-400 font-bold uppercase">GOING: </strong>
@@ -206,22 +219,20 @@ export default function Home() {
           </div>
         )}
 
-        {/* ================= TAB 2: FIXTURES (自動主客場 + 顯示星期幾) ================= */}
+        {/* ================= TAB 2: FIXTURES ================= */}
         {activeTab === 'fixtures' && (
           <div className="space-y-3">
             {data?.fixtures?.map((item: any, idx: number) => (
               <div key={idx} className="bg-[#0f1626] border border-gray-800/80 rounded-2xl p-4 flex justify-between items-center shadow-lg">
                 <div className="space-y-1.5">
                   <div className="flex items-center gap-2">
-                    {/* 自動顯示 HOME / AWAY */}
                     <span className={`text-[10px] font-bold px-2 py-0.5 rounded tracking-wider uppercase ${
-                      item.type === 'HOME'
-                        ? 'bg-blue-600/30 text-blue-400 border border-blue-500/40'
+                      item.type === 'HOME' 
+                        ? 'bg-blue-600/30 text-blue-400 border border-blue-500/40' 
                         : 'bg-purple-600/30 text-purple-400 border border-purple-500/40'
                     }`}>
                       {item.type}
                     </span>
-                    {/* 自動狀態 (UPCOMING / COMPLETED) */}
                     <span className={`text-[9px] font-bold px-2 py-0.5 rounded ${
                       item.status === 'COMPLETED'
                         ? 'bg-gray-800 text-gray-400 border border-gray-700'
@@ -235,7 +246,6 @@ export default function Home() {
                   </h3>
                 </div>
 
-                {/* Right Date Square Badge (包含星期幾、月份、日期與時間) */}
                 <div className="bg-[#080c16] border border-gray-800/90 rounded-xl p-2.5 min-w-[70px] text-center flex flex-col items-center justify-center">
                   <span className="text-[9px] font-bold text-blue-400 tracking-wider uppercase">{item.day} {item.month}</span>
                   <span className="text-xl font-black text-white leading-tight">{item.date}</span>
@@ -246,7 +256,7 @@ export default function Home() {
           </div>
         )}
 
-        {/* ================= TAB 3: PLAYER (球員名單) ================= */}
+        {/* ================= TAB 3: PLAYER ================= */}
         {activeTab === 'player' && (
           <div className="space-y-2.5">
             {data?.players?.map((player: any) => (
@@ -275,11 +285,10 @@ export default function Home() {
 
       </div>
 
-      {/* 底部導航欄：只保留 FIXTURES、中間乒乓球拍 (NEXT MATCH)、同埋 PLAYER */}
+      {/* 底部導航欄 */}
       <nav className="fixed bottom-0 left-0 right-0 z-30 bg-[#070a12]/95 border-t border-gray-800/80 backdrop-blur-xl">
         <div className="max-w-md mx-auto flex justify-around items-center h-16 px-4 relative">
 
-          {/* Left Tab: FIXTURES */}
           <button
             onClick={() => setActiveTab('fixtures')}
             className={`flex flex-col items-center justify-center w-16 transition ${
@@ -292,7 +301,6 @@ export default function Home() {
             <span className="text-[9px] font-bold tracking-wider">FIXTURES</span>
           </button>
 
-          {/* Center Main Floating Button (乒乓球拍 - 下一場比賽總覽) */}
           <div className="relative -top-4">
             <button
               onClick={() => setActiveTab('next')}
@@ -306,7 +314,6 @@ export default function Home() {
             </button>
           </div>
 
-          {/* Right Tab: PLAYER */}
           <button
             onClick={() => setActiveTab('player')}
             className={`flex flex-col items-center justify-center w-16 transition ${
