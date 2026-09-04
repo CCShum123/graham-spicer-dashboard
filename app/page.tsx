@@ -87,7 +87,7 @@ export default function Home() {
 
   const currentMatchTarget = data?.fixtures?.find((f: any) => f.id === selectedFixtureId) || data?.nextFixture;
   
-  // 關鍵修正：直接完全聽從後端 API 畀出嚟嘅 type ('HOME' 抑或 'AWAY')
+  // 嚴格跟從後端 API 畀出嚟嘅 type ('HOME' 抑或 'AWAY')
   const isHomeTeam = currentMatchTarget?.type === 'HOME';
 
   const allPlayerNames = data?.players?.map((p: any) => p.subName) || [];
@@ -185,9 +185,10 @@ export default function Home() {
         {activeTab === 'next' && (
           <div className="bg-[#0f1626] border border-gray-800/80 rounded-2xl p-4.5 space-y-4 shadow-xl">
             
-            <div className="flex justify-between items-start border-b border-gray-800/80 pb-3.5">
-              <div>
-                <div className="flex items-center gap-1.5 mb-1">
+            {/* Top Info Section: Teams on single line + Venue below + Date/Time on right */}
+            <div className="flex justify-between items-start border-b border-gray-800/80 pb-3.5 gap-2">
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-1.5 mb-1.5">
                   <span className="text-[10px] font-bold text-blue-400 uppercase tracking-wider">
                     {selectedFixtureId === data?.nextFixture?.id ? 'NEXT FIXTURE' : 'SELECTED FIXTURE'}
                   </span>
@@ -195,17 +196,20 @@ export default function Home() {
                     {isHomeTeam ? 'HOME' : 'AWAY'}
                   </span>
                 </div>
-                <h2 className="text-xl font-black text-white tracking-tight">
+                {/* 1) 隊伍對陣一行過，唔要換行 (whitespace-nowrap overflow-x-auto) */}
+                <h2 className="text-sm font-black text-white tracking-tight whitespace-nowrap overflow-x-auto pb-0.5">
                   {currentMatchTarget?.homeTeam} vs {currentMatchTarget?.awayTeam}
                 </h2>
+                {/* 2) 場地放喺隊伍下面 */}
+                <p className="text-xs text-gray-400 mt-1">📍 {currentMatchTarget?.venue}</p>
               </div>
-              <div className="text-right space-y-1">
-                {/* 顯示正確年份（由 route.ts 傳入，1月14日及之後會自動顯示 2027） */}
+
+              <div className="text-right shrink-0 space-y-1">
                 <p className="text-xs text-gray-200 font-semibold">🕒 {currentMatchTarget?.day} {currentMatchTarget?.date} {currentMatchTarget?.month} {currentMatchTarget?.year} {currentMatchTarget?.time}</p>
-                <p className="text-xs text-gray-400">📍 {currentMatchTarget?.venue}</p>
               </div>
             </div>
 
+            {/* Availability Section */}
             <div className="bg-[#0a0e19] border border-gray-800/60 rounded-xl p-3.5 space-y-3">
               <div className="flex justify-between items-center">
                 <span className="text-xs font-bold tracking-wider text-gray-300 uppercase">
@@ -237,43 +241,42 @@ export default function Home() {
               </div>
             </div>
 
-            {selectedFixtureId === data?.nextFixture?.id && (
-              <div className="bg-[#0a0e19] border border-gray-800/60 rounded-xl p-3.5 space-y-3">
-                <div className="flex justify-between items-center">
-                  <span className="text-xs font-bold tracking-wider text-emerald-400 uppercase">TEAM LINEUP</span>
-                  
-                  <button
-                    onClick={() => setShowMatchCard(true)}
-                    className="bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold px-3.5 py-2 rounded-xl shadow flex items-center gap-1.5"
-                  >
-                    <span>📋 Match Card</span>
-                  </button>
-                </div>
-
-                <div className="grid grid-cols-3 gap-2.5">
-                  {[0, 1, 2].map((i) => (
-                    <div key={i} className="space-y-1.5">
-                      <label className="text-xs font-bold text-blue-400 block">Player {i + 1}</label>
-                      <select
-                        value={selectedLineup[i]}
-                        onChange={(e) => {
-                          const updated = [...selectedLineup];
-                          updated[i] = e.target.value;
-                          setSelectedLineup(updated);
-                          syncDataToBackend({ lineup: updated });
-                        }}
-                        className="w-full bg-[#121a2d] border border-gray-700 rounded-xl p-2 text-xs text-gray-100 font-medium outline-none"
-                      >
-                        <option value="">Select...</option>
-                        {currentAvailability.going.map((name: string) => (
-                          <option key={name} value={name}>{name}</option>
-                        ))}
-                      </select>
-                    </div>
-                  ))}
-                </div>
+            {/* 3) Team Lineup 移咗去任何 selected fixture 下面都可以顯示 */}
+            <div className="bg-[#0a0e19] border border-gray-800/60 rounded-xl p-3.5 space-y-3">
+              <div className="flex justify-between items-center">
+                <span className="text-xs font-bold tracking-wider text-emerald-400 uppercase">TEAM LINEUP</span>
+                
+                <button
+                  onClick={() => setShowMatchCard(true)}
+                  className="bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold px-3.5 py-2 rounded-xl shadow flex items-center gap-1.5"
+                >
+                  <span>📋 Match Card</span>
+                </button>
               </div>
-            )}
+
+              <div className="grid grid-cols-3 gap-2.5">
+                {[0, 1, 2].map((i) => (
+                  <div key={i} className="space-y-1.5">
+                    <label className="text-xs font-bold text-blue-400 block">Player {i + 1}</label>
+                    <select
+                      value={selectedLineup[i]}
+                      onChange={(e) => {
+                        const updated = [...selectedLineup];
+                        updated[i] = e.target.value;
+                        setSelectedLineup(updated);
+                        syncDataToBackend({ lineup: updated });
+                      }}
+                      className="w-full bg-[#121a2d] border border-gray-700 rounded-xl p-2 text-xs text-gray-100 font-medium outline-none"
+                    >
+                      <option value="">Select...</option>
+                      {currentAvailability.going.map((name: string) => (
+                        <option key={name} value={name}>{name}</option>
+                      ))}
+                    </select>
+                  </div>
+                ))}
+              </div>
+            </div>
 
           </div>
         )}
@@ -287,19 +290,18 @@ export default function Home() {
                   setSelectedFixtureId(item.id);
                   setActiveTab('next');
                 }}
-                className="bg-[#0f1626] border border-gray-800/80 hover:border-blue-500/60 cursor-pointer transition rounded-2xl p-4 flex justify-between items-center shadow"
+                className="bg-[#0f1626] border border-gray-800/80 hover:border-blue-500/60 cursor-pointer transition rounded-2xl p-4 flex justify-between items-center shadow gap-2"
               >
-                <div>
-                  {/* 直接讀取後端 item.type 來正確顯示 HOME 定係 AWAY */}
+                <div className="min-w-0 flex-1">
                   <span className={`text-[10px] font-bold px-2 py-0.5 rounded uppercase ${item.type === 'HOME' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400'}`}>
                     {item.type}
                   </span>
-                  <h3 className="text-sm font-bold text-gray-100 mt-1.5">{item.homeTeam} vs {item.awayTeam}</h3>
-                </div>
-                <div className="text-right">
-                  {/* 正確顯示後端傳過嚟嘅年份（2026 或 2027） */}
-                  <span className="text-[10px] text-blue-400 font-bold">{item.day} {item.date} {item.month} {item.year}</span>
+                  {/* Fixtures 列表一樣單行唔換行 */}
+                  <h3 className="text-xs font-black text-gray-100 mt-1.5 whitespace-nowrap overflow-x-auto pb-0.5">{item.homeTeam} vs {item.awayTeam}</h3>
                   <p className="text-xs text-gray-400 mt-1">📍 {item.venue}</p>
+                </div>
+                <div className="text-right shrink-0">
+                  <span className="text-[10px] text-blue-400 font-bold">{item.day} {item.date} {item.month} {item.year}</span>
                 </div>
               </div>
             )) || <p className="text-center text-gray-400">No fixtures available</p>}
