@@ -10,7 +10,6 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState<'next' | 'fixtures' | 'player'>('next');
   const [selectedFixtureId, setSelectedFixtureId] = useState<string>('');
 
-  // 儲存所有比賽嘅 Availability 狀態
   const [availabilityMap, setAvailabilityMap] = useState<{ [key: string]: { going: string[]; cantGo: string[]; tbc: string[] } }>({});
 
   const [selectedPlayer, setSelectedPlayer] = useState('');
@@ -44,7 +43,6 @@ export default function Home() {
           if (json.data.availabilityMap) {
             setAvailabilityMap(json.data.availabilityMap);
           } else if (json.data.fixtures && json.data.players) {
-            // 如果後端未有 availabilityMap，幫所有球員預設全部放入 TBC
             const initialMap: any = {};
             const allPlayerNames = json.data.players.map((p: any) => p.subName);
             json.data.fixtures.forEach((f: any) => {
@@ -87,13 +85,11 @@ export default function Home() {
     }
   };
 
-  // 取得當前檢視嘅比賽
   const currentMatchTarget = data?.fixtures?.find((f: any) => f.id === selectedFixtureId) || data?.nextFixture;
   
-  // 嚴格跟從 route.ts 畀出嚟嘅 type (HOME / AWAY)，唔自己亂改
+  // 關鍵修正：直接完全聽從後端 API 畀出嚟嘅 type ('HOME' 抑或 'AWAY')
   const isHomeTeam = currentMatchTarget?.type === 'HOME';
 
-  // 取得當前比賽 availability，若果冇就預設全部球員喺 TBC
   const allPlayerNames = data?.players?.map((p: any) => p.subName) || [];
   const currentAvailability = availabilityMap[selectedFixtureId] || { going: [], cantGo: [], tbc: [...allPlayerNames] };
 
@@ -204,8 +200,8 @@ export default function Home() {
                 </h2>
               </div>
               <div className="text-right space-y-1">
-                {/* 顯示年份 (例如 2026/2027) */}
-                <p className="text-xs text-gray-200 font-semibold">🕒 {currentMatchTarget?.day} {currentMatchTarget?.date} {currentMatchTarget?.month} {currentMatchTarget?.year || '2026'} {currentMatchTarget?.time}</p>
+                {/* 顯示正確年份（由 route.ts 傳入，1月14日及之後會自動顯示 2027） */}
+                <p className="text-xs text-gray-200 font-semibold">🕒 {currentMatchTarget?.day} {currentMatchTarget?.date} {currentMatchTarget?.month} {currentMatchTarget?.year} {currentMatchTarget?.time}</p>
                 <p className="text-xs text-gray-400">📍 {currentMatchTarget?.venue}</p>
               </div>
             </div>
@@ -294,14 +290,15 @@ export default function Home() {
                 className="bg-[#0f1626] border border-gray-800/80 hover:border-blue-500/60 cursor-pointer transition rounded-2xl p-4 flex justify-between items-center shadow"
               >
                 <div>
+                  {/* 直接讀取後端 item.type 來正確顯示 HOME 定係 AWAY */}
                   <span className={`text-[10px] font-bold px-2 py-0.5 rounded uppercase ${item.type === 'HOME' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400'}`}>
                     {item.type}
                   </span>
                   <h3 className="text-sm font-bold text-gray-100 mt-1.5">{item.homeTeam} vs {item.awayTeam}</h3>
                 </div>
                 <div className="text-right">
-                  {/* 顯示年份 */}
-                  <span className="text-[10px] text-blue-400 font-bold">{item.day} {item.date} {item.month} {item.year || '2026'}</span>
+                  {/* 正確顯示後端傳過嚟嘅年份（2026 或 2027） */}
+                  <span className="text-[10px] text-blue-400 font-bold">{item.day} {item.date} {item.month} {item.year}</span>
                   <p className="text-xs text-gray-400 mt-1">📍 {item.venue}</p>
                 </div>
               </div>
