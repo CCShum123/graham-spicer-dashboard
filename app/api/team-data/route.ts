@@ -67,7 +67,8 @@ export async function GET() {
     const fixtures = rawFixtures.map((f, idx) => {
       const fixtureDate = new Date(f.dateStr);
       const isPast = fixtureDate < today;
-      const isHome = f.homeTeam.toLowerCase().includes('graham spicer');
+      const isHome = f.homeTeam === 'Graham Spicer 2';
+      const year = f.dateStr.split('-')[0]; // 直接由 '2027-01-14' 抽出 '2027'
       return {
         id: `fix-${idx}`,
         ...f,
