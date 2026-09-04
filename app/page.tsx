@@ -286,7 +286,7 @@ export default function Home() {
                 key={item.id}
                 onClick={() => {
                   setSelectedFixtureId(item.id);
-                  setActiveTab('next'); // 點擊後跳去 Availability 頁面
+                  setActiveTab('next');
                 }}
                 className="bg-[#0f1626] border border-gray-800/80 hover:border-blue-500/60 cursor-pointer transition rounded-2xl p-4 flex justify-between items-center shadow"
               >
@@ -297,7 +297,6 @@ export default function Home() {
                   <h3 className="text-sm font-bold text-gray-100 mt-1.5">{item.homeTeam} vs {item.awayTeam}</h3>
                 </div>
                 <div className="text-right">
-                  {/* 修正為顯示完整日期格式：Tue 29 Sep */}
                   <span className="text-[10px] text-blue-400 font-bold">{item.day} {item.date} {item.month}</span>
                   <p className="text-xs text-gray-400 mt-1">📍 {item.venue}</p>
                 </div>
@@ -429,7 +428,7 @@ export default function Home() {
                                 onChange={(e) => {
                                   const val = e.target.value;
                                   setGameScores(prev => {
-                                    const currentMatchGames = [...(prev[m.match] / Array(5).fill({ left: '', right: '' }))];
+                                    const currentMatchGames = [...(prev[m.match] || Array(5).fill({ left: '', right: '' }))];
                                     currentMatchGames[gIdx] = { ...currentMatchGames[gIdx], right: val };
                                     const updatedScores = { ...prev, [m.match]: currentMatchGames };
                                     syncDataToBackend({ gameScores: updatedScores });
