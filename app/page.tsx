@@ -27,17 +27,17 @@ export default function Home() {
   // Match Card Modal 狀態
   const [showMatchCard, setShowMatchCard] = useState(false);
 
-  // 實時記分狀態：9場入面每一場嘅 5 個 Game 分數（支援輸入文字如 11:7, 17:15）
-  const [gameScores, setGameScores] = useState<{ [key: number]: string[] }>({
-    1: ['', '', '', '', ''],
-    2: ['', '', '', '', ''],
-    3: ['', '', '', '', ''],
-    4: ['', '', '', '', ''],
-    5: ['', '', '', '', ''],
-    6: ['', '', '', '', ''],
-    7: ['', '', '', '', ''],
-    8: ['', '', '', '', ''],
-    9: ['', '', '', '', ''],
+  // 實時記分狀態：9場入面每一場嘅 5 個 Game 分數，每個 Game 分左邊 (left) 同右邊 (right) 數字
+  const [gameScores, setGameScores] = useState<{ [key: number]: { left: string; right: string }[] }>({
+    1: Array(5).fill({ left: '', right: '' }),
+    2: Array(5).fill({ left: '', right: '' }),
+    3: Array(5).fill({ left: '', right: '' }),
+    4: Array(5).fill({ left: '', right: '' }),
+    5: Array(5).fill({ left: '', right: '' }),
+    6: Array(5).fill({ left: '', right: '' }),
+    7: Array(5).fill({ left: '', right: '' }),
+    8: Array(5).fill({ left: '', right: '' }),
+    9: Array(5).fill({ left: '', right: '' }),
   });
 
   useEffect(() => {
@@ -87,11 +87,10 @@ export default function Home() {
   const rawHomeTeam = data?.nextFixture?.homeTeam || '';
   const isHomeTeam = rawHomeTeam.toLowerCase().includes('graham spicer') || rawHomeTeam.toLowerCase().includes('gs');
 
-  // 縮短球隊名稱函數 (Graham Spicer -> GS, Teddington 1 -> Ted 1 等)
+  // 縮短球隊名稱函數
   const formatTeamName = (name: string) => {
     if (!name) return '';
     let formatted = name;
-    // 嚴格將 Graham Spicer 縮寫為 GS
     formatted = formatted.replace(/Graham\s*Spicer/gi, 'GS');
     formatted = formatted.replace(/Teddington\s*1/gi, 'Ted 1');
     formatted = formatted.replace(/Teddington\s*2/gi, 'Ted 2');
@@ -99,7 +98,6 @@ export default function Home() {
     return formatted;
   };
 
-  const ourTeamNameFormatted = formatTeamName(rawHomeTeam || data?.nextFixture?.opponent || 'GS 2');
   const opponentTeamNameFormatted = formatTeamName(data?.nextFixture?.opponent || 'Opponent');
 
   // 根據相片入面 Thames Valley 賽例嘅 9 場對陣藍圖
@@ -108,7 +106,6 @@ export default function Home() {
     const names = [p1 || 'Player 1', p2 || 'Player 2', p3 || 'Player 3'];
 
     if (isHomeTeam) {
-      // Home: A=1,5,9 | B=2,4,7 | C=3,6,8
       return [
         { match: 1, our: names[0], ourRole: 'A', oppRole: 'X' },
         { match: 2, our: names[1], ourRole: 'B', oppRole: 'Y' },
@@ -121,7 +118,6 @@ export default function Home() {
         { match: 9, our: names[0], ourRole: 'A', oppRole: 'Y' },
       ];
     } else {
-      // Away: X=1,4,8 | Y=2,6,9 | Z=3,5,7 (對應 Away 崗位)
       return [
         { match: 1, our: names[0], ourRole: 'X', oppRole: 'A' },
         { match: 2, our: names[1], ourRole: 'Y', oppRole: 'B' },
@@ -136,54 +132,54 @@ export default function Home() {
     }
   };
 
-  if (loading) return <div className="flex min-h-screen items-center justify-center bg-[#070a12] text-white">Loading...</div>;
+  if (loading) return <div className="flex min-h-screen items-center justify-center bg-[#070a12] text-white text-sm">Loading...</div>;
 
   return (
     <main className="min-h-screen bg-[#070a12] text-white pb-24 font-sans text-xs">
 
-      {/* Header */}
+      {/* Header (字體加大) */}
       <header className="sticky top-0 z-20 bg-[#070a12]/90 px-4 py-3 border-b border-gray-800/40 flex justify-between items-center">
-        <h1 className="text-sm font-black tracking-tight text-white">
+        <h1 className="text-base font-black tracking-tight text-white">
           {activeTab === 'next' && <>GRAHAM SPICER <span className="text-blue-500">2</span></>}
           {activeTab === 'fixtures' && 'FIXTURES'}
           {activeTab === 'player' && 'PLAYER'}
         </h1>
-        <span className="bg-[#121929] text-[10px] text-gray-300 px-2.5 py-1 rounded-md border border-gray-700/60">2026-2027</span>
+        <span className="bg-[#121929] text-xs text-gray-300 px-3 py-1 rounded-md border border-gray-700/60 font-semibold">2026-2027</span>
       </header>
 
-      {/* Main Container (放寬少少空間，避免過度壓迫) */}
-      <div className="max-w-md mx-auto px-4 pt-3.5 space-y-3.5">
+      {/* Main Container */}
+      <div className="max-w-md mx-auto px-4 pt-4 space-y-4">
 
         {activeTab === 'next' && (
-          <div className="bg-[#0f1626] border border-gray-800/80 rounded-2xl p-4 space-y-3.5 shadow-xl">
+          <div className="bg-[#0f1626] border border-gray-800/80 rounded-2xl p-4.5 space-y-4 shadow-xl">
             
-            {/* 第一行：vs 隊名 + 日期地點放喺右手邊 + 明顯標註 Home / Away */}
-            <div className="flex justify-between items-start border-b border-gray-800/80 pb-3">
+            {/* 第一行：vs 隊名 + 日期地點放喺右手邊 (字體全面加大) */}
+            <div className="flex justify-between items-start border-b border-gray-800/80 pb-3.5">
               <div>
-                <div className="flex items-center gap-1.5 mb-0.5">
-                  <span className="text-[9px] font-bold text-blue-400 uppercase tracking-wider">NEXT FIXTURE</span>
-                  <span className={`text-[9px] font-black px-1.5 py-0.5 rounded ${isHomeTeam ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-amber-500/20 text-amber-400 border border-amber-500/30'}`}>
+                <div className="flex items-center gap-1.5 mb-1">
+                  <span className="text-[10px] font-bold text-blue-400 uppercase tracking-wider">NEXT FIXTURE</span>
+                  <span className={`text-[10px] font-black px-2 py-0.5 rounded ${isHomeTeam ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-amber-500/20 text-amber-400 border border-amber-500/30'}`}>
                     {isHomeTeam ? 'HOME' : 'AWAY'}
                   </span>
                 </div>
-                <h2 className="text-lg font-black text-white tracking-tight">vs {formatTeamName(data?.nextFixture?.opponent)}</h2>
+                <h2 className="text-xl font-black text-white tracking-tight">vs {formatTeamName(data?.nextFixture?.opponent)}</h2>
               </div>
-              <div className="text-right space-y-0.5">
-                <p className="text-[10px] text-gray-300 font-medium">🕒 {data?.nextFixture?.date} {data?.nextFixture?.time}</p>
-                <p className="text-[10px] text-gray-400">📍 {data?.nextFixture?.venue}</p>
+              <div className="text-right space-y-1">
+                <p className="text-xs text-gray-200 font-semibold">🕒 {data?.nextFixture?.date} {data?.nextFixture?.time}</p>
+                <p className="text-xs text-gray-400">📍 {data?.nextFixture?.venue}</p>
               </div>
             </div>
 
-            {/* Player Availability 區塊 */}
-            <div className="bg-[#0a0e19] border border-gray-800/60 rounded-xl p-3 space-y-2.5">
+            {/* Player Availability 區塊 (字體加大) */}
+            <div className="bg-[#0a0e19] border border-gray-800/60 rounded-xl p-3.5 space-y-3">
               <div className="flex justify-between items-center">
-                <span className="text-[10px] font-bold tracking-wider text-gray-400 uppercase">PLAYER AVAILABILITY ({availability.going.length})</span>
+                <span className="text-xs font-bold tracking-wider text-gray-300 uppercase">PLAYER AVAILABILITY ({availability.going.length})</span>
               </div>
 
               <select
                 value={selectedPlayer}
                 onChange={(e) => setSelectedPlayer(e.target.value)}
-                className="w-full bg-[#121a2d] border border-gray-700/80 rounded-lg p-2 text-xs text-gray-200 outline-none"
+                className="w-full bg-[#121a2d] border border-gray-700/80 rounded-xl p-2.5 text-xs text-gray-100 font-medium outline-none"
               >
                 <option value="">Select your name...</option>
                 {data?.players?.map((p: any) => (
@@ -192,28 +188,28 @@ export default function Home() {
               </select>
 
               <div className="grid grid-cols-3 gap-2">
-                <button onClick={() => handleStatusChange('going')} className="bg-[#1c273c] hover:bg-emerald-600/30 text-emerald-400 border border-emerald-500/40 py-1.5 rounded-lg font-bold text-xs">Going</button>
-                <button onClick={() => handleStatusChange('cantGo')} className="bg-[#1c273c] hover:bg-rose-600/30 text-rose-400 border border-rose-500/40 py-1.5 rounded-lg font-bold text-xs">Can't Go</button>
-                <button onClick={() => handleStatusChange('tbc')} className="bg-[#1c273c] hover:bg-amber-600/30 text-amber-400 border border-amber-500/40 py-1.5 rounded-lg font-bold text-xs">TBC</button>
+                <button onClick={() => handleStatusChange('going')} className="bg-[#1c273c] hover:bg-emerald-600/30 text-emerald-400 border border-emerald-500/40 py-2 rounded-xl font-bold text-xs">Going</button>
+                <button onClick={() => handleStatusChange('cantGo')} className="bg-[#1c273c] hover:bg-rose-600/30 text-rose-400 border border-rose-500/40 py-2 rounded-xl font-bold text-xs">Can't Go</button>
+                <button onClick={() => handleStatusChange('tbc')} className="bg-[#1c273c] hover:bg-amber-600/30 text-amber-400 border border-amber-500/40 py-2 rounded-xl font-bold text-xs">TBC</button>
               </div>
 
-              {/* 顯示 Going, Can't Go, TBC 名單 */}
-              <div className="space-y-1.5 text-[10px] pt-2 border-t border-gray-800/80">
-                <p><strong className="text-emerald-400 uppercase">GOING:</strong> <span className="text-gray-300">{availability.going.join(', ') || 'None'}</span></p>
-                <p><strong className="text-rose-400 uppercase">CAN'T GO:</strong> <span className="text-gray-300">{availability.cantGo.join(', ') || 'None'}</span></p>
-                <p><strong className="text-amber-400 uppercase">TBC:</strong> <span className="text-gray-300">{availability.tbc.join(', ') || 'None'}</span></p>
+              {/* 顯示 Going, Can't Go, TBC 名單 (字體加大清晰) */}
+              <div className="space-y-1.5 text-xs pt-2.5 border-t border-gray-800/80">
+                <p><strong className="text-emerald-400 uppercase">GOING:</strong> <span className="text-gray-200 font-medium">{availability.going.join(', ') || 'None'}</span></p>
+                <p><strong className="text-rose-400 uppercase">CAN'T GO:</strong> <span className="text-gray-200 font-medium">{availability.cantGo.join(', ') || 'None'}</span></p>
+                <p><strong className="text-amber-400 uppercase">TBC:</strong> <span className="text-gray-200 font-medium">{availability.tbc.join(', ') || 'None'}</span></p>
               </div>
             </div>
 
-            {/* Team Lineup 區塊（Player 1, 2, 3 打橫排 + 選項在各自下面） */}
-            <div className="bg-[#0a0e19] border border-gray-800/60 rounded-xl p-3 space-y-2.5">
+            {/* Team Lineup 區塊 (字體加大) */}
+            <div className="bg-[#0a0e19] border border-gray-800/60 rounded-xl p-3.5 space-y-3">
               <div className="flex justify-between items-center">
-                <span className="text-[10px] font-bold tracking-wider text-emerald-400 uppercase">TEAM LINEUP</span>
+                <span className="text-xs font-bold tracking-wider text-emerald-400 uppercase">TEAM LINEUP</span>
                 
                 {/* Match Card 掣 */}
                 <button
                   onClick={() => setShowMatchCard(true)}
-                  className="bg-blue-600 hover:bg-blue-500 text-white text-[10px] font-bold px-3 py-1.5 rounded-lg shadow flex items-center gap-1"
+                  className="bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold px-3.5 py-2 rounded-xl shadow flex items-center gap-1.5"
                 >
                   <span>📋 Match Card</span>
                 </button>
@@ -222,8 +218,8 @@ export default function Home() {
               {/* 打橫擺 3 個 Player，選項在各自下面 */}
               <div className="grid grid-cols-3 gap-2.5">
                 {[0, 1, 2].map((i) => (
-                  <div key={i} className="space-y-1">
-                    <label className="text-[10px] font-bold text-blue-400 block">Player {i + 1}</label>
+                  <div key={i} className="space-y-1.5">
+                    <label className="text-xs font-bold text-blue-400 block">Player {i + 1}</label>
                     <select
                       value={selectedLineup[i]}
                       onChange={(e) => {
@@ -231,7 +227,7 @@ export default function Home() {
                         updated[i] = e.target.value;
                         setSelectedLineup(updated);
                       }}
-                      className="w-full bg-[#121a2d] border border-gray-700 rounded-lg p-1.5 text-[10px] text-gray-200 outline-none"
+                      className="w-full bg-[#121a2d] border border-gray-700 rounded-xl p-2 text-xs text-gray-100 font-medium outline-none"
                     >
                       <option value="">Select...</option>
                       {availability.going.map((name) => (
@@ -247,16 +243,16 @@ export default function Home() {
         )}
 
         {activeTab === 'fixtures' && (
-          <div className="space-y-2.5">
+          <div className="space-y-3">
             {data?.fixtures?.map((item: any, idx: number) => (
-              <div key={idx} className="bg-[#0f1626] border border-gray-800/80 rounded-xl p-3.5 flex justify-between items-center">
+              <div key={idx} className="bg-[#0f1626] border border-gray-800/80 rounded-2xl p-4 flex justify-between items-center">
                 <div>
-                  <span className="text-[9px] font-bold px-1.5 py-0.5 rounded uppercase bg-blue-600/30 text-blue-400">{item.type}</span>
-                  <h3 className="text-xs font-bold text-gray-100 mt-1">{formatTeamName(item.homeTeam)} vs {formatTeamName(item.awayTeam)}</h3>
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded uppercase bg-blue-600/30 text-blue-400">{item.type}</span>
+                  <h3 className="text-sm font-bold text-gray-100 mt-1.5">{formatTeamName(item.homeTeam)} vs {formatTeamName(item.awayTeam)}</h3>
                 </div>
                 <div className="text-right">
-                  <span className="text-[9px] text-blue-400 font-bold">{item.day} {item.month}</span>
-                  <p className="text-sm font-black">{item.date}</p>
+                  <span className="text-[10px] text-blue-400 font-bold">{item.day} {item.month}</span>
+                  <p className="text-base font-black">{item.date}</p>
                 </div>
               </div>
             ))}
@@ -264,14 +260,14 @@ export default function Home() {
         )}
 
         {activeTab === 'player' && (
-          <div className="space-y-2.5">
+          <div className="space-y-3">
             {data?.players?.map((player: any) => (
-              <div key={player.number} className="bg-[#0f1626] border border-gray-800/80 rounded-xl p-3 flex items-center justify-between">
-                <div className="flex items-center gap-2.5">
-                  <span className="w-8 h-8 rounded-lg bg-[#080c16] flex items-center justify-center font-black text-sm">{player.number}</span>
+              <div key={player.number} className="bg-[#0f1626] border border-gray-800/80 rounded-2xl p-3.5 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <span className="w-9 h-9 rounded-xl bg-[#080c16] flex items-center justify-center font-black text-sm">{player.number}</span>
                   <div>
-                    <h3 className="text-xs font-bold">{player.name}</h3>
-                    <p className="text-[9px] text-gray-400 uppercase">{player.subName}</p>
+                    <h3 className="text-sm font-bold">{player.name}</h3>
+                    <p className="text-[10px] text-gray-400 uppercase font-semibold">{player.subName}</p>
                   </div>
                 </div>
               </div>
@@ -281,98 +277,116 @@ export default function Home() {
 
       </div>
 
-      {/* ================= THAMES VALLEY MATCH CARD 彈出視窗（支援比分輸入與 GS 縮寫） ================= */}
+      {/* ================= THAMES VALLEY MATCH CARD 彈出視窗（比分中間固定 ":"） ================= */}
       {showMatchCard && (
         <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-center justify-center p-2">
-          <div className="bg-[#0f1626] border border-gray-700 w-full max-w-xl rounded-2xl p-3.5 space-y-3 max-h-[95vh] overflow-y-auto shadow-2xl">
+          <div className="bg-[#0f1626] border border-gray-700 w-full max-w-xl rounded-2xl p-4 space-y-3.5 max-h-[95vh] overflow-y-auto shadow-2xl">
             
-            <div className="flex justify-between items-center border-b border-gray-800 pb-2">
+            <div className="flex justify-between items-center border-b border-gray-800 pb-2.5">
               <h3 className="text-xs font-black tracking-wider text-white uppercase">THAMES VALLEY TABLE TENNIS LEAGUE - MATCH CARD</h3>
-              <button onClick={() => setShowMatchCard(false)} className="bg-gray-800 hover:bg-gray-700 text-gray-300 w-6 h-6 rounded-full font-bold text-[10px]">✕</button>
+              <button onClick={() => setShowMatchCard(false)} className="bg-gray-800 hover:bg-gray-700 text-gray-300 w-7 h-7 rounded-full font-bold text-xs flex items-center justify-center">✕</button>
             </div>
 
-            {/* Match Card 表格 (正確分 Home / Away 欄位，並縮小隊名) */}
+            {/* Match Card 表格 */}
             <div className="overflow-x-auto">
-              <table className="w-full text-center border-collapse border border-gray-700 text-[10px]">
+              <table className="w-full text-center border-collapse border border-gray-700 text-xs">
                 <thead>
                   <tr className="bg-[#121929] text-gray-300">
-                    <th className="border border-gray-700 p-1 w-7">#</th>
+                    <th className="border border-gray-700 p-1.5 w-7">#</th>
                     
-                    {/* Home Team 欄 */}
-                    <th className="border border-gray-700 p-1 text-left">
+                    <th className="border border-gray-700 p-1.5 text-left font-bold">
                       Home: {isHomeTeam ? 'GS 2' : formatTeamName(data?.nextFixture?.homeTeam || opponentTeamNameFormatted)}
                     </th>
-                    <th className="border border-gray-700 p-1 w-5">{isHomeTeam ? 'H' : 'A'}</th>
+                    <th className="border border-gray-700 p-1.5 w-6 font-bold">{isHomeTeam ? 'H' : 'A'}</th>
                     
-                    <th className="border border-gray-700 p-1" colSpan={5}>Best of 5 Games Score (e.g., 11:7)</th>
+                    <th className="border border-gray-700 p-1.5 font-bold" colSpan={5}>Best of 5 Games Score (e.g. 11 : 7)</th>
                     
-                    <th className="border border-gray-700 p-1 w-5">{!isHomeTeam ? 'H' : 'A'}</th>
+                    <th className="border border-gray-700 p-1.5 w-6 font-bold">{!isHomeTeam ? 'H' : 'A'}</th>
                     
-                    {/* Away Team 欄 */}
-                    <th className="border border-gray-700 p-1 text-left">
+                    <th className="border border-gray-700 p-1.5 text-left font-bold">
                       Away: {!isHomeTeam ? 'GS 2' : opponentTeamNameFormatted}
                     </th>
                   </tr>
-                  <tr className="bg-[#0a0e19] text-gray-400 text-[9px]">
-                    <th className="border border-gray-700 p-0.5"></th>
-                    <th className="border border-gray-700 p-0.5 text-left">Name</th>
-                    <th className="border border-gray-700 p-0.5"></th>
-                    <th className="border border-gray-700 p-0.5 w-8">1st</th>
-                    <th className="border border-gray-700 p-0.5 w-8">2nd</th>
-                    <th className="border border-gray-700 p-0.5 w-8">3rd</th>
-                    <th className="border border-gray-700 p-0.5 w-8">4th</th>
-                    <th className="border border-gray-700 p-0.5 w-8">5th</th>
-                    <th className="border border-gray-700 p-0.5"></th>
-                    <th className="border border-gray-700 p-0.5 text-left">Name</th>
+                  <tr className="bg-[#0a0e19] text-gray-400 text-[10px]">
+                    <th className="border border-gray-700 p-1"></th>
+                    <th className="border border-gray-700 p-1 text-left">Name</th>
+                    <th className="border border-gray-700 p-1"></th>
+                    <th className="border border-gray-700 p-1 w-14">1st</th>
+                    <th className="border border-gray-700 p-1 w-14">2nd</th>
+                    <th className="border border-gray-700 p-1 w-14">3rd</th>
+                    <th className="border border-gray-700 p-1 w-14">4th</th>
+                    <th className="border border-gray-700 p-1 w-14">5th</th>
+                    <th className="border border-gray-700 p-1"></th>
+                    <th className="border border-gray-700 p-1 text-left">Name</th>
                   </tr>
                 </thead>
                 <tbody>
                   {getMatchStructure().map((m) => (
                     <tr key={m.match} className="hover:bg-gray-800/30">
-                      <td className="border border-gray-700 p-1 font-bold">{m.match}</td>
+                      <td className="border border-gray-700 p-1.5 font-black">{m.match}</td>
                       
                       {isHomeTeam ? (
                         <>
-                          <td className="border border-gray-700 p-1 text-left font-semibold text-white truncate max-w-[80px]">{m.our}</td>
-                          <td className="border border-gray-700 p-1 font-bold text-blue-400">{m.ourRole}</td>
+                          <td className="border border-gray-700 p-1.5 text-left font-bold text-white truncate max-w-[90px]">{m.our}</td>
+                          <td className="border border-gray-700 p-1.5 font-bold text-blue-400">{m.ourRole}</td>
                         </>
                       ) : (
                         <>
-                          <td className="border border-gray-700 p-1 text-left font-semibold text-gray-400 truncate max-w-[80px]">Opponent</td>
-                          <td className="border border-gray-700 p-1 font-bold text-amber-400">{m.oppRole}</td>
+                          <td className="border border-gray-700 p-1.5 text-left font-semibold text-gray-400 truncate max-w-[90px]">Opponent</td>
+                          <td className="border border-gray-700 p-1.5 font-bold text-amber-400">{m.oppRole}</td>
                         </>
                       )}
                       
-                      {/* 5個 Game 的比分輸入框 (支援 11:7, 4:11 等格式) */}
+                      {/* 5個 Game 的比分格子：左右輸入框，中間固定冒號 ":" */}
                       {[0, 1, 2, 3, 4].map((gIdx) => (
-                        <td key={gIdx} className="border border-gray-700 p-0.5">
-                          <input
-                            type="text"
-                            maxLength={7}
-                            value={gameScores[m.match]?.[gIdx] || ''}
-                            onChange={(e) => {
-                              const val = e.target.value;
-                              setGameScores(prev => {
-                                const currentMatchGames = [...(prev[m.match] || ['', '', '', '', ''])];
-                                currentMatchGames[gIdx] = val;
-                                return { ...prev, [m.match]: currentMatchGames };
-                              });
-                            }}
-                            placeholder="-"
-                            className="w-full bg-[#121a2d] border border-gray-700 rounded text-center text-[10px] p-0.5 text-white outline-none placeholder:text-gray-600"
-                          />
+                        <td key={gIdx} className="border border-gray-700 p-1">
+                          <div className="flex items-center justify-center gap-0.5 bg-[#121a2d] border border-gray-700 rounded p-0.5">
+                            <input
+                              type="text"
+                              inputMode="numeric"
+                              maxLength={2}
+                              value={gameScores[m.match]?.[gIdx]?.left || ''}
+                              onChange={(e) => {
+                                const val = e.target.value;
+                                setGameScores(prev => {
+                                  const currentMatchGames = [...(prev[m.match] || Array(5).fill({ left: '', right: '' }))];
+                                  currentMatchGames[gIdx] = { ...currentMatchGames[gIdx], left: val };
+                                  return { ...prev, [m.match]: currentMatchGames };
+                                });
+                              }}
+                              placeholder=""
+                              className="w-5 bg-transparent text-center text-xs font-bold text-white outline-none placeholder:text-gray-600"
+                            />
+                            <span className="text-gray-400 font-bold">:</span>
+                            <input
+                              type="text"
+                              inputMode="numeric"
+                              maxLength={2}
+                              value={gameScores[m.match]?.[gIdx]?.right || ''}
+                              onChange={(e) => {
+                                const val = e.target.value;
+                                setGameScores(prev => {
+                                  const currentMatchGames = [...(prev[m.match] || Array(5).fill({ left: '', right: '' }))];
+                                  currentMatchGames[gIdx] = { ...currentMatchGames[gIdx], right: val };
+                                  return { ...prev, [m.match]: currentMatchGames };
+                                });
+                              }}
+                              placeholder=""
+                              className="w-5 bg-transparent text-center text-xs font-bold text-white outline-none placeholder:text-gray-600"
+                            />
+                          </div>
                         </td>
                       ))}
 
                       {isHomeTeam ? (
                         <>
-                          <td className="border border-gray-700 p-1 font-bold text-amber-400">{m.oppRole}</td>
-                          <td className="border border-gray-700 p-1 text-left text-gray-400 truncate max-w-[80px]">Opponent</td>
+                          <td className="border border-gray-700 p-1.5 font-bold text-amber-400">{m.oppRole}</td>
+                          <td className="border border-gray-700 p-1.5 text-left text-gray-400 truncate max-w-[90px]">Opponent</td>
                         </>
                       ) : (
                         <>
-                          <td className="border border-gray-700 p-1 font-bold text-blue-400">{m.ourRole}</td>
-                          <td className="border border-gray-700 p-1 text-left font-semibold text-white truncate max-w-[80px]">{m.our}</td>
+                          <td className="border border-gray-700 p-1.5 font-bold text-blue-400">{m.ourRole}</td>
+                          <td className="border border-gray-700 p-1.5 text-left font-bold text-white truncate max-w-[90px]">{m.our}</td>
                         </>
                       )}
                     </tr>
@@ -383,7 +397,7 @@ export default function Home() {
 
             <button
               onClick={() => setShowMatchCard(false)}
-              className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2 rounded-xl text-xs shadow"
+              className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 rounded-xl text-xs shadow"
             >
               Save & Close
             </button>
@@ -394,9 +408,9 @@ export default function Home() {
       {/* 底部導航 */}
       <nav className="fixed bottom-0 left-0 right-0 z-30 bg-[#070a12]/95 border-t border-gray-800/80 backdrop-blur-xl">
         <div className="max-w-md mx-auto flex justify-around items-center h-14 px-4">
-          <button onClick={() => setActiveTab('fixtures')} className={`text-[10px] font-bold ${activeTab === 'fixtures' ? 'text-blue-500' : 'text-gray-500'}`}>FIXTURES</button>
+          <button onClick={() => setActiveTab('fixtures')} className={`text-xs font-bold ${activeTab === 'fixtures' ? 'text-blue-500' : 'text-gray-500'}`}>FIXTURES</button>
           <button onClick={() => setActiveTab('next')} className={`w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white text-base font-black ${activeTab === 'next' ? 'ring-2 ring-blue-400' : ''}`}>🏓</button>
-          <button onClick={() => setActiveTab('player')} className={`text-[10px] font-bold ${activeTab === 'player' ? 'text-blue-500' : 'text-gray-500'}`}>PLAYER</button>
+          <button onClick={() => setActiveTab('player')} className={`text-xs font-bold ${activeTab === 'player' ? 'text-blue-500' : 'text-gray-500'}`}>PLAYER</button>
         </div>
       </nav>
 
