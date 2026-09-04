@@ -41,7 +41,7 @@ let gsBData = {
     { number: 4, name: 'James Ng Hing Cheung', subName: 'James' },
     { number: 5, name: 'Rohit Kumar', subName: 'Rohit' },
     { number: 6, name: 'Peter Lyall', subName: 'Peter' },
-    { number: 7, name: 'AJAY SHAH', subName: 'Ajay' },
+    { number: 7, name: 'Ajay Shah', subName: 'Ajay' },
     { number: 8, name: 'Benjamin Richmond', subName: 'Benjamin' },
     { number: 9, name: 'Kostiantyn Motovilin', subName: 'Kostiantyn' },
     { number: 10, name: 'Hojeong Yoon', subName: 'Hojeong' },
