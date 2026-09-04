@@ -27,10 +27,10 @@ export default function Home() {
   // Match Card Modal 狀態
   const [showMatchCard, setShowMatchCard] = useState(false);
 
-  // 1) 對手頭三格球員名稱狀態（第 4-9 格會自動聯動）
+  // 對手頭三格球員名稱狀態
   const [opponentNames, setOpponentNames] = useState<string[]>(['', '', '']);
 
-  // 實時記分狀態：9場入面每一場嘅 5 個 Game 分數（壓縮闊度後嘅雙框結構）
+  // 實時記分狀態
   const [gameScores, setGameScores] = useState<{ [key: number]: { left: string; right: string }[] }>({
     1: Array(5).fill({ left: '', right: '' }),
     2: Array(5).fill({ left: '', right: '' }),
@@ -69,7 +69,6 @@ export default function Home() {
     fetchData();
   }, []);
 
-  // 3) 同步更新至伺服器儲存庫函數（確保隊友即時見到最新情況）
   const syncDataToBackend = async (updatedState: {
     availability?: any;
     lineup?: any;
@@ -115,6 +114,7 @@ export default function Home() {
     });
   };
 
+  // 確保正確判斷主客場：如果 homeTeam 包含 graham spicer 或者 gs，即係主場
   const rawHomeTeam = data?.nextFixture?.homeTeam || '';
   const isHomeTeam = rawHomeTeam.toLowerCase().includes('graham spicer') || rawHomeTeam.toLowerCase().includes('gs');
 
@@ -130,16 +130,12 @@ export default function Home() {
 
   const opponentTeamNameFormatted = formatTeamName(data?.nextFixture?.opponent || 'Opponent');
 
-  // 1) 根據賽例自動對應對手名字（第 4-9 格根據前三格自動對應）
   const getMatchStructure = () => {
     const [p1, p2, p3] = selectedLineup;
     const ourNames = [p1 || 'Player 1', p2 || 'Player 2', p3 || 'Player 3'];
     const [opp1, opp2, opp3] = opponentNames;
     const oppNamesList = [opp1 || 'Opp 1', opp2 || 'Opp 2', opp3 || 'Opp 3'];
 
-    // 聯賽 9 場對陣藍圖：
-    // Home Team 時對手係 X, Y, Z：Match 1(X), 2(Y), 3(Z), 4(X), 5(Z), 6(Y), 7(Z), 8(X), 9(Y)
-    // 對應對手陣容索引：X=0, Y=1, Z=2
     if (isHomeTeam) {
       return [
         { match: 1, our: ourNames[0], ourRole: 'A', oppName: oppNamesList[0], oppRole: 'X' },
@@ -153,7 +149,6 @@ export default function Home() {
         { match: 9, our: ourNames[0], ourRole: 'A', oppName: oppNamesList[1], oppRole: 'Y' },
       ];
     } else {
-      // Away Team 時：我方係 X,Y,Z，對手係 A,B,C (A=0, B=1, C=2)
       return [
         { match: 1, our: ourNames[0], ourRole: 'X', oppName: oppNamesList[0], oppRole: 'A' },
         { match: 2, our: ourNames[1], ourRole: 'Y', oppName: oppNamesList[1], oppRole: 'B' },
@@ -173,7 +168,6 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-[#070a12] text-white pb-24 font-sans text-xs">
 
-      {/* Header */}
       <header className="sticky top-0 z-20 bg-[#070a12]/90 px-4 py-3 border-b border-gray-800/40 flex justify-between items-center">
         <h1 className="text-base font-black tracking-tight text-white">
           {activeTab === 'next' && <>GRAHAM SPICER <span className="text-blue-500">2</span></>}
@@ -183,13 +177,11 @@ export default function Home() {
         <span className="bg-[#121929] text-xs text-gray-300 px-3 py-1 rounded-md border border-gray-700/60 font-semibold">2026-2027</span>
       </header>
 
-      {/* Main Container */}
       <div className="max-w-md mx-auto px-4 pt-4 space-y-4">
 
         {activeTab === 'next' && (
           <div className="bg-[#0f1626] border border-gray-800/80 rounded-2xl p-4.5 space-y-4 shadow-xl">
             
-            {/* 第一行：vs 隊名 + 日期地點 */}
             <div className="flex justify-between items-start border-b border-gray-800/80 pb-3.5">
               <div>
                 <div className="flex items-center gap-1.5 mb-1">
@@ -206,7 +198,6 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Player Availability 區塊 */}
             <div className="bg-[#0a0e19] border border-gray-800/60 rounded-xl p-3.5 space-y-3">
               <div className="flex justify-between items-center">
                 <span className="text-xs font-bold tracking-wider text-gray-300 uppercase">PLAYER AVAILABILITY ({availability.going.length})</span>
@@ -236,7 +227,6 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Team Lineup 區塊 */}
             <div className="bg-[#0a0e19] border border-gray-800/60 rounded-xl p-3.5 space-y-3">
               <div className="flex justify-between items-center">
                 <span className="text-xs font-bold tracking-wider text-emerald-400 uppercase">TEAM LINEUP</span>
@@ -321,7 +311,6 @@ export default function Home() {
               <button onClick={() => setShowMatchCard(false)} className="bg-gray-800 hover:bg-gray-700 text-gray-300 w-7 h-7 rounded-full font-bold text-xs flex items-center justify-center">✕</button>
             </div>
 
-            {/* Match Card 表格 (壓縮比分格闊度，對手頭三格可手動輸入並聯動) */}
             <div className="overflow-x-auto">
               <table className="w-full text-center border-collapse border border-gray-700 text-xs">
                 <thead>
@@ -333,8 +322,8 @@ export default function Home() {
                     </th>
                     <th className="border border-gray-700 p-1 w-5 font-bold">{isHomeTeam ? 'H' : 'A'}</th>
                     
-                    {/* 2) 壓縮比分標題區寬度 */}
-                    <th className="border border-gray-700 p-1 font-bold text-[10px]" colSpan={5}>Best of 5 (e.g. 11:7)</th>
+                    {/* 3) 刪除多餘字眼，只留 Games 標題 */}
+                    <th className="border border-gray-700 p-1 font-bold text-[10px]" colSpan={5}>Games Score</th>
                     
                     <th className="border border-gray-700 p-1 w-5 font-bold">{!isHomeTeam ? 'H' : 'A'}</th>
                     
@@ -357,23 +346,20 @@ export default function Home() {
                 </thead>
                 <tbody>
                   {getMatchStructure().map((m, index) => {
-                    // 1) 判斷邊個係對手嘅行：如果係 Home Team，Away 嗰邊係對手；如果係 Away Team，Home 嗰邊係對手
-                    const isOpponentSideHome = !isHomeTeam; 
-                    const isOpponentRow = isOpponentSideHome ? (index < 3) : (index < 3); // 頭 3 行係對手球員輸入框
-
                     return (
                       <tr key={m.match} className="hover:bg-gray-800/30">
                         <td className="border border-gray-700 p-1 font-black">{m.match}</td>
                         
                         {isHomeTeam ? (
                           <>
-                            <td className="border border-gray-700 p-1 text-left font-bold text-white truncate max-w-[80px]">{m.our}</td>
+                            {/* 1) 名字支援 wrap text (whitespace-normal break-words) */}
+                            <td className="border border-gray-700 p-1 text-left font-bold text-white whitespace-normal break-words max-w-[90px]">{m.our}</td>
                             <td className="border border-gray-700 p-1 font-bold text-blue-400">{m.ourRole}</td>
                           </>
                         ) : (
                           <>
-                            {/* 1) 頭三格比對手自己輸入名字，下面自動聯動 */}
-                            <td className="border border-gray-700 p-1 text-left">
+                            {/* 1) 對手頭三格手動輸入，支援 wrap text */}
+                            <td className="border border-gray-700 p-1 text-left whitespace-normal break-words max-w-[90px]">
                               {index < 3 ? (
                                 <input
                                   type="text"
@@ -384,18 +370,18 @@ export default function Home() {
                                     setOpponentNames(updatedOpp);
                                     syncDataToBackend({ opponentNames: updatedOpp });
                                   }}
-                                  placeholder={`Opponent ${index + 1}`}
+                                  placeholder={`Opp ${index + 1}`}
                                   className="w-full bg-[#121a2d] border border-gray-700 rounded p-0.5 text-[10px] font-semibold text-white outline-none"
                                 />
                               ) : (
-                                <span className="font-semibold text-gray-300">{m.oppName}</span>
+                                <span className="font-semibold text-gray-300 whitespace-normal break-words">{m.oppName}</span>
                               )}
                             </td>
                             <td className="border border-gray-700 p-1 font-bold text-amber-400">{m.oppRole}</td>
                           </>
                         )}
                         
-                        {/* 2) 壓縮後嘅比分格子（左右數字 + 固定冒號） */}
+                        {/* 比分格子 */}
                         {[0, 1, 2, 3, 4].map((gIdx) => (
                           <td key={gIdx} className="border border-gray-700 p-0.5">
                             <div className="flex items-center justify-center gap-0 bg-[#121a2d] border border-gray-700 rounded p-0.5">
@@ -443,7 +429,7 @@ export default function Home() {
                         {isHomeTeam ? (
                           <>
                             <td className="border border-gray-700 p-1 font-bold text-amber-400">{m.oppRole}</td>
-                            <td className="border border-gray-700 p-1 text-left">
+                            <td className="border border-gray-700 p-1 text-left whitespace-normal break-words max-w-[90px]">
                               {index < 3 ? (
                                 <input
                                   type="text"
@@ -454,18 +440,18 @@ export default function Home() {
                                     setOpponentNames(updatedOpp);
                                     syncDataToBackend({ opponentNames: updatedOpp });
                                   }}
-                                  placeholder={`Opponent ${index + 1}`}
+                                  placeholder={`Opp ${index + 1}`}
                                   className="w-full bg-[#121a2d] border border-gray-700 rounded p-0.5 text-[10px] font-semibold text-white outline-none"
                                 />
                               ) : (
-                                <span className="font-semibold text-gray-300">{m.oppName}</span>
+                                <span className="font-semibold text-gray-300 whitespace-normal break-words">{m.oppName}</span>
                               )}
                             </td>
                           </>
                         ) : (
                           <>
                             <td className="border border-gray-700 p-1 font-bold text-blue-400">{m.ourRole}</td>
-                            <td className="border border-gray-700 p-1 text-left font-bold text-white truncate max-w-[80px]">{m.our}</td>
+                            <td className="border border-gray-700 p-1 text-left font-bold text-white whitespace-normal break-words max-w-[90px]">{m.our}</td>
                           </>
                         )}
                       </tr>
@@ -488,7 +474,6 @@ export default function Home() {
         </div>
       )}
 
-      {/* 底部導航 */}
       <nav className="fixed bottom-0 left-0 right-0 z-30 bg-[#070a12]/95 border-t border-gray-800/80 backdrop-blur-xl">
         <div className="max-w-md mx-auto flex justify-around items-center h-14 px-4">
           <button onClick={() => setActiveTab('fixtures')} className={`text-xs font-bold ${activeTab === 'fixtures' ? 'text-blue-500' : 'text-gray-500'}`}>FIXTURES</button>
