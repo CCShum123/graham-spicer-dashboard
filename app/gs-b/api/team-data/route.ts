@@ -22,16 +22,18 @@ export async function POST(request: Request) {
     
     // 1. 拎現有資料
     const getRes = await fetch(NPOINT_URL, { cache: 'no-store' });
-    if (!getRes.ok) {
-      throw new Error('Failed to fetch from npoint during POST');
+    let currentData: any = {};
+    if (getRes.ok) {
+      currentData = await getRes.json();
     }
-    let currentData = await getRes.json();
 
-    // 2. 合併更新
-    if (body.availabilityMap !== undefined) currentData.availabilityMap = body.availabilityMap;
-    if (body.lineup !== undefined) currentData.lineup = body.lineup;
-    if (body.gameScores !== undefined) currentData.gameScores = body.gameScores;
-    if (body.opponentNames !== undefined) currentData.opponentNames = body.opponentNames;
+    // 2. 安全地合併資料（如果 body 有傳先覆蓋）
+    if (body) {
+      if (body.availabilityMap) currentData.availabilityMap = body.availabilityMap;
+      if (body.lineup) currentData.lineup = body.lineup;
+      if (body.gameScores) currentData.gameScores = body.gameScores;
+      if (body.opponentNames) currentData.opponentNames = body.opponentNames;
+    }
 
     // 3. 寫返落 npoint
     const updateRes = await fetch(NPOINT_URL, {
@@ -50,6 +52,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ success: true });
   } catch (err: any) {
     console.error('POST Error:', err.message);
+    // 回傳詳細嘅 error message 畀前端 Console 睇
     return NextResponse.json({ success: false, error: err.message }, { status: 500 });
   }
 }
