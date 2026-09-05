@@ -1,17 +1,34 @@
 import { NextResponse } from 'next/server';
 
-const NPOINT_URL = 'https://api.npoint.io/d25616ebd24559079ee6';
+const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
+const GITHUB_REPO = process.env.GITHUB_REPO; // e.g., 'username/repo-name'
+const GITHUB_BRANCH = process.env.GITHUB_BRANCH || 'main';
+const FILE_PATH = 'data/team.json';
+
+const GITHUB_API_URL = `https://api.github.com/repos/${GITHUB_REPO}/contents/${FILE_PATH}`;
 
 export async function GET() {
   try {
-    const res = await fetch(NPOINT_URL, { cache: 'no-store' });
+    const res = await fetch(`${GITHUB_API_URL}?ref=${GITHUB_BRANCH}`, {
+      headers: {
+        Authorization: `Bearer ${GITHUB_TOKEN}`,
+        Accept: 'application/vnd.github+json',
+      },
+      cache: 'no-store',
+    });
+
     if (!res.ok) {
-      throw new Error(`npoint fetch failed with status ${res.status}`);
+      throw new Error(`GitHub fetch failed with status ${res.status}`);
     }
-    const data = await res.json();
+
+    const fileData = await res.json();
+    // GitHub API 回傳嘅 content 係 base64 編碼，要 decode 返
+    const buffer = Buffer.from(fileData.content, 'base64');
+    const data = JSON.parse(buffer.toString('utf-8'));
+
     return NextResponse.json({ success: true, data });
   } catch (err: any) {
-    console.error('GET Error:', err.message);
+    console.error('GitHub GET Error:', err.message);
     return NextResponse.json({ success: false, error: err.message }, { status: 500 });
   }
 }
@@ -19,40 +36,63 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
+
+    // 1. 先從 GitHub 拎現有檔案嘅內容同埋 sha (GitHub 每次更新檔案必須提供上一個版本嘅 sha)
+    const getRes = await fetch(`${GITHUB_API_URL}?ref=${GITHUB_BRANCH}`, {
+      headers: {
+        Authorization: `Bearer ${GITHUB_TOKEN}`,
+        Accept: 'application/vnd.github+json',
+      },
+      cache: 'no-store',
+    });
+
+    if (!getRes.ok) {
+      throw new Error(`Failed to fetch current file from GitHub: ${getRes.status}`);
+    }
+
+    const fileData = await getRes.json();
+    const sha = fileData.sha;
     
-    // 1. 拎現有資料
-    const getRes = await fetch(NPOINT_URL, { cache: 'no-store' });
-    let currentData: any = {};
-    if (getRes.ok) {
-      currentData = await getRes.json();
-    }
+    const existingContent = JSON.parse(
+      Buffer.from(fileData.content, 'base64').toString('utf-8')
+    );
 
-    // 2. 安全地合併資料（如果 body 有傳先覆蓋）
+    // 2. 安全地合併資料
     if (body) {
-      if (body.availabilityMap) currentData.availabilityMap = body.availabilityMap;
-      if (body.lineup) currentData.lineup = body.lineup;
-      if (body.gameScores) currentData.gameScores = body.gameScores;
-      if (body.opponentNames) currentData.opponentNames = body.opponentNames;
+      if (body.availabilityMap) existingContent.availabilityMap = body.availabilityMap;
+      if (body.lineup) existingContent.lineup = body.lineup;
+      if (body.gameScores) existingContent.gameScores = body.gameScores;
+      if (body.opponentNames) existingContent.opponentNames = body.opponentNames;
     }
 
-    // 3. 寫返落 npoint
-    const updateRes = await fetch(NPOINT_URL, {
+    // 3. 用 PUT 請求叫 GitHub API 自動幫你 commit 新檔案
+    const updatedContentBase64 = Buffer.from(
+      JSON.stringify(existingContent, null, 2)
+    ).toString('base64');
+
+    const updateRes = await fetch(GITHUB_API_URL, {
       method: 'PUT',
       headers: {
+        Authorization: `Bearer ${GITHUB_TOKEN}`,
+        Accept: 'application/vnd.github+json',
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(currentData),
+      body: JSON.stringify({
+        message: 'Auto-update team data via app',
+        content: updatedContentBase64,
+        sha: sha,
+        branch: GITHUB_BRANCH,
+      }),
     });
 
     if (!updateRes.ok) {
       const errText = await updateRes.text();
-      throw new Error(`npoint update failed: ${errText}`);
+      throw new Error(`GitHub update failed: ${errText}`);
     }
 
     return NextResponse.json({ success: true });
   } catch (err: any) {
-    console.error('POST Error:', err.message);
-    // 回傳詳細嘅 error message 畀前端 Console 睇
+    console.error('GitHub POST Error:', err.message);
     return NextResponse.json({ success: false, error: err.message }, { status: 500 });
   }
 }
