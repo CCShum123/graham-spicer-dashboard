@@ -1,70 +1,32 @@
 {
   "players": [
+    { "subName": "CC", "name": "Chi Cheung Shum" },
+    { "subName": "Daniel", "name": "Daniel Heo" },
+    { "subName": "Kit", "name": "Tsz-Kit Chan" },
+    { "subName": "James", "name": "James Ng Hing Cheung" },
+    { "subName": "Rohit", "name": "Rohit Kumar" },
+    { "subName": "Peter", "name": "Peter Lyall" },
+    { "subName": "Ajay", "name": "Ajay Shah" },
+    { "subName": "Benjamin", "name": "Benjamin Richmond" },
+    { "subName": "Kostlantyn", "name": "Kostlantyn Motovilin" },
+    { "subName": "Hojeong", "name": "Hojeong Yoon" },
+    { "subName": "Brandon", "name": "Brandon Cann" }
+  ],
+  "nextFixture": {
+    "id": "match-1",
+    "opponent": "Eldorn B",
+    "date": "Thu 17 SEP 2026 19:30",
+    "type": "AWAY"
+  },
+  "fixtures": [
     {
-      "subName": "CC",
-      "name": "Chi Cheung Shum"
-    },
-    {
-      "subName": "Daniel",
-      "name": "Daniel Heo"
-    },
-    {
-      "subName": "Kit",
-      "name": "Tsz-Kit Chan"
-    },
-    {
-      "subName": "James",
-      "name": "James Ng Hing Cheung"
-    },
-    {
-      "subName": "Rohit",
-      "name": "Rohit Kumar"
-    },
-    {
-      "subName": "Peter",
-      "name": "Peter Lyall"
-    },
-    {
-      "subName": "Ajay",
-      "name": "Ajay Shah"
-    },
-    {
-      "subName": "Benjamin",
-      "name": "Benjamin Richmond"
-    },
-    {
-      "subName": "Kostlantyn",
-      "name": "Kostiantyn Motovilin"
-    },
-    {
-      "subName": "Hojeong",
-      "name": "Hojeong Yoon"
-    },
-    {
-      "subName": "Brandon",
-      "name": "Brandon Cann"
+      "id": "match-1",
+      "opponent": "Eldorn B",
+      "date": "Thu 17 SEP 2026 19:30",
+      "type": "AWAY"
     }
   ],
-  "availabilityMap": {
-    "": {
-      "going": [
-        "CC"
-      ],
-      "cantGo": [],
-      "tbc": [
-        "Daniel",
-        "Kit",
-        "James",
-        "Rohit",
-        "Peter",
-        "Ajay",
-        "Benjamin",
-        "Kostlantyn",
-        "Hojeong",
-        "Brandon"
-      ]
-    }
-  },
+  "availabilityMap": {},
   "lineup": {},
   "gameScores": {},
   "opponentNames": {}
