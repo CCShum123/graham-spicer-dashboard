@@ -324,6 +324,24 @@
         "Kostlantyn",
         "Hojeong"
       ]
+    },
+    "match-6": {
+      "going": [],
+      "cantGo": [
+        "CC"
+      ],
+      "tbc": [
+        "Daniel",
+        "Kit",
+        "James",
+        "Rohit",
+        "Peter",
+        "Ajay",
+        "Benjamin",
+        "Kostlantyn",
+        "Hojeong",
+        "Brandon"
+      ]
     }
   },
   "lineup": [
