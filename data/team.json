@@ -1,70 +1,18 @@
 {
   "players": [
-    {
-      "subName": "CC",
-      "name": "CC (Chi Cheung Shum)"
-    },
-    {
-      "subName": "Daniel",
-      "name": "Daniel"
-    },
-    {
-      "subName": "Kit",
-      "name": "Kit"
-    },
-    {
-      "subName": "James",
-      "name": "James"
-    },
-    {
-      "subName": "Rohit",
-      "name": "Rohit"
-    },
-    {
-      "subName": "Peter",
-      "name": "Peter"
-    },
-    {
-      "subName": "Ajay",
-      "name": "Ajay"
-    },
-    {
-      "subName": "Benjamin",
-      "name": "Benjamin"
-    },
-    {
-      "subName": "Kostlantyn",
-      "name": "Kostlantyn"
-    },
-    {
-      "subName": "Hojeong",
-      "name": "Hojeong"
-    },
-    {
-      "subName": "Brandon",
-      "name": "Brandon"
-    }
+    { "subName": "CC", "name": "Chi Cheung Shum" },
+    { "subName": "Daniel", "name": "Daniel Heo" },
+    { "subName": "Kit", "name": "Tsz-Kit Chan" },
+    { "subName": "James", "name": "James Ng Hing Cheung" },
+    { "subName": "Rohit", "name": "Rohit Kumar" },
+    { "subName": "Peter", "name": "Peter Lyall" },
+    { "subName": "Ajay", "name": "Ajay Shah" },
+    { "subName": "Benjamin", "name": "Benjamin Richmond" },
+    { "subName": "Kostlantyn", "name": "Kostiantyn Motovilin" },
+    { "subName": "Hojeong", "name": "Hojeong Yoon" },
+    { "subName": "Brandon", "name": "Brandon Cann" }
   ],
-  "availabilityMap": {
-    "": {
-      "going": [
-        "CC",
-        "Daniel"
-      ],
-      "cantGo": [],
-      "tbc": [
-        "Kit",
-        "James",
-        "Rohit",
-        "Peter",
-        "Ajay",
-        "Benjamin",
-        "Kostlantyn",
-        "Hojeong",
-        "Brandon"
-      ]
-    }
-  },
+  "availabilityMap": {},
   "lineup": {},
   "gameScores": {},
   "opponentNames": {}
