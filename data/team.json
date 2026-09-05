@@ -1,17 +1,61 @@
 {
   "season": "2026/27",
   "players": [
-    { "number": 1, "subName": "CC", "name": "Chi Cheung Shum" },
-    { "number": 2, "subName": "Daniel", "name": "Daniel Heo" },
-    { "number": 3, "subName": "Kit", "name": "Tsz-Kit Chan" },
-    { "number": 4, "subName": "James", "name": "James Ng Hing Cheung" },
-    { "number": 5, "subName": "Rohit", "name": "Rohit Kumar" },
-    { "number": 6, "subName": "Peter", "name": "Peter Lyall" },
-    { "number": 7, "subName": "Ajay", "name": "Ajay Shah" },
-    { "number": 8, "subName": "Benjamin", "name": "Benjamin Richmond" },
-    { "number": 9, "subName": "Kostlantyn", "name": "Kostlantyn Motovilin" },
-    { "number": 10, "subName": "Hojeong", "name": "Hojeong Yoon" },
-    { "number": 11, "subName": "Brandon", "name": "Brandon Cann" }
+    {
+      "number": 1,
+      "subName": "CC",
+      "name": "Chi Cheung Shum"
+    },
+    {
+      "number": 2,
+      "subName": "Daniel",
+      "name": "Daniel Heo"
+    },
+    {
+      "number": 3,
+      "subName": "Kit",
+      "name": "Tsz-Kit Chan"
+    },
+    {
+      "number": 4,
+      "subName": "James",
+      "name": "James Ng Hing Cheung"
+    },
+    {
+      "number": 5,
+      "subName": "Rohit",
+      "name": "Rohit Kumar"
+    },
+    {
+      "number": 6,
+      "subName": "Peter",
+      "name": "Peter Lyall"
+    },
+    {
+      "number": 7,
+      "subName": "Ajay",
+      "name": "Ajay Shah"
+    },
+    {
+      "number": 8,
+      "subName": "Benjamin",
+      "name": "Benjamin Richmond"
+    },
+    {
+      "number": 9,
+      "subName": "Kostlantyn",
+      "name": "Kostlantyn Motovilin"
+    },
+    {
+      "number": 10,
+      "subName": "Hojeong",
+      "name": "Hojeong Yoon"
+    },
+    {
+      "number": 11,
+      "subName": "Brandon",
+      "name": "Brandon Cann"
+    }
   ],
   "nextFixture": {
     "id": "match-1",
@@ -243,8 +287,35 @@
       "type": "HOME"
     }
   ],
-  "availabilityMap": {},
-  "lineup": ["", "", ""],
+  "availabilityMap": {
+    "match-1": {
+      "going": [
+        "CC"
+      ],
+      "cantGo": [],
+      "tbc": [
+        "Daniel",
+        "Kit",
+        "James",
+        "Rohit",
+        "Peter",
+        "Ajay",
+        "Benjamin",
+        "Kostlantyn",
+        "Hojeong",
+        "Brandon"
+      ]
+    }
+  },
+  "lineup": [
+    "",
+    "",
+    ""
+  ],
   "gameScores": {},
-  "opponentNames": ["", "", ""]
+  "opponentNames": [
+    "",
+    "",
+    ""
+  ]
 }
