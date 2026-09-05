@@ -1,5 +1,6 @@
 {
   "players": [
+    { "subName": "CC" },
     { "subName": "Daniel" },
     { "subName": "Kit" },
     { "subName": "James" },
