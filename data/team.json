@@ -1,16 +1,17 @@
 {
-  "availabilityMap": {
-    "Daniel": "TBC",
-    "Kit": "TBC",
-    "James": "TBC",
-    "Rohit": "TBC",
-    "Peter": "TBC",
-    "Ajay": "TBC",
-    "Benjamin": "TBC",
-    "Kostlantyn": "TBC",
-    "Hojeong": "TBC",
-    "Brandon": "TBC"
-  },
+  "players": [
+    { "subName": "Daniel" },
+    { "subName": "Kit" },
+    { "subName": "James" },
+    { "subName": "Rohit" },
+    { "subName": "Peter" },
+    { "subName": "Ajay" },
+    { "subName": "Benjamin" },
+    { "subName": "Kostlantyn" },
+    { "subName": "Hojeong" },
+    { "subName": "Brandon" }
+  ],
+  "availabilityMap": {},
   "lineup": {},
   "gameScores": {},
   "opponentNames": {}
