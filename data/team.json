@@ -59,9 +59,9 @@
   ],
   "nextFixture": {
     "id": "match-1",
-    "homeTeam": "Eldorn B",
+    "homeTeam": "Eldon B",
     "awayTeam": "Graham Spicers B",
-    "venue": "Eldorn Hall",
+    "venue": "Eldon Hall",
     "day": "Thu",
     "date": "17",
     "month": "SEP",
@@ -72,9 +72,9 @@
   "fixtures": [
     {
       "id": "match-1",
-      "homeTeam": "Eldorn B",
+      "homeTeam": "Eldon B",
       "awayTeam": "Graham Spicers B",
-      "venue": "Eldorn Hall",
+      "venue": "Eldon Hall",
       "day": "Thu",
       "date": "17",
       "month": "SEP",
@@ -168,9 +168,9 @@
     },
     {
       "id": "match-9",
-      "homeTeam": "Eldorn A",
+      "homeTeam": "Eldon A",
       "awayTeam": "Graham Spicers B",
-      "venue": "Eldorn Hall",
+      "venue": "Eldon Hall",
       "day": "Thu",
       "date": "10",
       "month": "DEC",
@@ -181,7 +181,7 @@
     {
       "id": "match-10",
       "homeTeam": "Graham Spicers B",
-      "awayTeam": "Eldorn B",
+      "awayTeam": "Eldon B",
       "venue": "Graham Spicer Institute",
       "day": "Mon",
       "date": "14",
@@ -277,7 +277,7 @@
     {
       "id": "match-18",
       "homeTeam": "Graham Spicers B",
-      "awayTeam": "Eldorn A",
+      "awayTeam": "Eldon A",
       "venue": "Graham Spicer Institute",
       "day": "Mon",
       "date": "22",
