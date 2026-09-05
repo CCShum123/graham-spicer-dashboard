@@ -48,11 +48,11 @@
   "availabilityMap": {
     "": {
       "going": [
-        "CC"
+        "CC",
+        "Daniel"
       ],
       "cantGo": [],
       "tbc": [
-        "Daniel",
         "Kit",
         "James",
         "Rohit",
