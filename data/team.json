@@ -1,18 +1,59 @@
 {
   "players": [
-    { "subName": "CC" },
-    { "subName": "Daniel" },
-    { "subName": "Kit" },
-    { "subName": "James" },
-    { "subName": "Rohit" },
-    { "subName": "Peter" },
-    { "subName": "Ajay" },
-    { "subName": "Benjamin" },
-    { "subName": "Kostlantyn" },
-    { "subName": "Hojeong" },
-    { "subName": "Brandon" }
+    {
+      "subName": "CC"
+    },
+    {
+      "subName": "Daniel"
+    },
+    {
+      "subName": "Kit"
+    },
+    {
+      "subName": "James"
+    },
+    {
+      "subName": "Rohit"
+    },
+    {
+      "subName": "Peter"
+    },
+    {
+      "subName": "Ajay"
+    },
+    {
+      "subName": "Benjamin"
+    },
+    {
+      "subName": "Kostlantyn"
+    },
+    {
+      "subName": "Hojeong"
+    },
+    {
+      "subName": "Brandon"
+    }
   ],
-  "availabilityMap": {},
+  "availabilityMap": {
+    "": {
+      "going": [
+        "CC"
+      ],
+      "cantGo": [],
+      "tbc": [
+        "Daniel",
+        "Kit",
+        "James",
+        "Rohit",
+        "Peter",
+        "Ajay",
+        "Benjamin",
+        "Kostlantyn",
+        "Hojeong",
+        "Brandon"
+      ]
+    }
+  },
   "lineup": {},
   "gameScores": {},
   "opponentNames": {}
