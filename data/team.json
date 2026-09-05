@@ -19,15 +19,46 @@
     "type": "AWAY"
   },
   "fixtures": [
-    {
-      "id": "match-1",
-      "opponent": "Eldorn B",
-      "date": "Thu 17 SEP 2026 19:30",
-      "type": "AWAY"
-    }
+    { "id": "match-1", "opponent": "Eldorn B", "date": "Thu 17 SEP 2026 19:30", "type": "AWAY" },
+    { "id": "match-2", "opponent": "Crusaders B", "date": "Mon 21 SEP 2026 19:30", "type": "HOME" },
+    { "id": "match-3", "opponent": "Crusaders A", "date": "Thu 01 OCT 2026 19:30", "type": "AWAY" },
+    { "id": "match-4", "opponent": "Rosehill A", "date": "Mon 05 OCT 2026 19:30", "type": "HOME" },
+    { "id": "match-5", "opponent": "Graham Spicer A", "date": "Wed 14 OCT 2026 19:30", "type": "AWAY" },
+    { "id": "match-6", "opponent": "Ballards A", "date": "Mon 02 NOV 2026 19:30", "type": "HOME" },
+    { "id": "match-7", "opponent": "Kingsway A", "date": "Mon 09 NOV 2026 19:30", "type": "AWAY" },
+    { "id": "match-8", "opponent": "Rosehill B", "date": "Mon 23 NOV 2026 19:30", "type": "HOME" },
+    { "id": "match-9", "opponent": "Eldorn A", "date": "Thu 10 DEC 2026 19:30", "type": "AWAY" },
+    { "id": "match-10", "opponent": "Eldorn B", "date": "Mon 14 DEC 2026 19:30", "type": "HOME" },
+    { "id": "match-11", "opponent": "Crusaders B", "date": "Thu 07 JAN 2027 19:30", "type": "AWAY" },
+    { "id": "match-12", "opponent": "Crusaders A", "date": "Mon 18 JAN 2027 19:30", "type": "HOME" },
+    { "id": "match-13", "opponent": "Rosehill A", "date": "Tue 26 JAN 2027 19:30", "type": "AWAY" },
+    { "id": "match-14", "opponent": "Graham Spicer A", "date": "Mon 08 FEB 2027 19:30", "type": "HOME" },
+    { "id": "match-15", "opponent": "Ballards A", "date": "Mon 22 FEB 2027 19:30", "type": "AWAY" },
+    { "id": "match-16", "opponent": "Kingsway A", "date": "Mon 01 MAR 2027 19:30", "type": "HOME" },
+    { "id": "match-17", "opponent": "Rosehill B", "date": "Wed 17 MAR 2027 19:30", "type": "AWAY" },
+    { "id": "match-18", "opponent": "Eldorn A", "date": "Mon 22 MAR 2027 19:30", "type": "HOME" }
   ],
   "availabilityMap": {},
   "lineup": {},
   "gameScores": {},
-  "opponentNames": {}
+  "opponentNames": {
+    "match-1": "Eldorn B",
+    "match-2": "Crusaders B",
+    "match-3": "Crusaders A",
+    "match-4": "Rosehill A",
+    "match-5": "Graham Spicer A",
+    "match-6": "Ballards A",
+    "match-7": "Kingsway A",
+    "match-8": "Rosehill B",
+    "match-9": "Eldorn A",
+    "match-10": "Eldorn B",
+    "match-11": "Crusaders B",
+    "match-12": "Crusaders A",
+    "match-13": "Rosehill A",
+    "match-14": "Graham Spicer A",
+    "match-15": "Ballards A",
+    "match-16": "Kingsway A",
+    "match-17": "Rosehill B",
+    "match-18": "Eldorn A"
+  }
 }
