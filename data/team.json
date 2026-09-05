@@ -343,6 +343,24 @@
         "Hojeong",
         "Brandon"
       ]
+    },
+    "match-3": {
+      "going": [],
+      "cantGo": [
+        "Benjamin"
+      ],
+      "tbc": [
+        "CC",
+        "Daniel",
+        "Kit",
+        "James",
+        "Rohit",
+        "Peter",
+        "Ajay",
+        "Kostlantyn",
+        "Hojeong",
+        "Brandon"
+      ]
     }
   },
   "lineup": [
