@@ -1,133 +1,97 @@
 import { NextResponse } from 'next/server';
 
-const initialData = {
-  success: true,
-  data: {
-    teamName: 'Graham Spicer 2',
-    league: 'Thames Valley Table Tennis League - Division 1',
-    season: '2026-2027',
-    nextFixture: {
-      opponent: '',
-      date: '',
-      time: '19:30',
-      venue: '',
-      homeTeam: ''
-    },
-    players: [
-      { number: 1, name: 'Timothy Denby', subName: 'Tim' },
-      { number: 2, name: 'Aleksei Dhillon-Francis', subName: 'Aleksei' },
-      { number: 3, name: 'Chi Cheung Shum', subName: 'CC' },
-      { number: 4, name: 'Tsz-Kit Chan', subName: 'Kit' },
-      { number: 5, name: 'Jin Su Choi', subName: 'Jin Su' },
-      { number: 6, name: 'Cassius Collett', subName: 'Cass' },
-      { number: 7, name: 'Andi Skevis', subName: 'Andi' },
-      { number: 8, name: 'Sam Choi', subName: 'Sam' },
-    ],
-    standings: [
-      { pos: 1, team: 'Graham Spicer 1', p: 0, w: 0, d: 0, l: 0, pts: 0 },
-      { pos: 2, team: 'Graham Spicer 2', p: 0, w: 0, d: 0, l: 0, pts: 0, isMyTeam: true },
-      { pos: 3, team: 'Teddington 1', p: 0, w: 0, d: 0, l: 0, pts: 0 },
-      { pos: 4, team: 'Graham Spicer 5', p: 0, w: 0, d: 0, l: 0, pts: 0 },
-      { pos: 5, team: 'Graham Spicer 3', p: 0, w: 0, d: 0, l: 0, pts: 0 },
-      { pos: 6, team: 'Graham Spicer 4', p: 0, w: 0, d: 0, l: 0, pts: 0 },
-      { pos: 7, team: 'Cheam', p: 0, w: 0, d: 0, l: 0, pts: 0 },
-      { pos: 8, team: 'Malden 1', p: 0, w: 0, d: 0, l: 0, pts: 0 },
-    ],
-    fixtures: [],
-    availabilityMap: {}, 
-    lineup: ['', '', ''],
-    opponentNames: ['', '', ''],
-    gameScores: {}
-  }
-};
+const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
+const GITHUB_REPO = process.env.GITHUB_REPO; // 假設你同 Gs-b 用緊同一個 Repo
+const GITHUB_BRANCH = process.env.GITHUB_BRANCH || 'main';
+const FILE_PATH = 'data/gs2-team.json'; // 指向 GS-2 專屬嘅 json 檔案
 
-let cloudMemoryData = JSON.parse(JSON.stringify(initialData));
-
-// 場地自動對應函數：根據邊個係主場（homeTeam）去決定場地
-const getVenue = (homeTeam: string) => {
-  if (homeTeam.toLowerCase().includes('graham spicer')) {
-    return 'Graham Spicer Table Tennis Club';
-  }
-  if (homeTeam.includes('Cheam')) {
-    return 'Cheam Social Club';
-  }
-  if (homeTeam.includes('Malden 1')) {
-    return 'Malden Table Tennis Club';
-  }
-  if (homeTeam.includes('Teddington 1')) {
-    return 'Teddington Table Tennis Club';
-  }
-  return 'Away Venue';
-};
+const GITHUB_API_URL = `https://api.github.com/repos/${GITHUB_REPO}/contents/${FILE_PATH}`;
 
 export async function GET() {
   try {
-    const today = new Date('2026-09-04');
-
-    const rawFixtures = [
-      { dateStr: '2026-09-29', homeTeam: 'Cheam', awayTeam: 'Graham Spicer 2', month: 'SEP', date: '29', day: 'Tue', time: '19:30' },
-      { dateStr: '2026-10-08', homeTeam: 'Graham Spicer 2', awayTeam: 'Graham Spicer 3', month: 'OCT', date: '8', day: 'Thu', time: '19:30' },
-      { dateStr: '2026-10-13', homeTeam: 'Graham Spicer 5', awayTeam: 'Graham Spicer 2', month: 'OCT', date: '13', day: 'Tue', time: '19:30' },
-      { dateStr: '2026-10-29', homeTeam: 'Graham Spicer 2', awayTeam: 'Malden 1', month: 'OCT', date: '29', day: 'Thu', time: '19:30' },
-      { dateStr: '2026-11-04', homeTeam: 'Graham Spicer 4', awayTeam: 'Graham Spicer 2', month: 'NOV', date: '4', day: 'Wed', time: '19:30' },
-      { dateStr: '2026-11-19', homeTeam: 'Graham Spicer 2', awayTeam: 'Teddington 1', month: 'NOV', date: '19', day: 'Thu', time: '19:30' },
-      { dateStr: '2026-12-08', homeTeam: 'Graham Spicer 1', awayTeam: 'Graham Spicer 2', month: 'DEC', date: '8', day: 'Tue', time: '19:30' },
-      { dateStr: '2027-01-14', homeTeam: 'Graham Spicer 2', awayTeam: 'Cheam', month: 'JAN', date: '14', day: 'Thu', time: '19:30' },
-      { dateStr: '2027-01-28', homeTeam: 'Graham Spicer 3', awayTeam: 'Graham Spicer 2', month: 'JAN', date: '28', day: 'Thu', time: '19:30' },
-      { dateStr: '2027-02-04', homeTeam: 'Graham Spicer 2', awayTeam: 'Graham Spicer 5', month: 'FEB', date: '4', day: 'Thu', time: '19:30' },
-      { dateStr: '2027-02-17', homeTeam: 'Malden 1', awayTeam: 'Graham Spicer 2', month: 'FEB', date: '17', day: 'Wed', time: '19:30' },
-      { dateStr: '2027-02-25', homeTeam: 'Graham Spicer 2', awayTeam: 'Graham Spicer 4', month: 'FEB', date: '25', day: 'Thu', time: '19:30' },
-      { dateStr: '2027-03-09', homeTeam: 'Teddington 1', awayTeam: 'Graham Spicer 2', month: 'MAR', date: '9', day: 'Tue', time: '19:30' },
-      { dateStr: '2027-03-25', homeTeam: 'Graham Spicer 2', awayTeam: 'Graham Spicer 1', month: 'MAR', date: '25', day: 'Thu', time: '19:30' },
-    ];
-
-    const fixtures = rawFixtures.map((f, idx) => {
-      const fixtureDate = new Date(f.dateStr);
-      const isPast = fixtureDate < today;
-      // 嚴格判定：只有當 homeTeam 係 "Graham Spicer 2" 先至係 HOME
-      const isHome = f.homeTeam === 'Graham Spicer 2';
-      const year = f.dateStr.split('-')[0]; // 自動抽出 2026 或 2027
-
-      return {
-        id: `fix-${idx}`,
-        ...f,
-        year,
-        status: isPast ? 'COMPLETED' : 'UPCOMING',
-        type: isHome ? 'HOME' : 'AWAY',
-        venue: getVenue(f.homeTeam) // 帶入對應場地
-      };
+    const res = await fetch(`${GITHUB_API_URL}?ref=${GITHUB_BRANCH}`, {
+      headers: {
+        Authorization: `Bearer ${GITHUB_TOKEN}`,
+        Accept: 'application/vnd.github+json',
+      },
+      cache: 'no-store',
     });
 
-    const upcomingFixture = fixtures.find(f => f.status === 'UPCOMING') || fixtures[0];
-    const opponentName = upcomingFixture.homeTeam === 'Graham Spicer 2' ? upcomingFixture.awayTeam : upcomingFixture.homeTeam;
+    if (!res.ok) {
+      throw new Error(`GitHub fetch failed with status ${res.status}`);
+    }
 
-    cloudMemoryData.data.fixtures = fixtures;
-    cloudMemoryData.data.nextFixture = {
-      id: upcomingFixture.id,
-      opponent: opponentName,
-      date: `${upcomingFixture.day} ${upcomingFixture.date} ${upcomingFixture.month}`,
-      time: upcomingFixture.time,
-      venue: upcomingFixture.venue,
-      homeTeam: upcomingFixture.homeTeam
-    };
+    const fileData = await res.json();
+    const buffer = Buffer.from(fileData.content, 'base64');
+    const data = JSON.parse(buffer.toString('utf-8'));
 
-    return NextResponse.json(cloudMemoryData);
-  } catch (error) {
-    return NextResponse.json(cloudMemoryData);
+    return NextResponse.json({ success: true, data });
+  } catch (err: any) {
+    console.error('GitHub GET Error:', err.message);
+    return NextResponse.json({ success: false, error: err.message }, { status: 500 });
   }
 }
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    
-    if (body.availabilityMap) cloudMemoryData.data.availabilityMap = body.availabilityMap;
-    if (body.lineup) cloudMemoryData.data.lineup = body.lineup;
-    if (body.opponentNames) cloudMemoryData.data.opponentNames = body.opponentNames;
-    if (body.gameScores) cloudMemoryData.data.gameScores = body.gameScores;
 
-    return NextResponse.json({ success: true, message: 'Synced successfully' });
-  } catch (error) {
-    return NextResponse.json({ success: false, error: 'Failed to sync' }, { status: 500 });
+    // 1. 先從 GitHub 拎現有檔案嘅內容同埋 sha
+    const getRes = await fetch(`${GITHUB_API_URL}?ref=${GITHUB_BRANCH}`, {
+      headers: {
+        Authorization: `Bearer ${GITHUB_TOKEN}`,
+        Accept: 'application/vnd.github+json',
+      },
+      cache: 'no-store',
+    });
+
+    if (!getRes.ok) {
+      throw new Error(`Failed to fetch current file from GitHub: ${getRes.status}`);
+    }
+
+    const fileData = await getRes.json();
+    const sha = fileData.sha;
+    
+    const existingContent = JSON.parse(
+      Buffer.from(fileData.content, 'base64').toString('utf-8')
+    );
+
+    // 2. 安全地合併資料
+    if (body) {
+      if (body.availabilityMap) existingContent.availabilityMap = body.availabilityMap;
+      if (body.lineup) existingContent.lineup = body.lineup;
+      if (body.gameScores) existingContent.gameScores = body.gameScores;
+      if (body.opponentNames) existingContent.opponentNames = body.opponentNames;
+    }
+
+    // 3. 用 PUT 請求叫 GitHub API 自動幫你 commit 新檔案
+    const updatedContentBase64 = Buffer.from(
+      JSON.stringify(existingContent, null, 2)
+    ).toString('base64');
+
+    const updateRes = await fetch(GITHUB_API_URL, {
+      method: 'PUT',
+      headers: {
+        Authorization: `Bearer ${GITHUB_TOKEN}`,
+        Accept: 'application/vnd.github+json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        message: 'Auto-update GS-2 team data via app',
+        content: updatedContentBase64,
+        sha: sha,
+        branch: GITHUB_BRANCH,
+      }),
+    });
+
+    if (!updateRes.ok) {
+      const errText = await updateRes.text();
+      throw new Error(`GitHub update failed: ${errText}`);
+    }
+
+    return NextResponse.json({ success: true });
+  } catch (err: any) {
+    console.error('GitHub POST Error:', err.message);
+    return NextResponse.json({ success: false, error: err.message }, { status: 500 });
   }
 }
