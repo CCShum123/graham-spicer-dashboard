@@ -3,14 +3,46 @@
   "teamName": "Graham Spicer 2",
   "league": "Thames Valley Table Tennis League - Division 1",
   "players": [
-    { "number": 1, "name": "Timothy Denby", "subName": "Tim" },
-    { "number": 2, "name": "Aleksei Dhillon-Francis", "subName": "Aleksei" },
-    { "number": 3, "name": "Chi Cheung Shum", "subName": "CC" },
-    { "number": 4, "name": "Tsz-Kit Chan", "subName": "Kit" },
-    { "number": 5, "name": "Jin Su Choi", "subName": "Jin Su" },
-    { "number": 6, "name": "Cassius Collett", "subName": "Cass" },
-    { "number": 7, "name": "Andi Skevis", "subName": "Andi" },
-    { "number": 8, "name": "Sam Choi", "subName": "Sam" }
+    {
+      "number": 1,
+      "name": "Timothy Denby",
+      "subName": "Tim"
+    },
+    {
+      "number": 2,
+      "name": "Aleksei Dhillon-Francis",
+      "subName": "Aleksei"
+    },
+    {
+      "number": 3,
+      "name": "Chi Cheung Shum",
+      "subName": "CC"
+    },
+    {
+      "number": 4,
+      "name": "Tsz-Kit Chan",
+      "subName": "Kit"
+    },
+    {
+      "number": 5,
+      "name": "Jin Su Choi",
+      "subName": "Jin Su"
+    },
+    {
+      "number": 6,
+      "name": "Cassius Collett",
+      "subName": "Cass"
+    },
+    {
+      "number": 7,
+      "name": "Andi Skevis",
+      "subName": "Andi"
+    },
+    {
+      "number": 8,
+      "name": "Sam Choi",
+      "subName": "Sam"
+    }
   ],
   "nextFixture": {
     "id": "fix-0",
@@ -25,23 +57,201 @@
     "type": "AWAY"
   },
   "fixtures": [
-    { "id": "fix-0", "homeTeam": "Cheam", "awayTeam": "Graham Spicer 2", "venue": "Cheam Social Club", "day": "Tue", "date": "29", "month": "SEP", "year": "2026", "time": "19:30", "type": "AWAY" },
-    { "id": "fix-1", "homeTeam": "Graham Spicer 2", "awayTeam": "Graham Spicer 3", "venue": "Graham Spicer Table Tennis Club", "day": "Thu", "date": "8", "month": "OCT", "year": "2026", "time": "19:30", "type": "HOME" },
-    { "id": "fix-2", "homeTeam": "Graham Spicer 5", "awayTeam": "Graham Spicer 2", "venue": "Graham Spicer Table Tennis Club", "day": "Tue", "date": "13", "month": "OCT", "year": "2026", "time": "19:30", "type": "AWAY" },
-    { "id": "fix-3", "homeTeam": "Graham Spicer 2", "awayTeam": "Malden 1", "venue": "Graham Spicer Table Tennis Club", "day": "Thu", "date": "29", "month": "OCT", "year": "2026", "time": "19:30", "type": "HOME" },
-    { "id": "fix-4", "homeTeam": "Graham Spicer 4", "awayTeam": "Graham Spicer 2", "venue": "Graham Spicer Table Tennis Club", "day": "Wed", "date": "4", "month": "NOV", "year": "2026", "time": "19:30", "type": "AWAY" },
-    { "id": "fix-5", "homeTeam": "Graham Spicer 2", "awayTeam": "Teddington 1", "venue": "Graham Spicer Table Tennis Club", "day": "Thu", "date": "19", "month": "NOV", "year": "2026", "time": "19:30", "type": "HOME" },
-    { "id": "fix-6", "homeTeam": "Graham Spicer 1", "awayTeam": "Graham Spicer 2", "venue": "Graham Spicer Table Tennis Club", "day": "Tue", "date": "8", "month": "DEC", "year": "2026", "time": "19:30", "type": "AWAY" },
-    { "id": "fix-7", "homeTeam": "Graham Spicer 2", "awayTeam": "Cheam", "venue": "Graham Spicer Table Tennis Club", "day": "Thu", "date": "14", "month": "JAN", "year": "2027", "time": "19:30", "type": "HOME" },
-    { "id": "fix-8", "homeTeam": "Graham Spicer 3", "awayTeam": "Graham Spicer 2", "venue": "Graham Spicer Table Tennis Club", "day": "Thu", "date": "28", "month": "JAN", "year": "2027", "time": "19:30", "type": "AWAY" },
-    { "id": "fix-9", "homeTeam": "Graham Spicer 2", "awayTeam": "Graham Spicer 5", "venue": "Graham Spicer Table Tennis Club", "day": "Thu", "date": "4", "month": "FEB", "year": "2027", "time": "19:30", "type": "HOME" },
-    { "id": "fix-10", "homeTeam": "Malden 1", "awayTeam": "Graham Spicer 2", "venue": "Malden Table Tennis Club", "day": "Wed", "date": "17", "month": "FEB", "year": "2027", "time": "19:30", "type": "AWAY" },
-    { "id": "fix-11", "homeTeam": "Graham Spicer 2", "awayTeam": "Graham Spicer 4", "venue": "Graham Spicer Table Tennis Club", "day": "Thu", "date": "25", "month": "FEB", "year": "2027", "time": "19:30", "type": "HOME" },
-    { "id": "fix-12", "homeTeam": "Teddington 1", "awayTeam": "Graham Spicer 2", "venue": "Teddington Table Tennis Club", "day": "Tue", "date": "9", "month": "MAR", "year": "2027", "time": "19:30", "type": "AWAY" },
-    { "id": "fix-13", "homeTeam": "Graham Spicer 2", "awayTeam": "Graham Spicer 1", "venue": "Graham Spicer Table Tennis Club", "day": "Thu", "date": "25", "month": "MAR", "year": "2027", "time": "19:30", "type": "HOME" }
+    {
+      "id": "fix-0",
+      "homeTeam": "Cheam",
+      "awayTeam": "Graham Spicer 2",
+      "venue": "Cheam Social Club",
+      "day": "Tue",
+      "date": "29",
+      "month": "SEP",
+      "year": "2026",
+      "time": "19:30",
+      "type": "AWAY"
+    },
+    {
+      "id": "fix-1",
+      "homeTeam": "Graham Spicer 2",
+      "awayTeam": "Graham Spicer 3",
+      "venue": "Graham Spicer Table Tennis Club",
+      "day": "Thu",
+      "date": "8",
+      "month": "OCT",
+      "year": "2026",
+      "time": "19:30",
+      "type": "HOME"
+    },
+    {
+      "id": "fix-2",
+      "homeTeam": "Graham Spicer 5",
+      "awayTeam": "Graham Spicer 2",
+      "venue": "Graham Spicer Table Tennis Club",
+      "day": "Tue",
+      "date": "13",
+      "month": "OCT",
+      "year": "2026",
+      "time": "19:30",
+      "type": "AWAY"
+    },
+    {
+      "id": "fix-3",
+      "homeTeam": "Graham Spicer 2",
+      "awayTeam": "Malden 1",
+      "venue": "Graham Spicer Table Tennis Club",
+      "day": "Thu",
+      "date": "29",
+      "month": "OCT",
+      "year": "2026",
+      "time": "19:30",
+      "type": "HOME"
+    },
+    {
+      "id": "fix-4",
+      "homeTeam": "Graham Spicer 4",
+      "awayTeam": "Graham Spicer 2",
+      "venue": "Graham Spicer Table Tennis Club",
+      "day": "Wed",
+      "date": "4",
+      "month": "NOV",
+      "year": "2026",
+      "time": "19:30",
+      "type": "AWAY"
+    },
+    {
+      "id": "fix-5",
+      "homeTeam": "Graham Spicer 2",
+      "awayTeam": "Teddington 1",
+      "venue": "Graham Spicer Table Tennis Club",
+      "day": "Thu",
+      "date": "19",
+      "month": "NOV",
+      "year": "2026",
+      "time": "19:30",
+      "type": "HOME"
+    },
+    {
+      "id": "fix-6",
+      "homeTeam": "Graham Spicer 1",
+      "awayTeam": "Graham Spicer 2",
+      "venue": "Graham Spicer Table Tennis Club",
+      "day": "Tue",
+      "date": "8",
+      "month": "DEC",
+      "year": "2026",
+      "time": "19:30",
+      "type": "AWAY"
+    },
+    {
+      "id": "fix-7",
+      "homeTeam": "Graham Spicer 2",
+      "awayTeam": "Cheam",
+      "venue": "Graham Spicer Table Tennis Club",
+      "day": "Thu",
+      "date": "14",
+      "month": "JAN",
+      "year": "2027",
+      "time": "19:30",
+      "type": "HOME"
+    },
+    {
+      "id": "fix-8",
+      "homeTeam": "Graham Spicer 3",
+      "awayTeam": "Graham Spicer 2",
+      "venue": "Graham Spicer Table Tennis Club",
+      "day": "Thu",
+      "date": "28",
+      "month": "JAN",
+      "year": "2027",
+      "time": "19:30",
+      "type": "AWAY"
+    },
+    {
+      "id": "fix-9",
+      "homeTeam": "Graham Spicer 2",
+      "awayTeam": "Graham Spicer 5",
+      "venue": "Graham Spicer Table Tennis Club",
+      "day": "Thu",
+      "date": "4",
+      "month": "FEB",
+      "year": "2027",
+      "time": "19:30",
+      "type": "HOME"
+    },
+    {
+      "id": "fix-10",
+      "homeTeam": "Malden 1",
+      "awayTeam": "Graham Spicer 2",
+      "venue": "Malden Table Tennis Club",
+      "day": "Wed",
+      "date": "17",
+      "month": "FEB",
+      "year": "2027",
+      "time": "19:30",
+      "type": "AWAY"
+    },
+    {
+      "id": "fix-11",
+      "homeTeam": "Graham Spicer 2",
+      "awayTeam": "Graham Spicer 4",
+      "venue": "Graham Spicer Table Tennis Club",
+      "day": "Thu",
+      "date": "25",
+      "month": "FEB",
+      "year": "2027",
+      "time": "19:30",
+      "type": "HOME"
+    },
+    {
+      "id": "fix-12",
+      "homeTeam": "Teddington 1",
+      "awayTeam": "Graham Spicer 2",
+      "venue": "Teddington Table Tennis Club",
+      "day": "Tue",
+      "date": "9",
+      "month": "MAR",
+      "year": "2027",
+      "time": "19:30",
+      "type": "AWAY"
+    },
+    {
+      "id": "fix-13",
+      "homeTeam": "Graham Spicer 2",
+      "awayTeam": "Graham Spicer 1",
+      "venue": "Graham Spicer Table Tennis Club",
+      "day": "Thu",
+      "date": "25",
+      "month": "MAR",
+      "year": "2027",
+      "time": "19:30",
+      "type": "HOME"
+    }
   ],
-  "availabilityMap": {},
-  "lineup": ["", "", ""],
-  "opponentNames": ["", "", ""],
+  "availabilityMap": {
+    "fix-0": {
+      "going": [
+        "CC"
+      ],
+      "cantGo": [],
+      "tbc": [
+        "Tim",
+        "Aleksei",
+        "Kit",
+        "Jin Su",
+        "Cass",
+        "Andi",
+        "Sam"
+      ]
+    }
+  },
+  "lineup": [
+    "",
+    "",
+    ""
+  ],
+  "opponentNames": [
+    "",
+    "",
+    ""
+  ],
   "gameScores": {}
 }
