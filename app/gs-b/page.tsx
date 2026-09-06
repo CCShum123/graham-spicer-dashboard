@@ -10,7 +10,7 @@ export default function GrahamSpicerBPage() {
   const [activeTab, setActiveTab] = useState<'next' | 'fixtures' | 'player'>('next');
   const [selectedFixtureId, setSelectedFixtureId] = useState<string>('');
 
-  const [availabilityMap, setAvailabilityMap] = useState<{ [key: string]: { going: string[]; cantGo: string[]; tbc: string[] } }>({});
+  const [availabilityMap, setAvailabilityMap] = useState<{ [key: string]: { available: string[]; unavailable: string[]; tbc: string[] } }>({});
 
   const [selectedPlayer, setSelectedPlayer] = useState('');
   const [selectedLineup, setSelectedLineup] = useState<string[]>(['', '', '']);
@@ -46,7 +46,7 @@ export default function GrahamSpicerBPage() {
             const initialMap: any = {};
             const allPlayerNames = json.data.players.map((p: any) => p.subName);
             json.data.fixtures.forEach((f: any) => {
-              initialMap[f.id] = { going: [], cantGo: [], tbc: [...allPlayerNames] };
+              initialMap[f.id] = { available: [], unavailable: [], tbc: [...allPlayerNames] };
             });
             setAvailabilityMap(initialMap);
           }
@@ -89,27 +89,27 @@ export default function GrahamSpicerBPage() {
   const isHomeTeam = currentMatchTarget?.type === 'HOME';
 
   const allPlayerNames = data?.players?.map((p: any) => p.subName) || [];
-  const currentAvailability = availabilityMap[selectedFixtureId] || { going: [], cantGo: [], tbc: [...allPlayerNames] };
+  const currentAvailability = availabilityMap[selectedFixtureId] || { available: [], unavailable: [], tbc: [...allPlayerNames] };
 
-  const handleStatusChange = (status: 'going' | 'cantGo' | 'tbc') => {
+  const handleStatusChange = (status: 'available' | 'unavailable' | 'tbc') => {
     if (!selectedPlayer) {
       alert('Please select your name first!');
       return;
     }
 
     setAvailabilityMap((prev) => {
-      const targetAvail = prev[selectedFixtureId] || { going: [], cantGo: [], tbc: [...allPlayerNames] };
-      const newGoing = targetAvail.going.filter((p: string) => p !== selectedPlayer);
-      const newCantGo = targetAvail.cantGo.filter((p: string) => p !== selectedPlayer);
+      const targetAvail = prev[selectedFixtureId] || { available: [], unavailable: [], tbc: [...allPlayerNames] };
+      const newAvailable = targetAvail.available.filter((p: string) => p !== selectedPlayer);
+      const newUnavailable = targetAvail.unavailable.filter((p: string) => p !== selectedPlayer);
       const newTbc = targetAvail.tbc.filter((p: string) => p !== selectedPlayer);
 
-      if (status === 'going') newGoing.push(selectedPlayer);
-      if (status === 'cantGo') newCantGo.push(selectedPlayer);
+      if (status === 'available') newAvailable.push(selectedPlayer);
+      if (status === 'unavailable') newUnavailable.push(selectedPlayer);
       if (status === 'tbc') newTbc.push(selectedPlayer);
 
       const updatedMap = {
         ...prev,
-        [selectedFixtureId]: { going: newGoing, cantGo: newCantGo, tbc: newTbc }
+        [selectedFixtureId]: { available: newAvailable, unavailable: newUnavailable, tbc: newTbc }
       };
 
       syncDataToBackend({ availabilityMap: updatedMap });
@@ -201,7 +201,7 @@ export default function GrahamSpicerBPage() {
             <div className="bg-[#0a0e19] border border-gray-800/60 rounded-xl p-3 space-y-2.5">
               <div className="flex justify-between items-center">
                 <span className="text-[11px] font-bold tracking-wider text-gray-300 uppercase">
-                  PLAYER AVAILABILITY ({currentAvailability.going.length})
+                  PLAYER AVAILABILITY ({currentAvailability.available.length})
                 </span>
               </div>
 
@@ -217,14 +217,14 @@ export default function GrahamSpicerBPage() {
               </select>
 
               <div className="grid grid-cols-3 gap-2">
-                <button onClick={() => handleStatusChange('going')} className="bg-[#1c273c] hover:bg-emerald-600/30 text-emerald-400 border border-emerald-500/40 py-1.5 rounded-xl font-bold text-xs">Going</button>
-                <button onClick={() => handleStatusChange('cantGo')} className="bg-[#1c273c] hover:bg-rose-600/30 text-rose-400 border border-rose-500/40 py-1.5 rounded-xl font-bold text-xs">Can't Go</button>
+                <button onClick={() => handleStatusChange('available')} className="bg-[#1c273c] hover:bg-emerald-600/30 text-emerald-400 border border-emerald-500/40 py-1.5 rounded-xl font-bold text-xs">Available</button>
+                <button onClick={() => handleStatusChange('unavailable')} className="bg-[#1c273c] hover:bg-rose-600/30 text-rose-400 border border-rose-500/40 py-1.5 rounded-xl font-bold text-xs">Unavailable</button>
                 <button onClick={() => handleStatusChange('tbc')} className="bg-[#1c273c] hover:bg-amber-600/30 text-amber-400 border border-amber-500/40 py-1.5 rounded-xl font-bold text-xs">TBC</button>
               </div>
 
               <div className="space-y-1 text-[11px] pt-2 border-t border-gray-800/80">
-                <p><strong className="text-emerald-400 uppercase">GOING:</strong> <span className="text-gray-200 font-medium">{currentAvailability.going.join(', ') || 'None'}</span></p>
-                <p><strong className="text-rose-400 uppercase">CAN'T GO:</strong> <span className="text-gray-200 font-medium">{currentAvailability.cantGo.join(', ') || 'None'}</span></p>
+                <p><strong className="text-emerald-400 uppercase">AVAILABLE:</strong> <span className="text-gray-200 font-medium">{currentAvailability.available.join(', ') || 'None'}</span></p>
+                <p><strong className="text-rose-400 uppercase">UNAVAILABLE:</strong> <span className="text-gray-200 font-medium">{currentAvailability.unavailable.join(', ') || 'None'}</span></p>
                 <p><strong className="text-amber-400 uppercase">TBC:</strong> <span className="text-gray-200 font-medium">{currentAvailability.tbc.join(', ') || 'None'}</span></p>
               </div>
             </div>
@@ -256,7 +256,7 @@ export default function GrahamSpicerBPage() {
                       className="w-full bg-[#121a2d] border border-gray-700 rounded-xl p-1.5 text-xs text-gray-100 font-medium outline-none"
                     >
                       <option value="">Select...</option>
-                      {currentAvailability.going.map((name: string) => (
+                      {currentAvailability.available.map((name: string) => (
                         <option key={name} value={name}>{name}</option>
                       ))}
                     </select>
