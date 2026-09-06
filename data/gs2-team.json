@@ -256,6 +256,21 @@
         "Andi",
         "Sam"
       ]
+    },
+    "fix-4": {
+      "going": [],
+      "cantGo": [
+        "CC"
+      ],
+      "tbc": [
+        "Tim",
+        "Aleksei",
+        "Kit",
+        "Jin Su",
+        "Cass",
+        "Andi",
+        "Sam"
+      ]
     }
   },
   "lineup": [
