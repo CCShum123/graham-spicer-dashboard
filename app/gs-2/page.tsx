@@ -221,14 +221,14 @@ export default function Home() {
               </select>
 
               <div className="grid grid-cols-3 gap-2">
-                <button onClick={() => handleStatusChange('going')} className="bg-[#1c273c] hover:bg-emerald-600/30 text-emerald-400 border border-emerald-500/40 py-1.5 rounded-xl font-bold text-xs">Going</button>
-                <button onClick={() => handleStatusChange('cantGo')} className="bg-[#1c273c] hover:bg-rose-600/30 text-rose-400 border border-rose-500/40 py-1.5 rounded-xl font-bold text-xs">Can't Go</button>
+                <button onClick={() => handleStatusChange('going')} className="bg-[#1c273c] hover:bg-emerald-600/30 text-emerald-400 border border-emerald-500/40 py-1.5 rounded-xl font-bold text-xs">Available</button>
+                <button onClick={() => handleStatusChange('cantGo')} className="bg-[#1c273c] hover:bg-rose-600/30 text-rose-400 border border-rose-500/40 py-1.5 rounded-xl font-bold text-xs">Unavailable</button>
                 <button onClick={() => handleStatusChange('tbc')} className="bg-[#1c273c] hover:bg-amber-600/30 text-amber-400 border border-amber-500/40 py-1.5 rounded-xl font-bold text-xs">TBC</button>
               </div>
 
               <div className="space-y-1 text-[11px] pt-2 border-t border-gray-800/80">
-                <p><strong className="text-emerald-400 uppercase">GOING:</strong> <span className="text-gray-200 font-medium">{currentAvailability.going.join(', ') || 'None'}</span></p>
-                <p><strong className="text-rose-400 uppercase">CAN'T GO:</strong> <span className="text-gray-200 font-medium">{currentAvailability.cantGo.join(', ') || 'None'}</span></p>
+                <p><strong className="text-emerald-400 uppercase">AVAILABLE:</strong> <span className="text-gray-200 font-medium">{currentAvailability.going.join(', ') || 'None'}</span></p>
+                <p><strong className="text-rose-400 uppercase">UNAVAILABLE:</strong> <span className="text-gray-200 font-medium">{currentAvailability.cantGo.join(', ') || 'None'}</span></p>
                 <p><strong className="text-amber-400 uppercase">TBC:</strong> <span className="text-gray-200 font-medium">{currentAvailability.tbc.join(', ') || 'None'}</span></p>
               </div>
             </div>
