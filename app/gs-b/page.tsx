@@ -17,7 +17,7 @@ export default function GrahamSpicerBPage() {
   const [showMatchCard, setShowMatchCard] = useState(false);
   const [opponentNames, setOpponentNames] = useState<string[]>(['', '', '']);
 
-  // 第 10 場雙打代號選擇（例如主隊揀 'A,B'，客隊揀 'X,Y'）
+  // 第 10 場雙打代號選擇
   const [doublesCodesH, setDoublesCodesH] = useState<string>('');
   const [doublesCodesA, setDoublesCodesA] = useState<string>('');
 
@@ -143,9 +143,6 @@ export default function GrahamSpicerBPage() {
     const [opp1, opp2, opp3] = opponentNames;
     const oppNamesList = [opp1 || 'Opp 1', opp2 || 'Opp 2', opp3 || 'Opp 3'];
 
-    // 主客隊完整陣容對應：
-    // 如果 isHomeTeam = true，主隊係 GS B (A, B, C)，客隊係對手 (X, Y, Z)
-    // 如果 isHomeTeam = false，主隊係對手 (A, B, C)，客隊係 GS B (X, Y, Z)
     const homePlayerNames = isHomeTeam ? ourNames : oppNamesList;
     const awayPlayerNames = isHomeTeam ? oppNamesList : ourNames;
 
@@ -159,7 +156,7 @@ export default function GrahamSpicerBPage() {
       { match: 7, label: 'B v Z', homeName: homePlayerNames[1], homeCode: 'B', awayName: awayPlayerNames[2], awayCode: 'Z' },
       { match: 8, label: 'C v X', homeName: homePlayerNames[2], homeCode: 'C', awayName: awayPlayerNames[0], awayCode: 'X' },
       { match: 9, label: 'A v Y', homeName: homePlayerNames[0], homeCode: 'A', awayName: awayPlayerNames[1], awayCode: 'Y' },
-      { match: 10, label: 'Doubles v', homeName: 'Doubles', homeCode: doublesCodesH || 'Dbl1', awayName: 'Doubles', awayCode: doublesCodesA || 'Dbl2' },
+      { match: 10, label: 'Doubles v', homeName: 'Doubles', homeCode: doublesCodesH || 'H-Dbl', awayName: 'Doubles', awayCode: doublesCodesA || 'A-Dbl' },
     ];
   };
 
@@ -167,8 +164,8 @@ export default function GrahamSpicerBPage() {
     const scores = gameScores[matchNum];
     if (!scores) return '';
 
-    let homeWins = 0;
-    let awayWins = 0;
+    let leftWins = 0;
+    let rightWins = 0;
     let hasPlayed = false;
 
     for (let i = 0; i < 5; i++) {
@@ -178,18 +175,17 @@ export default function GrahamSpicerBPage() {
       if (!isNaN(leftVal) && !isNaN(rightVal) && (scores[i].left !== '' || scores[i].right !== '')) {
         hasPlayed = true;
         if (leftVal > rightVal) {
-          homeWins++;
+          leftWins++;
         } else if (rightVal > leftVal) {
-          awayWins++;
+          rightWins++;
         }
       }
     }
 
     if (!hasPlayed) return '';
-    if (homeWins >= 3) return 'H';
-    if (awayWins >= 3) return 'A';
-    if (homeWins > awayWins) return 'H';
-    if (awayWins > homeWins) return 'A';
+    // 回傳 'L' 代表左邊（Home）贏，'R' 代表右邊（Away）贏
+    if (leftWins >= 3 || leftWins > rightWins) return 'L';
+    if (rightWins >= 3 || rightWins > leftWins) return 'R';
     return '';
   };
 
@@ -198,8 +194,8 @@ export default function GrahamSpicerBPage() {
     let totalA = 0;
     for (let m = 1; m <= 10; m++) {
       const winner = calculateMatchWinner(m);
-      if (winner === 'H') totalH++;
-      if (winner === 'A') totalA++;
+      if (winner === 'L') totalH++;
+      if (winner === 'R') totalA++;
     }
     return { totalH, totalA };
   };
@@ -397,7 +393,6 @@ export default function GrahamSpicerBPage() {
                     
                     return (
                       <tr key={row.index} className="bg-[#0a0e19]">
-                        {/* 修正：主隊固定顯示 A, B, C，客隊固定顯示 X, Y, Z */}
                         <td className="w-8 border border-gray-700 p-1 font-bold text-blue-400">{row.codeH}</td>
                         <td className="border border-gray-700 p-1 text-left font-bold text-white truncate">
                           {isHomeTeam ? ourNameVal : (
@@ -460,10 +455,10 @@ export default function GrahamSpicerBPage() {
                   {getMatchStructure().map((m) => {
                     const matchWinnerResult = calculateMatchWinner(m.match);
                     let displayWon = '';
-                    if (matchWinnerResult === 'H') {
-                      displayWon = (isHomeTeam ? m.homeCode : m.awayCode) || '';
-                    } else if (matchWinnerResult === 'A') {
-                      displayWon = (isHomeTeam ? m.awayCode : m.homeCode) || '';
+                    if (matchWinnerResult === 'L') {
+                      displayWon = m.homeCode; // 左邊贏，顯示左邊代號 (例如 A)
+                    } else if (matchWinnerResult === 'R') {
+                      displayWon = m.awayCode; // 右邊贏，顯示右邊代號 (例如 X)
                     }
 
                     return (

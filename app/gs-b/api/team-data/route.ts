@@ -57,12 +57,14 @@ export async function POST(request: Request) {
       Buffer.from(fileData.content, 'base64').toString('utf-8')
     );
 
-    // 2. 安全地合併資料
+    // 2. 安全地合併資料（已加入 doublesCodesH 同 doublesCodesA）
     if (body) {
       if (body.availabilityMap) existingContent.availabilityMap = body.availabilityMap;
       if (body.lineup) existingContent.lineup = body.lineup;
       if (body.gameScores) existingContent.gameScores = body.gameScores;
       if (body.opponentNames) existingContent.opponentNames = body.opponentNames;
+      if (body.doublesCodesH !== undefined) existingContent.doublesCodesH = body.doublesCodesH;
+      if (body.doublesCodesA !== undefined) existingContent.doublesCodesA = body.doublesCodesA;
     }
 
     // 3. 用 PUT 請求叫 GitHub API 自動幫你 commit 新檔案
