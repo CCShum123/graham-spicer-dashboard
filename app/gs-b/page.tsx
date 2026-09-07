@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 
 export default function GrahamSpicerBPage() {
   const [data, setData] = useState<any>(null);
@@ -17,7 +17,7 @@ export default function GrahamSpicerBPage() {
   const [showMatchCard, setShowMatchCard] = useState(false);
   const [opponentNames, setOpponentNames] = useState<string[]>(['', '', '']);
 
-  // 第 10 場雙打代號選擇
+  // 第 10 場雙打代號選擇（例如 "AB" 同 "XY"）
   const [doublesCodesH, setDoublesCodesH] = useState<string>('');
   const [doublesCodesA, setDoublesCodesA] = useState<string>('');
 
@@ -34,6 +34,8 @@ export default function GrahamSpicerBPage() {
     9: Array(5).fill({ left: '', right: '' }),
     10: Array(5).fill({ left: '', right: '' }),
   });
+
+  const syncTimeoutRef = useRef<any>(null);
 
   useEffect(() => {
     async function fetchData() {
@@ -59,8 +61,8 @@ export default function GrahamSpicerBPage() {
           if (json.data.lineup) setSelectedLineup(json.data.lineup);
           if (json.data.gameScores) setGameScores(json.data.gameScores);
           if (json.data.opponentNames) setOpponentNames(json.data.opponentNames);
-          if (json.data.doublesCodesH) setDoublesCodesH(json.data.doublesCodesH);
-          if (json.data.doublesCodesA) setDoublesCodesA(json.data.doublesCodesA);
+          if (json.data.doublesCodesH !== undefined) setDoublesCodesH(json.data.doublesCodesH);
+          if (json.data.doublesCodesA !== undefined) setDoublesCodesA(json.data.doublesCodesA);
         }
       } catch (err: any) {
         setError(err.message || 'Failed to load team data');
@@ -71,7 +73,7 @@ export default function GrahamSpicerBPage() {
     fetchData();
   }, []);
 
-  const syncDataToBackend = async (updatedState: {
+  const syncDataToBackend = (updatedState: {
     availabilityMap?: any;
     lineup?: any;
     gameScores?: any;
@@ -79,22 +81,26 @@ export default function GrahamSpicerBPage() {
     doublesCodesH?: string;
     doublesCodesA?: string;
   }) => {
-    try {
-      await fetch('/gs-b/api/team-data', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          availabilityMap: updatedState.availabilityMap || availabilityMap,
-          lineup: updatedState.lineup || selectedLineup,
-          gameScores: updatedState.gameScores || gameScores,
-          opponentNames: updatedState.opponentNames || opponentNames,
-          doublesCodesH: updatedState.doublesCodesH !== undefined ? updatedState.doublesCodesH : doublesCodesH,
-          doublesCodesA: updatedState.doublesCodesA !== undefined ? updatedState.doublesCodesA : doublesCodesA,
-        }),
-      });
-    } catch (err) {
-      console.error('Failed to sync data to backend:', err);
-    }
+    if (syncTimeoutRef.current) clearTimeout(syncTimeoutRef.current);
+
+    syncTimeoutRef.current = setTimeout(async () => {
+      try {
+        await fetch('/gs-b/api/team-data', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            availabilityMap: updatedState.availabilityMap || availabilityMap,
+            lineup: updatedState.lineup || selectedLineup,
+            gameScores: updatedState.gameScores || gameScores,
+            opponentNames: updatedState.opponentNames || opponentNames,
+            doublesCodesH: updatedState.doublesCodesH !== undefined ? updatedState.doublesCodesH : doublesCodesH,
+            doublesCodesA: updatedState.doublesCodesA !== undefined ? updatedState.doublesCodesA : doublesCodesA,
+          }),
+        });
+      } catch (err) {
+        console.error('Failed to sync data to backend:', err);
+      }
+    }, 500); // 停手 0.5 秒先至同步，避免打字時頻繁觸發 500 error
   };
 
   const currentMatchTarget = data?.fixtures?.find((f: any) => f.id === selectedFixtureId) || data?.nextFixture;
@@ -183,7 +189,6 @@ export default function GrahamSpicerBPage() {
     }
 
     if (!hasPlayed) return '';
-    // 回傳 'L' 代表左邊（Home）贏，'R' 代表右邊（Away）贏
     if (leftWins >= 3 || leftWins > rightWins) return 'L';
     if (rightWins >= 3 || rightWins > leftWins) return 'R';
     return '';
@@ -393,7 +398,8 @@ export default function GrahamSpicerBPage() {
                     
                     return (
                       <tr key={row.index} className="bg-[#0a0e19]">
-                        <td className="w-8 border border-gray-700 p-1 font-bold text-blue-400">{row.codeH}</td>
+                        {/* 1) 收窄 A/B/C 欄位寬度從 w-8 改為 w-6 */}
+                        <td className="w-6 border border-gray-700 p-1 font-bold text-blue-400">{row.codeH}</td>
                         <td className="border border-gray-700 p-1 text-left font-bold text-white truncate">
                           {isHomeTeam ? ourNameVal : (
                             <input
@@ -412,7 +418,8 @@ export default function GrahamSpicerBPage() {
                         </td>
                         <td className="w-10 border border-gray-700 p-1 text-gray-300 font-semibold">-</td>
 
-                        <td className="w-8 border border-gray-700 p-1 font-bold text-amber-400">{row.codeX}</td>
+                        {/* 1) 收窄 X/Y/Z 欄位寬度從 w-8 改為 w-6 */}
+                        <td className="w-6 border border-gray-700 p-1 font-bold text-amber-400">{row.codeX}</td>
                         <td className="border border-gray-700 p-1 text-left font-bold text-white truncate">
                           {!isHomeTeam ? ourNameVal : (
                             <input
@@ -441,13 +448,14 @@ export default function GrahamSpicerBPage() {
               <table className="w-full text-center border-collapse border border-gray-700 text-xs">
                 <thead>
                   <tr className="bg-[#121929] text-gray-300 text-[10px]">
-                    <th className="border border-gray-700 p-1 w-20 font-bold">Match Order</th>
+                    <th className="border border-gray-700 p-1 w-24 font-bold">Match Order</th>
                     <th className="border border-gray-700 p-1 w-10 font-bold">Game 1</th>
                     <th className="border border-gray-700 p-1 w-10 font-bold">Game 2</th>
                     <th className="border border-gray-700 p-1 w-10 font-bold">Game 3</th>
                     <th className="border border-gray-700 p-1 w-10 font-bold">Game 4</th>
                     <th className="border border-gray-700 p-1 w-10 font-bold">Game 5</th>
                     <th className="border border-gray-700 p-1 w-8 font-bold">F.A.</th>
+                    {/* 1) 確保 WON 字清晰顯示 */}
                     <th className="border border-gray-700 p-1 w-10 font-bold text-emerald-400">WON</th>
                   </tr>
                 </thead>
@@ -456,41 +464,80 @@ export default function GrahamSpicerBPage() {
                     const matchWinnerResult = calculateMatchWinner(m.match);
                     let displayWon = '';
                     if (matchWinnerResult === 'L') {
-                      displayWon = m.homeCode; // 左邊贏，顯示左邊代號 (例如 A)
+                      displayWon = m.homeCode;
                     } else if (matchWinnerResult === 'R') {
-                      displayWon = m.awayCode; // 右邊贏，顯示右邊代號 (例如 X)
+                      displayWon = m.awayCode;
                     }
 
                     return (
                       <tr key={m.match} className="hover:bg-gray-800/30">
                         <td className="border border-gray-700 p-1 font-bold text-blue-400 bg-[#0a0e19]">
                           {m.match === 10 ? (
+                            /* 2) 第 10 場雙打：前面兩個位揀 ABC，後面兩個位揀 XYZ */
                             <div className="flex items-center justify-center gap-0.5 text-[10px]">
-                              <input
-                                type="text"
-                                maxLength={5}
-                                value={doublesCodesH}
+                              <select
+                                value={doublesCodesH.substring(0, 1)}
                                 onChange={(e) => {
-                                  const val = e.target.value;
+                                  const secondChar = doublesCodesH.substring(1, 2) || 'B';
+                                  const val = e.target.value + secondChar;
                                   setDoublesCodesH(val);
                                   syncDataToBackend({ doublesCodesH: val });
                                 }}
-                                placeholder="H"
-                                className="w-7 bg-[#121a2d] border border-gray-700 rounded text-center text-white font-bold p-0.5"
-                              />
-                              <span className="text-gray-400">v</span>
-                              <input
-                                type="text"
-                                maxLength={5}
-                                value={doublesCodesA}
+                                className="w-5 bg-[#121a2d] border border-gray-700 rounded text-center text-white font-bold p-0.5 outline-none text-[10px]"
+                              >
+                                <option value=""></option>
+                                <option value="A">A</option>
+                                <option value="B">B</option>
+                                <option value="C">C</option>
+                              </select>
+                              <select
+                                value={doublesCodesH.substring(1, 2)}
                                 onChange={(e) => {
-                                  const val = e.target.value;
+                                  const firstChar = doublesCodesH.substring(0, 1) || 'A';
+                                  const val = firstChar + e.target.value;
+                                  setDoublesCodesH(val);
+                                  syncDataToBackend({ doublesCodesH: val });
+                                }}
+                                className="w-5 bg-[#121a2d] border border-gray-700 rounded text-center text-white font-bold p-0.5 outline-none text-[10px]"
+                              >
+                                <option value=""></option>
+                                <option value="A">A</option>
+                                <option value="B">B</option>
+                                <option value="C">C</option>
+                              </select>
+
+                              <span className="text-gray-400 font-bold px-0.5">v</span>
+
+                              <select
+                                value={doublesCodesA.substring(0, 1)}
+                                onChange={(e) => {
+                                  const secondChar = doublesCodesA.substring(1, 2) || 'Y';
+                                  const val = e.target.value + secondChar;
                                   setDoublesCodesA(val);
                                   syncDataToBackend({ doublesCodesA: val });
                                 }}
-                                placeholder="A"
-                                className="w-7 bg-[#121a2d] border border-gray-700 rounded text-center text-white font-bold p-0.5"
-                              />
+                                className="w-5 bg-[#121a2d] border border-gray-700 rounded text-center text-white font-bold p-0.5 outline-none text-[10px]"
+                              >
+                                <option value=""></option>
+                                <option value="X">X</option>
+                                <option value="Y">Y</option>
+                                <option value="Z">Z</option>
+                              </select>
+                              <select
+                                value={doublesCodesA.substring(1, 2)}
+                                onChange={(e) => {
+                                  const firstChar = doublesCodesA.substring(0, 1) || 'X';
+                                  const val = firstChar + e.target.value;
+                                  setDoublesCodesA(val);
+                                  syncDataToBackend({ doublesCodesA: val });
+                                }}
+                                className="w-5 bg-[#121a2d] border border-gray-700 rounded text-center text-white font-bold p-0.5 outline-none text-[10px]"
+                              >
+                                <option value=""></option>
+                                <option value="X">X</option>
+                                <option value="Y">Y</option>
+                                <option value="Z">Z</option>
+                              </select>
                             </div>
                           ) : (
                             m.label
@@ -551,11 +598,12 @@ export default function GrahamSpicerBPage() {
               </table>
             </div>
 
+            {/* 3) 最低 Result 改名做 Home 同 Away */}
             <div className="bg-[#0a0e19] border border-gray-700 rounded-lg p-2.5 flex justify-between items-center px-4 font-bold text-xs">
               <span className="tracking-wider text-blue-400">RESULT (Total Matches Won)</span>
-              <div className="flex gap-6">
-                <span className="bg-[#121929] px-3 py-1 rounded border border-gray-700">H: <strong className="text-emerald-400 text-sm">{totalH}</strong></span>
-                <span className="bg-[#121929] px-3 py-1 rounded border border-gray-700">A: <strong className="text-emerald-400 text-sm">{totalA}</strong></span>
+              <div className="flex gap-4">
+                <span className="bg-[#121929] px-2.5 py-1 rounded border border-gray-700">Home: <strong className="text-emerald-400 text-sm">{totalH}</strong></span>
+                <span className="bg-[#121929] px-2.5 py-1 rounded border border-gray-700">Away: <strong className="text-emerald-400 text-sm">{totalA}</strong></span>
               </div>
             </div>
 
