@@ -290,7 +290,8 @@
   "availabilityMap": {
     "match-1": {
       "going": [
-        "CC"
+        "CC",
+        "Ajay"
       ],
       "cantGo": [
         "Brandon",
@@ -303,7 +304,6 @@
         "Kit",
         "Rohit",
         "Peter",
-        "Ajay",
         "Benjamin"
       ]
     },
