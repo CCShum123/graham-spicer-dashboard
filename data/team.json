@@ -408,7 +408,7 @@
     "1": [
       {
         "left": "11",
-        "right": "5"
+        "right": ""
       },
       {
         "left": "13",
@@ -433,6 +433,6 @@
     "",
     ""
   ],
-  "doublesCodesH": "",
+  "doublesCodesH": "a",
   "doublesCodesA": ""
 }
