@@ -17,9 +17,9 @@ export default function GrahamSpicerBPage() {
   const [showMatchCard, setShowMatchCard] = useState(false);
   const [opponentNames, setOpponentNames] = useState<string[]>(['', '', '']);
 
-  // 第 10 場（雙打）嘅主客隊各 2 位球員選擇
-  const [doublesLineupH, setDoublesLineupH] = useState<string[]>(['', '']);
-  const [doublesLineupA, setDoublesLineupA] = useState<string[]>(['', '']);
+  // 第 10 場雙打代號選擇（例如主隊揀 'A,B'，客隊揀 'X,Y'）
+  const [doublesCodesH, setDoublesCodesH] = useState<string>('');
+  const [doublesCodesA, setDoublesCodesA] = useState<string>('');
 
   // 1 到 10 場比分
   const [gameScores, setGameScores] = useState<{ [key: number]: { left: string; right: string }[] }>({
@@ -59,8 +59,8 @@ export default function GrahamSpicerBPage() {
           if (json.data.lineup) setSelectedLineup(json.data.lineup);
           if (json.data.gameScores) setGameScores(json.data.gameScores);
           if (json.data.opponentNames) setOpponentNames(json.data.opponentNames);
-          if (json.data.doublesLineupH) setDoublesLineupH(json.data.doublesLineupH);
-          if (json.data.doublesLineupA) setDoublesLineupA(json.data.doublesLineupA);
+          if (json.data.doublesCodesH) setDoublesCodesH(json.data.doublesCodesH);
+          if (json.data.doublesCodesA) setDoublesCodesA(json.data.doublesCodesA);
         }
       } catch (err: any) {
         setError(err.message || 'Failed to load team data');
@@ -76,8 +76,8 @@ export default function GrahamSpicerBPage() {
     lineup?: any;
     gameScores?: any;
     opponentNames?: any;
-    doublesLineupH?: any;
-    doublesLineupA?: any;
+    doublesCodesH?: string;
+    doublesCodesA?: string;
   }) => {
     try {
       await fetch('/gs-b/api/team-data', {
@@ -88,8 +88,8 @@ export default function GrahamSpicerBPage() {
           lineup: updatedState.lineup || selectedLineup,
           gameScores: updatedState.gameScores || gameScores,
           opponentNames: updatedState.opponentNames || opponentNames,
-          doublesLineupH: updatedState.doublesLineupH || doublesLineupH,
-          doublesLineupA: updatedState.doublesLineupA || doublesLineupA,
+          doublesCodesH: updatedState.doublesCodesH !== undefined ? updatedState.doublesCodesH : doublesCodesH,
+          doublesCodesA: updatedState.doublesCodesA !== undefined ? updatedState.doublesCodesA : doublesCodesA,
         }),
       });
     } catch (err) {
@@ -143,38 +143,24 @@ export default function GrahamSpicerBPage() {
     const [opp1, opp2, opp3] = opponentNames;
     const oppNamesList = [opp1 || 'Opp 1', opp2 || 'Opp 2', opp3 || 'Opp 3'];
 
-    const dH1 = doublesLineupH[0] || 'DH1';
-    const dH2 = doublesLineupH[1] || 'DH2';
-    const dA1 = doublesLineupA[0] || 'DA1';
-    const dA2 = doublesLineupA[1] || 'DA2';
+    // 主客隊完整陣容對應：
+    // 如果 isHomeTeam = true，主隊係 GS B (A, B, C)，客隊係對手 (X, Y, Z)
+    // 如果 isHomeTeam = false，主隊係對手 (A, B, C)，客隊係 GS B (X, Y, Z)
+    const homePlayerNames = isHomeTeam ? ourNames : oppNamesList;
+    const awayPlayerNames = isHomeTeam ? oppNamesList : ourNames;
 
-    if (isHomeTeam) {
-      return [
-        { match: 1, label: 'A v X', homeName: ourNames[0], homeCode: 'A', awayName: oppNamesList[0], awayCode: 'X' },
-        { match: 2, label: 'B v Y', homeName: ourNames[1], homeCode: 'B', awayName: oppNamesList[1], awayCode: 'Y' },
-        { match: 3, label: 'C v Z', homeName: ourNames[2], homeCode: 'C', awayName: oppNamesList[2], awayCode: 'Z' },
-        { match: 4, label: 'B v X', homeName: ourNames[1], homeCode: 'B', awayName: oppNamesList[0], awayCode: 'X' },
-        { match: 5, label: 'A v Z', homeName: ourNames[0], homeCode: 'A', awayName: oppNamesList[2], awayCode: 'Z' },
-        { match: 6, label: 'C v Y', homeName: ourNames[2], homeCode: 'C', awayName: oppNamesList[1], awayCode: 'Y' },
-        { match: 7, label: 'B v Z', homeName: ourNames[1], homeCode: 'B', awayName: oppNamesList[2], awayCode: 'Z' },
-        { match: 8, label: 'C v X', homeName: ourNames[2], homeCode: 'C', awayName: oppNamesList[0], awayCode: 'X' },
-        { match: 9, label: 'A v Y', homeName: ourNames[0], homeCode: 'A', awayName: oppNamesList[1], awayCode: 'Y' },
-        { match: 10, label: 'Doubles v', homeName: `${dH1} & ${dH2}`, homeCode: 'H-Dbl', awayName: `${dA1} & ${dA2}`, awayCode: 'A-Dbl' },
-      ];
-    } else {
-      return [
-        { match: 1, label: 'A v X', homeName: oppNamesList[0], homeCode: 'X', awayName: ourNames[0], awayCode: 'A' },
-        { match: 2, label: 'B v Y', homeName: oppNamesList[1], homeCode: 'Y', awayName: ourNames[1], awayCode: 'B' },
-        { match: 3, label: 'C v Z', homeName: oppNamesList[2], homeCode: 'Z', awayName: ourNames[2], awayCode: 'C' },
-        { match: 4, label: 'B v X', homeName: oppNamesList[0], homeCode: 'X', awayName: ourNames[1], awayCode: 'B' },
-        { match: 5, label: 'A v Z', homeName: oppNamesList[2], homeCode: 'Z', awayName: ourNames[2], awayCode: 'C' },
-        { match: 6, label: 'C v Y', homeName: oppNamesList[1], homeCode: 'Y', awayName: ourNames[1], awayCode: 'B' },
-        { match: 7, label: 'B v Z', homeName: oppNamesList[1], homeCode: 'Y', awayName: ourNames[2], awayCode: 'C' },
-        { match: 8, label: 'C v X', homeName: oppNamesList[2], homeCode: 'Z', awayName: ourNames[0], awayCode: 'A' },
-        { match: 9, label: 'A v Y', homeName: oppNamesList[0], homeCode: 'X', awayName: ourNames[1], awayCode: 'B' },
-        { match: 10, label: 'Doubles v', homeName: `${dA1} & ${dA2}`, homeCode: 'A-Dbl', awayName: `${dH1} & ${dH2}`, awayCode: 'H-Dbl' },
-      ];
-    }
+    return [
+      { match: 1, label: 'A v X', homeName: homePlayerNames[0], homeCode: 'A', awayName: awayPlayerNames[0], awayCode: 'X' },
+      { match: 2, label: 'B v Y', homeName: homePlayerNames[1], homeCode: 'B', awayName: awayPlayerNames[1], awayCode: 'Y' },
+      { match: 3, label: 'C v Z', homeName: homePlayerNames[2], homeCode: 'C', awayName: awayPlayerNames[2], awayCode: 'Z' },
+      { match: 4, label: 'B v X', homeName: homePlayerNames[1], homeCode: 'B', awayName: awayPlayerNames[0], awayCode: 'X' },
+      { match: 5, label: 'A v Z', homeName: homePlayerNames[0], homeCode: 'A', awayName: awayPlayerNames[2], awayCode: 'Z' },
+      { match: 6, label: 'C v Y', homeName: homePlayerNames[2], homeCode: 'C', awayName: awayPlayerNames[1], awayCode: 'Y' },
+      { match: 7, label: 'B v Z', homeName: homePlayerNames[1], homeCode: 'B', awayName: awayPlayerNames[2], awayCode: 'Z' },
+      { match: 8, label: 'C v X', homeName: homePlayerNames[2], homeCode: 'C', awayName: awayPlayerNames[0], awayCode: 'X' },
+      { match: 9, label: 'A v Y', homeName: homePlayerNames[0], homeCode: 'A', awayName: awayPlayerNames[1], awayCode: 'Y' },
+      { match: 10, label: 'Doubles v', homeName: 'Doubles', homeCode: doublesCodesH || 'Dbl1', awayName: 'Doubles', awayCode: doublesCodesA || 'Dbl2' },
+    ];
   };
 
   const calculateMatchWinner = (matchNum: number) => {
@@ -411,7 +397,8 @@ export default function GrahamSpicerBPage() {
                     
                     return (
                       <tr key={row.index} className="bg-[#0a0e19]">
-                        <td className="w-8 border border-gray-700 p-1 font-bold text-blue-400">{isHomeTeam ? row.codeH : row.codeX}</td>
+                        {/* 修正：主隊固定顯示 A, B, C，客隊固定顯示 X, Y, Z */}
+                        <td className="w-8 border border-gray-700 p-1 font-bold text-blue-400">{row.codeH}</td>
                         <td className="border border-gray-700 p-1 text-left font-bold text-white truncate">
                           {isHomeTeam ? ourNameVal : (
                             <input
@@ -430,7 +417,7 @@ export default function GrahamSpicerBPage() {
                         </td>
                         <td className="w-10 border border-gray-700 p-1 text-gray-300 font-semibold">-</td>
 
-                        <td className="w-8 border border-gray-700 p-1 font-bold text-amber-400">{isHomeTeam ? row.codeX : row.codeH}</td>
+                        <td className="w-8 border border-gray-700 p-1 font-bold text-amber-400">{row.codeX}</td>
                         <td className="border border-gray-700 p-1 text-left font-bold text-white truncate">
                           {!isHomeTeam ? ourNameVal : (
                             <input
@@ -455,84 +442,11 @@ export default function GrahamSpicerBPage() {
               </table>
             </div>
 
-            <div className="bg-[#0a0e19] border border-gray-700 rounded-lg p-2.5 space-y-2">
-              <span className="text-[11px] font-bold text-blue-400 uppercase">Doubles Lineup (Match 10 Selection)</span>
-              <div className="grid grid-cols-2 gap-2">
-                <div className="space-y-1">
-                  <label className="text-[10px] text-gray-400 block font-semibold">Home Team Doubles (Pick 2)</label>
-                  <div className="flex gap-1">
-                    <select
-                      value={doublesLineupH[0] || ''}
-                      onChange={(e) => {
-                        const updated = [e.target.value, doublesLineupH[1] || ''];
-                        setDoublesLineupH(updated);
-                        syncDataToBackend({ doublesLineupH: updated });
-                      }}
-                      className="w-1/2 bg-[#121a2d] border border-gray-700 rounded p-1 text-[11px] text-white outline-none"
-                    >
-                      <option value="">Player 1</option>
-                      {(isHomeTeam ? (currentAvailability?.going || []) : opponentNames).map((n: string) => (
-                        <option key={n} value={n}>{n}</option>
-                      ))}
-                    </select>
-                    <select
-                      value={doublesLineupH[1] || ''}
-                      onChange={(e) => {
-                        const updated = [doublesLineupH[0] || '', e.target.value];
-                        setDoublesLineupH(updated);
-                        syncDataToBackend({ doublesLineupH: updated });
-                      }}
-                      className="w-1/2 bg-[#121a2d] border border-gray-700 rounded p-1 text-[11px] text-white outline-none"
-                    >
-                      <option value="">Player 2</option>
-                      {(isHomeTeam ? (currentAvailability?.going || []) : opponentNames).map((n: string) => (
-                        <option key={n} value={n}>{n}</option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-
-                <div className="space-y-1">
-                  <label className="text-[10px] text-gray-400 block font-semibold">Away Team Doubles (Pick 2)</label>
-                  <div className="flex gap-1">
-                    <select
-                      value={doublesLineupA[0] || ''}
-                      onChange={(e) => {
-                        const updated = [e.target.value, doublesLineupA[1] || ''];
-                        setDoublesLineupA(updated);
-                        syncDataToBackend({ doublesLineupA: updated });
-                      }}
-                      className="w-1/2 bg-[#121a2d] border border-gray-700 rounded p-1 text-[11px] text-white outline-none"
-                    >
-                      <option value="">Player 1</option>
-                      {(!isHomeTeam ? (currentAvailability?.going || []) : opponentNames).map((n: string) => (
-                        <option key={n} value={n}>{n}</option>
-                      ))}
-                    </select>
-                    <select
-                      value={doublesLineupA[1] || ''}
-                      onChange={(e) => {
-                        const updated = [doublesLineupA[0] || '', e.target.value];
-                        setDoublesLineupA(updated);
-                        syncDataToBackend({ doublesLineupA: updated });
-                      }}
-                      className="w-1/2 bg-[#121a2d] border border-gray-700 rounded p-1 text-[11px] text-white outline-none"
-                    >
-                      <option value="">Player 2</option>
-                      {(!isHomeTeam ? (currentAvailability?.going || []) : opponentNames).map((n: string) => (
-                        <option key={n} value={n}>{n}</option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-              </div>
-            </div>
-
             <div className="overflow-x-auto">
               <table className="w-full text-center border-collapse border border-gray-700 text-xs">
                 <thead>
                   <tr className="bg-[#121929] text-gray-300 text-[10px]">
-                    <th className="border border-gray-700 p-1 w-16 font-bold">Match Order</th>
+                    <th className="border border-gray-700 p-1 w-20 font-bold">Match Order</th>
                     <th className="border border-gray-700 p-1 w-10 font-bold">Game 1</th>
                     <th className="border border-gray-700 p-1 w-10 font-bold">Game 2</th>
                     <th className="border border-gray-700 p-1 w-10 font-bold">Game 3</th>
@@ -554,7 +468,39 @@ export default function GrahamSpicerBPage() {
 
                     return (
                       <tr key={m.match} className="hover:bg-gray-800/30">
-                        <td className="border border-gray-700 p-1 font-bold text-blue-400 bg-[#0a0e19]">{m.label}</td>
+                        <td className="border border-gray-700 p-1 font-bold text-blue-400 bg-[#0a0e19]">
+                          {m.match === 10 ? (
+                            <div className="flex items-center justify-center gap-0.5 text-[10px]">
+                              <input
+                                type="text"
+                                maxLength={5}
+                                value={doublesCodesH}
+                                onChange={(e) => {
+                                  const val = e.target.value;
+                                  setDoublesCodesH(val);
+                                  syncDataToBackend({ doublesCodesH: val });
+                                }}
+                                placeholder="H"
+                                className="w-7 bg-[#121a2d] border border-gray-700 rounded text-center text-white font-bold p-0.5"
+                              />
+                              <span className="text-gray-400">v</span>
+                              <input
+                                type="text"
+                                maxLength={5}
+                                value={doublesCodesA}
+                                onChange={(e) => {
+                                  const val = e.target.value;
+                                  setDoublesCodesA(val);
+                                  syncDataToBackend({ doublesCodesA: val });
+                                }}
+                                placeholder="A"
+                                className="w-7 bg-[#121a2d] border border-gray-700 rounded text-center text-white font-bold p-0.5"
+                              />
+                            </div>
+                          ) : (
+                            m.label
+                          )}
+                        </td>
                         
                         {[0, 1, 2, 3, 4].map((gIdx) => (
                           <td key={gIdx} className="border border-gray-700 p-0.5">
