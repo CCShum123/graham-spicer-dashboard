@@ -387,15 +387,15 @@ export default function GrahamSpicerBPage() {
               <div><span className="text-gray-400">Division:</span> <strong className="text-white">{data?.season || 'Division 2'}</strong></div>
             </div>
 
-            {/* 上方球員名單表格：精確控制寬度，確保 A/B/C、球員名及 WON 欄位正常顯示 */}
+            {/* 上方球員名單表格：強制平分左右兩半 (w-1/2)，各自佔 50% 闊度 */}
             <div className="border border-gray-700 rounded-lg overflow-hidden">
-              <table className="w-full text-center text-xs border-collapse">
+              <table className="w-full text-center text-xs border-collapse table-fixed">
                 <thead>
                   <tr className="bg-[#121929] text-gray-300">
-                    <th className="border border-gray-700 p-1 text-left font-bold text-[11px]" colSpan={3}>
+                    <th className="border border-gray-700 p-1 text-left font-bold text-[11px] w-1/2">
                       Home Team: {isHomeTeam ? 'GS B' : formatTeamNameShort(currentMatchTarget?.homeTeam)}
                     </th>
-                    <th className="border border-gray-700 p-1 text-left font-bold text-[11px]" colSpan={3}>
+                    <th className="border border-gray-700 p-1 text-left font-bold text-[11px] w-1/2">
                       Away Team: {!isHomeTeam ? 'GS B' : formatTeamNameShort(currentMatchTarget?.awayTeam)}
                     </th>
                   </tr>
@@ -412,49 +412,57 @@ export default function GrahamSpicerBPage() {
                     
                     return (
                       <tr key={row.index} className="bg-[#0a0e19]">
-                        {/* Home Team 欄位 */}
-                        <td style={{ width: '32px' }} className="border border-gray-700 p-1 font-bold text-blue-400 text-center">{row.codeH}</td>
-                        <td className="border border-gray-700 p-1 text-left font-bold text-white">
-                          {isHomeTeam ? (
-                            <div className="truncate px-1">{ourNameVal}</div>
-                          ) : (
-                            <input
-                              type="text"
-                              value={opponentNames[row.index] || ''}
-                              onChange={(e) => {
-                                const updatedOpp = [...opponentNames];
-                                updatedOpp[row.index] = e.target.value;
-                                setOpponentNames(updatedOpp);
-                                syncDataToBackend({ opponentNames: updatedOpp });
-                              }}
-                              placeholder={`Opp ${row.index + 1}`}
-                              className="w-full bg-[#121a2d] border border-gray-700 rounded p-1 text-[11px] font-semibold text-white outline-none"
-                            />
-                          )}
+                        {/* Home Team 半邊 (w-1/2)：A碼 + 球員名/對手 + 勝場 */}
+                        <td className="border border-gray-700 p-1 w-1/2">
+                          <div className="flex items-center gap-1">
+                            <span className="w-7 shrink-0 font-bold text-blue-400 text-center">{row.codeH}</span>
+                            <div className="flex-1 min-w-0 text-left font-bold text-white">
+                              {isHomeTeam ? (
+                                <div className="truncate px-1">{ourNameVal}</div>
+                              ) : (
+                                <input
+                                  type="text"
+                                  value={opponentNames[row.index] || ''}
+                                  onChange={(e) => {
+                                    const updatedOpp = [...opponentNames];
+                                    updatedOpp[row.index] = e.target.value;
+                                    setOpponentNames(updatedOpp);
+                                    syncDataToBackend({ opponentNames: updatedOpp });
+                                  }}
+                                  placeholder={`Opp ${row.index + 1}`}
+                                  className="w-full bg-[#121a2d] border border-gray-700 rounded p-1 text-[11px] font-semibold text-white outline-none"
+                                />
+                              )}
+                            </div>
+                            <span className="w-8 shrink-0 border border-gray-700 rounded bg-[#121929] text-emerald-400 font-bold py-1 text-center">{homeWon}</span>
+                          </div>
                         </td>
-                        <td style={{ width: '45px' }} className="border border-gray-700 p-1 text-emerald-400 font-bold bg-[#121929] text-center">{homeWon}</td>
 
-                        {/* Away Team 欄位 */}
-                        <td style={{ width: '32px' }} className="border border-gray-700 p-1 font-bold text-amber-400 text-center">{row.codeX}</td>
-                        <td className="border border-gray-700 p-1 text-left font-bold text-white">
-                          {!isHomeTeam ? (
-                            <div className="truncate px-1">{ourNameVal}</div>
-                          ) : (
-                            <input
-                              type="text"
-                              value={opponentNames[row.index] || ''}
-                              onChange={(e) => {
-                                const updatedOpp = [...opponentNames];
-                                updatedOpp[row.index] = e.target.value;
-                                setOpponentNames(updatedOpp);
-                                syncDataToBackend({ opponentNames: updatedOpp });
-                              }}
-                              placeholder={`Opp ${row.index + 1}`}
-                              className="w-full bg-[#121a2d] border border-gray-700 rounded p-1 text-[11px] font-semibold text-white outline-none"
-                            />
-                          )}
+                        {/* Away Team 半邊 (w-1/2)：X碼 + 球員名/對手 + 勝場 */}
+                        <td className="border border-gray-700 p-1 w-1/2">
+                          <div className="flex items-center gap-1">
+                            <span className="w-7 shrink-0 font-bold text-amber-400 text-center">{row.codeX}</span>
+                            <div className="flex-1 min-w-0 text-left font-bold text-white">
+                              {!isHomeTeam ? (
+                                <div className="truncate px-1">{ourNameVal}</div>
+                              ) : (
+                                <input
+                                  type="text"
+                                  value={opponentNames[row.index] || ''}
+                                  onChange={(e) => {
+                                    const updatedOpp = [...opponentNames];
+                                    updatedOpp[row.index] = e.target.value;
+                                    setOpponentNames(updatedOpp);
+                                    syncDataToBackend({ opponentNames: updatedOpp });
+                                  }}
+                                  placeholder={`Opp ${row.index + 1}`}
+                                  className="w-full bg-[#121a2d] border border-gray-700 rounded p-1 text-[11px] font-semibold text-white outline-none"
+                                />
+                              )}
+                            </div>
+                            <span className="w-8 shrink-0 border border-gray-700 rounded bg-[#121929] text-emerald-400 font-bold py-1 text-center">{awayWon}</span>
+                          </div>
                         </td>
-                        <td style={{ width: '45px' }} className="border border-gray-700 p-1 text-emerald-400 font-bold bg-[#121929] text-center">{awayWon}</td>
                       </tr>
                     );
                   })}
@@ -490,7 +498,6 @@ export default function GrahamSpicerBPage() {
                       <tr key={m.match} className="hover:bg-gray-800/30">
                         <td className="border border-gray-700 p-1 font-bold text-blue-400 bg-[#0a0e19]">
                           {m.match === 10 ? (
-                            /* 第 10 場雙打：修復為正常闊度（w-8），確保字母與選單完全清楚顯示 */
                             <div className="flex items-center justify-center gap-1 text-[11px]">
                               <select
                                 value={doublesCodesH.substring(0, 1)}
