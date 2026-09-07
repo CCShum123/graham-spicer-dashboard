@@ -411,7 +411,7 @@
         "right": "5"
       },
       {
-        "left": "",
+        "left": "1",
         "right": "11"
       },
       {
@@ -432,5 +432,7 @@
     "",
     "",
     ""
-  ]
+  ],
+  "doublesCodesH": "",
+  "doublesCodesA": ""
 }
