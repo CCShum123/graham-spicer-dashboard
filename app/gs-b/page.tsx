@@ -172,7 +172,7 @@ export default function GrahamSpicerBPage() {
         { match: 7, label: 'B v Z', homeName: oppNamesList[1], homeCode: 'Y', awayName: ourNames[2], awayCode: 'C' },
         { match: 8, label: 'C v X', homeName: oppNamesList[2], homeCode: 'Z', awayName: ourNames[0], awayCode: 'A' },
         { match: 9, label: 'A v Y', homeName: oppNamesList[0], homeCode: 'X', awayName: ourNames[1], awayCode: 'B' },
-        { match: 10, label: 'Doubles v', homeName: `${dA1} & ${dA2}`, homeCode: 'A-Dbl', awayName: `${dH1} & ${dH2}`, homeCode_alt: 'H-Dbl' },
+        { match: 10, label: 'Doubles v', homeName: `${dA1} & ${dA2}`, homeCode: 'A-Dbl', awayName: `${dH1} & ${dH2}`, awayCode: 'H-Dbl' },
       ];
     }
   };
@@ -544,12 +544,12 @@ export default function GrahamSpicerBPage() {
                 </thead>
                 <tbody>
                   {getMatchStructure().map((m) => {
-                    const matchWinner = calculateMatchWinner(m.match);
+                    const matchWinnerResult = calculateMatchWinner(m.match);
                     let displayWon = '';
-                    if (matchWinner === 'H') {
-                      displayWon = isHomeTeam ? m.homeCode : m.awayCode;
-                    } else if (matchWinner === 'A') {
-                      displayWon = isHomeTeam ? m.awayCode : m.homeCode;
+                    if (matchWinnerResult === 'H') {
+                      displayWon = (isHomeTeam ? m.homeCode : m.awayCode) || '';
+                    } else if (matchWinnerResult === 'A') {
+                      displayWon = (isHomeTeam ? m.awayCode : m.homeCode) || '';
                     }
 
                     return (
