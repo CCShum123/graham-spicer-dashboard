@@ -137,7 +137,6 @@ export default function GrahamSpicerBPage() {
     return formatted;
   };
 
-  // 10 場對賽結構（帶返 A/B/C 同 X/Y/Z 代號）
   const getMatchStructure = () => {
     const [p1, p2, p3] = selectedLineup;
     const ourNames = [p1 || 'Player 1', p2 || 'Player 2', p3 || 'Player 3'];
@@ -168,7 +167,7 @@ export default function GrahamSpicerBPage() {
         { match: 2, label: 'B v Y', homeName: oppNamesList[1], homeCode: 'Y', awayName: ourNames[1], awayCode: 'B' },
         { match: 3, label: 'C v Z', homeName: oppNamesList[2], homeCode: 'Z', awayName: ourNames[2], awayCode: 'C' },
         { match: 4, label: 'B v X', homeName: oppNamesList[0], homeCode: 'X', awayName: ourNames[1], awayCode: 'B' },
-        { match: 5, label: 'A v Z', homeName: oppNamesList[2], homeCode: 'Z', awayName: ourNames[2], awayCode: 'C' }, // 注意Away位置對調
+        { match: 5, label: 'A v Z', homeName: oppNamesList[2], homeCode: 'Z', awayName: ourNames[2], awayCode: 'C' },
         { match: 6, label: 'C v Y', homeName: oppNamesList[1], homeCode: 'Y', awayName: ourNames[1], awayCode: 'B' },
         { match: 7, label: 'B v Z', homeName: oppNamesList[1], homeCode: 'Y', awayName: ourNames[2], awayCode: 'C' },
         { match: 8, label: 'C v X', homeName: oppNamesList[2], homeCode: 'Z', awayName: ourNames[0], awayCode: 'A' },
@@ -178,8 +177,6 @@ export default function GrahamSpicerBPage() {
     }
   };
 
-  // 計算每場邊個贏（根據 5 局入面邊邊贏得多局）
-  // 回傳 'H' (Home贏), 'A' (Away贏), 或 '' (未分勝負/未填完)
   const calculateMatchWinner = (matchNum: number) => {
     const scores = gameScores[matchNum];
     if (!scores) return '';
@@ -203,16 +200,13 @@ export default function GrahamSpicerBPage() {
     }
 
     if (!hasPlayed) return '';
-    // 乒乓球 5 局 3 勝
     if (homeWins >= 3) return 'H';
     if (awayWins >= 3) return 'A';
-    // 如果未夠 3 勝但已經入咗比分，睇邊邊暫時贏得比較多局
     if (homeWins > awayWins) return 'H';
     if (awayWins > homeWins) return 'A';
     return '';
   };
 
-  // 計算總 RESULT (H 贏幾場, A 贏幾場)
   const getTotalResults = () => {
     let totalH = 0;
     let totalA = 0;
@@ -390,13 +384,11 @@ export default function GrahamSpicerBPage() {
               <button onClick={() => setShowMatchCard(false)} className="bg-gray-800 hover:bg-gray-700 text-gray-300 w-7 h-7 rounded-full font-bold text-xs flex items-center justify-center">✕</button>
             </div>
 
-            {/* 1) 頂頭加返個日子同 Division */}
             <div className="grid grid-cols-2 gap-2 text-[11px] bg-[#0a0e19] p-2 rounded-lg border border-gray-700">
               <div><span className="text-gray-400">Date:</span> <strong className="text-white">{currentMatchTarget?.day} {currentMatchTarget?.date} {currentMatchTarget?.month} {currentMatchTarget?.year}</strong></div>
               <div><span className="text-gray-400">Division:</span> <strong className="text-white">{data?.season || 'Division 2'}</strong></div>
             </div>
 
-            {/* 2 & 3) 球員名稱欄：主隊ABC，客隊XYZ，各佔版面一半闊度 */}
             <div className="border border-gray-700 rounded-lg overflow-hidden">
               <table className="w-full text-center text-xs border-collapse table-fixed">
                 <thead>
@@ -416,17 +408,15 @@ export default function GrahamSpicerBPage() {
                     { codeH: 'C', codeX: 'Z', index: 2 },
                   ].map((row) => {
                     const ourNameVal = selectedLineup[row.index] || `Player ${row.index + 1}`;
-                    const oppNameVal = opponentNames[row.index] || `Opp ${row.index + 1}`;
                     
                     return (
                       <tr key={row.index} className="bg-[#0a0e19]">
-                        {/* 主隊 (ABC) */}
                         <td className="w-8 border border-gray-700 p-1 font-bold text-blue-400">{isHomeTeam ? row.codeH : row.codeX}</td>
                         <td className="border border-gray-700 p-1 text-left font-bold text-white truncate">
                           {isHomeTeam ? ourNameVal : (
                             <input
                               type="text"
-                              value={opponentNames[row.index]}
+                              value={opponentNames[row.index] || ''}
                               onChange={(e) => {
                                 const updatedOpp = [...opponentNames];
                                 updatedOpp[row.index] = e.target.value;
@@ -440,13 +430,12 @@ export default function GrahamSpicerBPage() {
                         </td>
                         <td className="w-10 border border-gray-700 p-1 text-gray-300 font-semibold">-</td>
 
-                        {/* 客隊 (XYZ) */}
                         <td className="w-8 border border-gray-700 p-1 font-bold text-amber-400">{isHomeTeam ? row.codeX : row.codeH}</td>
                         <td className="border border-gray-700 p-1 text-left font-bold text-white truncate">
                           {!isHomeTeam ? ourNameVal : (
                             <input
                               type="text"
-                              value={opponentNames[row.index]}
+                              value={opponentNames[row.index] || ''}
                               onChange={(e) => {
                                 const updatedOpp = [...opponentNames];
                                 updatedOpp[row.index] = e.target.value;
@@ -466,7 +455,6 @@ export default function GrahamSpicerBPage() {
               </table>
             </div>
 
-            {/* 4) 雙打（Doubles）選人專區：主客每邊各選兩位球員 */}
             <div className="bg-[#0a0e19] border border-gray-700 rounded-lg p-2.5 space-y-2">
               <span className="text-[11px] font-bold text-blue-400 uppercase">Doubles Lineup (Match 10 Selection)</span>
               <div className="grid grid-cols-2 gap-2">
@@ -474,9 +462,9 @@ export default function GrahamSpicerBPage() {
                   <label className="text-[10px] text-gray-400 block font-semibold">Home Team Doubles (Pick 2)</label>
                   <div className="flex gap-1">
                     <select
-                      value={doublesLineupH[0]}
+                      value={doublesLineupH[0] || ''}
                       onChange={(e) => {
-                        const updated = [e.target.value, doublesLineupH[1]];
+                        const updated = [e.target.value, doublesLineupH[1] || ''];
                         setDoublesLineupH(updated);
                         syncDataToBackend({ doublesLineupH: updated });
                       }}
@@ -488,9 +476,9 @@ export default function GrahamSpicerBPage() {
                       ))}
                     </select>
                     <select
-                      value={doublesLineupH[1]}
+                      value={doublesLineupH[1] || ''}
                       onChange={(e) => {
-                        const updated = [doublesLineupH[0], e.target.value];
+                        const updated = [doublesLineupH[0] || '', e.target.value];
                         setDoublesLineupH(updated);
                         syncDataToBackend({ doublesLineupH: updated });
                       }}
@@ -508,9 +496,9 @@ export default function GrahamSpicerBPage() {
                   <label className="text-[10px] text-gray-400 block font-semibold">Away Team Doubles (Pick 2)</label>
                   <div className="flex gap-1">
                     <select
-                      value={doublesLineupA[0]}
+                      value={doublesLineupA[0] || ''}
                       onChange={(e) => {
-                        const updated = [e.target.value, doublesLineupA[1]];
+                        const updated = [e.target.value, doublesLineupA[1] || ''];
                         setDoublesLineupA(updated);
                         syncDataToBackend({ doublesLineupA: updated });
                       }}
@@ -522,9 +510,9 @@ export default function GrahamSpicerBPage() {
                       ))}
                     </select>
                     <select
-                      value={doublesLineupA[1]}
+                      value={doublesLineupA[1] || ''}
                       onChange={(e) => {
-                        const updated = [doublesLineupA[0], e.target.value];
+                        const updated = [doublesLineupA[0] || '', e.target.value];
                         setDoublesLineupA(updated);
                         syncDataToBackend({ doublesLineupA: updated });
                       }}
@@ -540,7 +528,6 @@ export default function GrahamSpicerBPage() {
               </div>
             </div>
 
-            {/* 5) 下方對賽比分表格 (Match Order, Game 1-5, F.A., 仲有自動計算嘅 WON 欄) */}
             <div className="overflow-x-auto">
               <table className="w-full text-center border-collapse border border-gray-700 text-xs">
                 <thead>
@@ -558,7 +545,6 @@ export default function GrahamSpicerBPage() {
                 <tbody>
                   {getMatchStructure().map((m) => {
                     const matchWinner = calculateMatchWinner(m.match);
-                    // 根據邊個隊伍贏，顯示對應嘅代號（例如主隊贏出係 A/B/C 或 H，客隊係 X/Y/Z 或 A）
                     let displayWon = '';
                     if (matchWinner === 'H') {
                       displayWon = isHomeTeam ? m.homeCode : m.awayCode;
@@ -612,10 +598,8 @@ export default function GrahamSpicerBPage() {
                           </td>
                         ))}
 
-                        {/* F.A. 格仔 */}
                         <td className="border border-gray-700 p-1 text-gray-500 font-semibold">-</td>
 
-                        {/* WON 欄自動顯示贏咗嗰位球員代號 */}
                         <td className="border border-gray-700 p-1 font-black text-emerald-400 bg-emerald-950/20">
                           {displayWon}
                         </td>
@@ -626,7 +610,6 @@ export default function GrahamSpicerBPage() {
               </table>
             </div>
 
-            {/* 6) RESULT 行：自動計算 H 同 A 總贏場數 */}
             <div className="bg-[#0a0e19] border border-gray-700 rounded-lg p-2.5 flex justify-between items-center px-4 font-bold text-xs">
               <span className="tracking-wider text-blue-400">RESULT (Total Matches Won)</span>
               <div className="flex gap-6">
@@ -634,8 +617,6 @@ export default function GrahamSpicerBPage() {
                 <span className="bg-[#121929] px-3 py-1 rounded border border-gray-700">A: <strong className="text-emerald-400 text-sm">{totalA}</strong></span>
               </div>
             </div>
-
-            {/* 7) 已經刪除咗 home captain / away captain signed 嗰行 */}
 
             <button
               onClick={() => {
