@@ -17,6 +17,7 @@ export default function GrahamSpicerBPage() {
   const [showMatchCard, setShowMatchCard] = useState(false);
   const [opponentNames, setOpponentNames] = useState<string[]>(['', '', '']);
 
+  // 1 到 10 場（包 9 場單打 + 第 10 場 Doubles）嘅比分，每場 5 局
   const [gameScores, setGameScores] = useState<{ [key: number]: { left: string; right: string }[] }>({
     1: Array(5).fill({ left: '', right: '' }),
     2: Array(5).fill({ left: '', right: '' }),
@@ -27,6 +28,7 @@ export default function GrahamSpicerBPage() {
     7: Array(5).fill({ left: '', right: '' }),
     8: Array(5).fill({ left: '', right: '' }),
     9: Array(5).fill({ left: '', right: '' }),
+    10: Array(5).fill({ left: '', right: '' }), // Doubles
   });
 
   useEffect(() => {
@@ -125,6 +127,7 @@ export default function GrahamSpicerBPage() {
     return formatted;
   };
 
+  // 新嘅 Match Order 結構（頭 3 個係球員 A, B, C / X, Y, Z 對應，第 10 場係雙打）
   const getMatchStructure = () => {
     const [p1, p2, p3] = selectedLineup;
     const ourNames = [p1 || 'Player 1', p2 || 'Player 2', p3 || 'Player 3'];
@@ -133,27 +136,30 @@ export default function GrahamSpicerBPage() {
 
     if (isHomeTeam) {
       return [
-        { match: 1, our: ourNames[0], ourRole: 'A', oppName: oppNamesList[0], oppRole: 'X' },
-        { match: 2, our: ourNames[1], ourRole: 'B', oppName: oppNamesList[1], oppRole: 'Y' },
-        { match: 3, our: ourNames[2], ourRole: 'C', oppName: oppNamesList[2], oppRole: 'Z' },
-        { match: 4, our: ourNames[1], ourRole: 'B', oppName: oppNamesList[0], oppRole: 'X' },
-        { match: 5, our: ourNames[0], ourRole: 'A', oppName: oppNamesList[2], oppRole: 'Z' },
-        { match: 6, our: ourNames[2], ourRole: 'C', oppName: oppNamesList[1], oppRole: 'Y' },
-        { match: 7, our: ourNames[1], ourRole: 'B', oppName: oppNamesList[2], oppRole: 'Z' },
-        { match: 8, our: ourNames[2], ourRole: 'C', oppName: oppNamesList[0], oppRole: 'X' },
-        { match: 9, our: ourNames[0], ourRole: 'A', oppName: oppNamesList[1], oppRole: 'Y' },
+        { match: 1, label: 'A v X', our: ourNames[0], ourRole: 'A', oppName: oppNamesList[0], oppRole: 'X' },
+        { match: 2, label: 'B v Y', our: ourNames[1], ourRole: 'B', oppName: oppNamesList[1], oppRole: 'Y' },
+        { match: 3, label: 'C v Z', our: ourNames[2], ourRole: 'C', oppName: oppNamesList[2], oppRole: 'Z' },
+        { match: 4, label: 'B v X', our: ourNames[1], ourRole: 'B', oppName: oppNamesList[0], oppRole: 'X' },
+        { match: 5, label: 'A v Z', our: ourNames[0], ourRole: 'A', oppName: oppNamesList[2], oppRole: 'Z' },
+        { match: 6, label: 'C v Y', our: ourNames[2], ourRole: 'C', oppName: oppNamesList[1], oppRole: 'Y' },
+        { match: 7, label: 'B v Z', our: ourNames[1], ourRole: 'B', oppName: oppNamesList[2], oppRole: 'Z' },
+        { match: 8, label: 'C v X', our: ourNames[2], ourRole: 'C', oppName: oppNamesList[0], oppRole: 'X' },
+        { match: 9, label: 'A v Y', our: ourNames[0], ourRole: 'A', oppName: oppNamesList[1], oppRole: 'Y' },
+        { match: 10, label: 'Doubles v', our: `${ourNames[0]} & ${ourNames[1]}`, ourRole: 'D', oppName: `${oppNamesList[0]} & ${oppNamesList[1]}`, oppRole: 'D' },
       ];
     } else {
+      // Away 嘅對調邏輯
       return [
-        { match: 1, our: ourNames[0], ourRole: 'X', oppName: oppNamesList[0], oppRole: 'A' },
-        { match: 2, our: ourNames[1], ourRole: 'Y', oppName: oppNamesList[1], oppRole: 'B' },
-        { match: 3, our: ourNames[2], ourRole: 'Z', oppName: oppNamesList[2], oppRole: 'C' },
-        { match: 4, our: ourNames[0], ourRole: 'X', oppName: oppNamesList[1], oppRole: 'B' },
-        { match: 5, our: ourNames[2], ourRole: 'Z', oppName: oppNamesList[0], oppRole: 'A' },
-        { match: 6, our: ourNames[1], ourRole: 'Y', oppName: oppNamesList[2], oppRole: 'C' },
-        { match: 7, our: ourNames[2], ourRole: 'Z', oppName: oppNamesList[1], oppRole: 'B' },
-        { match: 8, our: ourNames[0], ourRole: 'X', oppName: oppNamesList[2], oppRole: 'C' },
-        { match: 9, our: ourNames[1], ourRole: 'Y', oppName: oppNamesList[0], oppRole: 'A' },
+        { match: 1, label: 'A v X', our: ourNames[0], ourRole: 'X', oppName: oppNamesList[0], oppRole: 'A' },
+        { match: 2, label: 'B v Y', our: ourNames[1], ourRole: 'Y', oppName: oppNamesList[1], oppRole: 'B' },
+        { match: 3, label: 'C v Z', our: ourNames[2], ourRole: 'Z', oppName: oppNamesList[2], oppRole: 'C' },
+        { match: 4, label: 'B v X', our: ourNames[1], ourRole: 'X', oppName: oppNamesList[1], oppRole: 'B' },
+        { match: 5, label: 'A v Z', our: ourNames[2], ourRole: 'Z', oppName: oppNamesList[0], oppRole: 'A' },
+        { match: 6, label: 'C v Y', our: ourNames[1], ourRole: 'Y', oppName: oppNamesList[2], oppRole: 'C' },
+        { match: 7, label: 'B v Z', our: ourNames[2], ourRole: 'Z', oppName: oppNamesList[1], oppRole: 'B' },
+        { match: 8, label: 'C v X', our: ourNames[0], ourRole: 'X', oppName: oppNamesList[2], oppRole: 'C' },
+        { match: 9, label: 'A v Y', our: ourNames[1], ourRole: 'Y', oppName: oppNamesList[0], oppRole: 'A' },
+        { match: 10, label: 'Doubles v', our: `${ourNames[0]} & ${ourNames[1]}`, ourRole: 'D', oppName: `${oppNamesList[0]} & ${oppNamesList[1]}`, oppRole: 'D' },
       ];
     }
   };
@@ -322,72 +328,96 @@ export default function GrahamSpicerBPage() {
               <button onClick={() => setShowMatchCard(false)} className="bg-gray-800 hover:bg-gray-700 text-gray-300 w-7 h-7 rounded-full font-bold text-xs flex items-center justify-center">✕</button>
             </div>
 
-            <div className="overflow-x-auto">
-              <table className="w-full text-center border-collapse border border-gray-700 text-xs">
+            {/* 上方球員陣容及 WON 欄位 */}
+            <div className="border border-gray-700 rounded-lg overflow-hidden">
+              <table className="w-full text-center text-xs border-collapse">
                 <thead>
                   <tr className="bg-[#121929] text-gray-300">
-                    <th className="border border-gray-700 p-1 w-6">#</th>
-                    
+                    <th className="border border-gray-700 p-1 w-8"></th>
                     <th className="border border-gray-700 p-1 text-left font-bold text-[11px]">
-                      Home: {isHomeTeam ? 'GS B' : formatTeamNameShort(currentMatchTarget?.homeTeam)}
+                      Home Team: {isHomeTeam ? 'GS B' : formatTeamNameShort(currentMatchTarget?.homeTeam)}
                     </th>
-                    <th className="border border-gray-700 p-1 w-5 font-bold">{isHomeTeam ? 'H' : 'A'}</th>
-                    
-                    <th className="border border-gray-700 p-1 font-bold text-[10px]" colSpan={5}>Games Score</th>
-                    
-                    <th className="border border-gray-700 p-1 w-5 font-bold">{!isHomeTeam ? 'H' : 'A'}</th>
-                    
+                    <th className="border border-gray-700 p-1 w-10 font-bold">WON</th>
+                    <th className="border border-gray-700 p-1 w-8"></th>
                     <th className="border border-gray-700 p-1 text-left font-bold text-[11px]">
-                      Away: {!isHomeTeam ? 'GS B' : formatTeamNameShort(currentMatchTarget?.awayTeam)}
+                      Away Team: {!isHomeTeam ? 'GS B' : formatTeamNameShort(currentMatchTarget?.awayTeam)}
                     </th>
-                  </tr>
-                  <tr className="bg-[#0a0e19] text-gray-400 text-[9px]">
-                    <th className="border border-gray-700 p-0.5"></th>
-                    <th className="border border-gray-700 p-0.5 text-left">Name</th>
-                    <th className="border border-gray-700 p-0.5"></th>
-                    <th className="border border-gray-700 p-0.5 w-10">1st</th>
-                    <th className="border border-gray-700 p-0.5 w-10">2nd</th>
-                    <th className="border border-gray-700 p-0.5 w-10">3rd</th>
-                    <th className="border border-gray-700 p-0.5 w-10">4th</th>
-                    <th className="border border-gray-700 p-0.5 w-10">5th</th>
-                    <th className="border border-gray-700 p-0.5"></th>
-                    <th className="border border-gray-700 p-0.5 text-left">Name</th>
+                    <th className="border border-gray-700 p-1 w-10 font-bold">WON</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {getMatchStructure().map((m, index) => {
+                  {[
+                    { roleH: 'A', roleX: 'X', index: 0 },
+                    { roleH: 'B', roleX: 'Y', index: 1 },
+                    { roleH: 'C', roleX: 'Z', index: 2 },
+                  ].map((row) => {
+                    const ourNameVal = selectedLineup[row.index] || `Player ${row.index + 1}`;
+                    const oppNameVal = opponentNames[row.index] || `Opp ${row.index + 1}`;
+                    return (
+                      <tr key={row.index} className="bg-[#0a0e19]">
+                        <td className="border border-gray-700 p-1 font-bold text-blue-400">{isHomeTeam ? row.roleH : row.roleX}</td>
+                        <td className="border border-gray-700 p-1 text-left font-bold text-white">
+                          {isHomeTeam ? ourNameVal : (
+                            <input
+                              type="text"
+                              value={opponentNames[row.index]}
+                              onChange={(e) => {
+                                const updatedOpp = [...opponentNames];
+                                updatedOpp[row.index] = e.target.value;
+                                setOpponentNames(updatedOpp);
+                                syncDataToBackend({ opponentNames: updatedOpp });
+                              }}
+                              placeholder={`Opp ${row.index + 1}`}
+                              className="w-full bg-[#121a2d] border border-gray-700 rounded p-1 text-[11px] font-semibold text-white outline-none"
+                            />
+                          )}
+                        </td>
+                        <td className="border border-gray-700 p-1 text-gray-300 font-semibold">-</td>
+
+                        <td className="border border-gray-700 p-1 font-bold text-amber-400">{isHomeTeam ? row.roleX : row.roleH}</td>
+                        <td className="border border-gray-700 p-1 text-left font-bold text-white">
+                          {!isHomeTeam ? ourNameVal : (
+                            <input
+                              type="text"
+                              value={opponentNames[row.index]}
+                              onChange={(e) => {
+                                const updatedOpp = [...opponentNames];
+                                updatedOpp[row.index] = e.target.value;
+                                setOpponentNames(updatedOpp);
+                                syncDataToBackend({ opponentNames: updatedOpp });
+                              }}
+                              placeholder={`Opp ${row.index + 1}`}
+                              className="w-full bg-[#121a2d] border border-gray-700 rounded p-1 text-[11px] font-semibold text-white outline-none"
+                            />
+                          )}
+                        </td>
+                        <td className="border border-gray-700 p-1 text-gray-300 font-semibold">-</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+
+            {/* 下方對賽比分表格 (Match Order, Game 1-5, F.A.) */}
+            <div className="overflow-x-auto">
+              <table className="w-full text-center border-collapse border border-gray-700 text-xs">
+                <thead>
+                  <tr className="bg-[#121929] text-gray-300 text-[10px]">
+                    <th className="border border-gray-700 p-1 w-16 font-bold">Match Order</th>
+                    <th className="border border-gray-700 p-1 w-10 font-bold">Game 1</th>
+                    <th className="border border-gray-700 p-1 w-10 font-bold">Game 2</th>
+                    <th className="border border-gray-700 p-1 w-10 font-bold">Game 3</th>
+                    <th className="border border-gray-700 p-1 w-10 font-bold">Game 4</th>
+                    <th className="border border-gray-700 p-1 w-10 font-bold">Game 5</th>
+                    <th className="border border-gray-700 p-1 w-10 font-bold">F.A.</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {getMatchStructure().map((m) => {
                     return (
                       <tr key={m.match} className="hover:bg-gray-800/30">
-                        <td className="border border-gray-700 p-1 font-black">{m.match}</td>
-                        
-                        {isHomeTeam ? (
-                          <>
-                            <td className="border border-gray-700 p-1 text-left font-bold text-white whitespace-normal break-words max-w-[90px]">{m.our}</td>
-                            <td className="border border-gray-700 p-1 font-bold text-blue-400">{m.ourRole}</td>
-                          </>
-                        ) : (
-                          <>
-                            <td className="border border-gray-700 p-1 text-left whitespace-normal break-words max-w-[90px]">
-                              {index < 3 ? (
-                                <input
-                                  type="text"
-                                  value={opponentNames[index]}
-                                  onChange={(e) => {
-                                    const updatedOpp = [...opponentNames];
-                                    updatedOpp[index] = e.target.value;
-                                    setOpponentNames(updatedOpp);
-                                    syncDataToBackend({ opponentNames: updatedOpp });
-                                  }}
-                                  placeholder={`Opp ${index + 1}`}
-                                  className="w-full bg-[#121a2d] border border-gray-700 rounded p-0.5 text-[10px] font-semibold text-white outline-none"
-                                />
-                              ) : (
-                                <span className="font-semibold text-gray-300 whitespace-normal break-words">{m.oppName}</span>
-                              )}
-                            </td>
-                            <td className="border border-gray-700 p-1 font-bold text-amber-400">{m.oppRole}</td>
-                          </>
-                        )}
+                        <td className="border border-gray-700 p-1 font-bold text-blue-400 bg-[#0a0e19]">{m.label}</td>
                         
                         {[0, 1, 2, 3, 4].map((gIdx) => (
                           <td key={gIdx} className="border border-gray-700 p-0.5">
@@ -431,39 +461,27 @@ export default function GrahamSpicerBPage() {
                           </td>
                         ))}
 
-                        {isHomeTeam ? (
-                          <>
-                            <td className="border border-gray-700 p-1 font-bold text-amber-400">{m.oppRole}</td>
-                            <td className="border border-gray-700 p-1 text-left whitespace-normal break-words max-w-[90px]">
-                              {index < 3 ? (
-                                <input
-                                  type="text"
-                                  value={opponentNames[index]}
-                                  onChange={(e) => {
-                                    const updatedOpp = [...opponentNames];
-                                    updatedOpp[index] = e.target.value;
-                                    setOpponentNames(updatedOpp);
-                                    syncDataToBackend({ opponentNames: updatedOpp });
-                                  }}
-                                  placeholder={`Opp ${index + 1}`}
-                                  className="w-full bg-[#121a2d] border border-gray-700 rounded p-0.5 text-[10px] font-semibold text-white outline-none"
-                                />
-                              ) : (
-                                <span className="font-semibold text-gray-300 whitespace-normal break-words">{m.oppName}</span>
-                              )}
-                            </td>
-                          </>
-                        ) : (
-                          <>
-                            <td className="border border-gray-700 p-1 font-bold text-blue-400">{m.ourRole}</td>
-                            <td className="border border-gray-700 p-1 text-left font-bold text-white whitespace-normal break-words max-w-[90px]">{m.our}</td>
-                          </>
-                        )}
+                        <td className="border border-gray-700 p-1 text-gray-300 font-semibold"></td>
                       </tr>
                     );
                   })}
                 </tbody>
               </table>
+            </div>
+
+            {/* 底部 RESULT 同簽名位 */}
+            <div className="bg-[#0a0e19] border border-gray-700 rounded-lg p-2.5 space-y-2 text-[11px]">
+              <div className="flex justify-between items-center px-4 font-bold">
+                <span>RESULT</span>
+                <div className="flex gap-4">
+                  <span>H: [     ]</span>
+                  <span>A: [     ]</span>
+                </div>
+              </div>
+              <div className="pt-2 border-t border-gray-800 text-gray-400 flex justify-between">
+                <span>Home Captain Signed: ________________</span>
+                <span>Away Captain Signed: ________________</span>
+              </div>
             </div>
 
             <button
