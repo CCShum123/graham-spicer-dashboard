@@ -149,9 +149,6 @@ export default function GrahamSpicerBPage() {
     const [opp1, opp2, opp3] = opponentNames;
     const oppNamesList = [opp1 || 'Opp 1', opp2 || 'Opp 2', opp3 || 'Opp 3'];
 
-    const homePlayerNames = isHomeTeam ? ourNames : oppNamesList;
-    const awayPlayerNames = isHomeTeam ? oppNamesList : ourNames;
-
     return [
       { match: 1, label: 'A v X', homeCode: 'A', awayCode: 'X' },
       { match: 2, label: 'B v Y', homeCode: 'B', awayCode: 'Y' },
@@ -390,9 +387,9 @@ export default function GrahamSpicerBPage() {
               <div><span className="text-gray-400">Division:</span> <strong className="text-white">{data?.season || 'Division 2'}</strong></div>
             </div>
 
-            {/* 上方球員名單表格：強制鎖死 ABC/XYZ 欄位闊度，放大人名與 Opp 欄 */}
+            {/* 上方球員名單表格：精確控制寬度，確保 A/B/C、球員名及 WON 欄位正常顯示 */}
             <div className="border border-gray-700 rounded-lg overflow-hidden">
-              <table className="w-full text-center text-xs border-collapse table-fixed">
+              <table className="w-full text-center text-xs border-collapse">
                 <thead>
                   <tr className="bg-[#121929] text-gray-300">
                     <th className="border border-gray-700 p-1 text-left font-bold text-[11px]" colSpan={3}>
@@ -415,8 +412,8 @@ export default function GrahamSpicerBPage() {
                     
                     return (
                       <tr key={row.index} className="bg-[#0a0e19]">
-                        {/* Home Team 欄位：強制 ABC 寬度 28px */}
-                        <td style={{ width: '28px', minWidth: '28px', maxWidth: '28px' }} className="border border-gray-700 p-1 font-bold text-blue-400 text-center">{row.codeH}</td>
+                        {/* Home Team 欄位 */}
+                        <td style={{ width: '32px' }} className="border border-gray-700 p-1 font-bold text-blue-400 text-center">{row.codeH}</td>
                         <td className="border border-gray-700 p-1 text-left font-bold text-white">
                           {isHomeTeam ? (
                             <div className="truncate px-1">{ourNameVal}</div>
@@ -435,10 +432,10 @@ export default function GrahamSpicerBPage() {
                             />
                           )}
                         </td>
-                        <td className="w-8 border border-gray-700 p-1 text-emerald-400 font-bold bg-[#121929]">{homeWon}</td>
+                        <td style={{ width: '45px' }} className="border border-gray-700 p-1 text-emerald-400 font-bold bg-[#121929] text-center">{homeWon}</td>
 
-                        {/* Away Team 欄位：強制 XYZ 寬度 28px */}
-                        <td style={{ width: '28px', minWidth: '28px', maxWidth: '28px' }} className="border border-gray-700 p-1 font-bold text-amber-400 text-center">{row.codeX}</td>
+                        {/* Away Team 欄位 */}
+                        <td style={{ width: '32px' }} className="border border-gray-700 p-1 font-bold text-amber-400 text-center">{row.codeX}</td>
                         <td className="border border-gray-700 p-1 text-left font-bold text-white">
                           {!isHomeTeam ? (
                             <div className="truncate px-1">{ourNameVal}</div>
@@ -457,7 +454,7 @@ export default function GrahamSpicerBPage() {
                             />
                           )}
                         </td>
-                        <td className="w-8 border border-gray-700 p-1 text-emerald-400 font-bold bg-[#121929]">{awayWon}</td>
+                        <td style={{ width: '45px' }} className="border border-gray-700 p-1 text-emerald-400 font-bold bg-[#121929] text-center">{awayWon}</td>
                       </tr>
                     );
                   })}
@@ -469,7 +466,7 @@ export default function GrahamSpicerBPage() {
               <table className="w-full text-center border-collapse border border-gray-700 text-xs">
                 <thead>
                   <tr className="bg-[#121929] text-gray-300 text-[10px]">
-                    <th className="border border-gray-700 p-1 w-24 font-bold">Match Order</th>
+                    <th className="border border-gray-700 p-1 w-28 font-bold">Match Order</th>
                     <th className="border border-gray-700 p-1 w-10 font-bold">Game 1</th>
                     <th className="border border-gray-700 p-1 w-10 font-bold">Game 2</th>
                     <th className="border border-gray-700 p-1 w-10 font-bold">Game 3</th>
@@ -493,8 +490,8 @@ export default function GrahamSpicerBPage() {
                       <tr key={m.match} className="hover:bg-gray-800/30">
                         <td className="border border-gray-700 p-1 font-bold text-blue-400 bg-[#0a0e19]">
                           {m.match === 10 ? (
-                            /* 第 10 場雙打：修復為正確的橫向排列選單，支援完整顯示 A/B/C 及 X/Y/Z */
-                            <div className="flex items-center justify-center gap-1 text-[10px]">
+                            /* 第 10 場雙打：修復為正常闊度（w-8），確保字母與選單完全清楚顯示 */
+                            <div className="flex items-center justify-center gap-1 text-[11px]">
                               <select
                                 value={doublesCodesH.substring(0, 1)}
                                 onChange={(e) => {
@@ -503,7 +500,7 @@ export default function GrahamSpicerBPage() {
                                   setDoublesCodesH(val);
                                   syncDataToBackend({ doublesCodesH: val });
                                 }}
-                                className="w-6 h-6 bg-[#121a2d] border border-gray-700 rounded text-center text-white font-bold p-0 outline-none text-[10px]"
+                                className="w-8 h-7 bg-[#121a2d] border border-gray-700 rounded text-center text-white font-bold p-0 outline-none text-[11px]"
                               >
                                 <option value="">-</option>
                                 <option value="A">A</option>
@@ -518,7 +515,7 @@ export default function GrahamSpicerBPage() {
                                   setDoublesCodesH(val);
                                   syncDataToBackend({ doublesCodesH: val });
                                 }}
-                                className="w-6 h-6 bg-[#121a2d] border border-gray-700 rounded text-center text-white font-bold p-0 outline-none text-[10px]"
+                                className="w-8 h-7 bg-[#121a2d] border border-gray-700 rounded text-center text-white font-bold p-0 outline-none text-[11px]"
                               >
                                 <option value="">-</option>
                                 <option value="A">A</option>
@@ -536,7 +533,7 @@ export default function GrahamSpicerBPage() {
                                   setDoublesCodesA(val);
                                   syncDataToBackend({ doublesCodesA: val });
                                 }}
-                                className="w-6 h-6 bg-[#121a2d] border border-gray-700 rounded text-center text-white font-bold p-0 outline-none text-[10px]"
+                                className="w-8 h-7 bg-[#121a2d] border border-gray-700 rounded text-center text-white font-bold p-0 outline-none text-[11px]"
                               >
                                 <option value="">-</option>
                                 <option value="X">X</option>
@@ -551,7 +548,7 @@ export default function GrahamSpicerBPage() {
                                   setDoublesCodesA(val);
                                   syncDataToBackend({ doublesCodesA: val });
                                 }}
-                                className="w-6 h-6 bg-[#121a2d] border border-gray-700 rounded text-center text-white font-bold p-0 outline-none text-[10px]"
+                                className="w-8 h-7 bg-[#121a2d] border border-gray-700 rounded text-center text-white font-bold p-0 outline-none text-[11px]"
                               >
                                 <option value="">-</option>
                                 <option value="X">X</option>
