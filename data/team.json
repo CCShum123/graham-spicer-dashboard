@@ -404,7 +404,30 @@
     "",
     ""
   ],
-  "gameScores": {},
+  "gameScores": {
+    "1": [
+      {
+        "left": "1",
+        "right": ""
+      },
+      {
+        "left": "",
+        "right": ""
+      },
+      {
+        "left": "",
+        "right": ""
+      },
+      {
+        "left": "",
+        "right": ""
+      },
+      {
+        "left": "",
+        "right": ""
+      }
+    ]
+  },
   "opponentNames": [
     "",
     "",
