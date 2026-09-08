@@ -143,11 +143,11 @@ export default function GrahamSpicerBPage() {
     return formatted;
   };
 
-  // 根據你提供嘅 Excel 內容建立對應嘅精準 Google Maps 地址對照表
+  // 確保每一個場地查詢都強制帶上完整地址/Postcode，避免 Google Maps 彈出多個同名混淆結果
   const getGoogleMapsUrl = (venueName: string, homeTeam: string, awayTeam: string) => {
-    // 檢查係咪對陣 Kingsway A，自動對應返 Glyn School 嘅精準地址
-    if ((homeTeam && homeTeam.includes('Kingsway A')) || (awayTeam && awayTeam.includes('Kingsway A'))) {
-      return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent('Glyn School, KT17 1NB')}`;
+    // 檢查係咪對陣 Kingsway A 或 Glyn School
+    if ((homeTeam && homeTeam.includes('Kingsway A')) || (awayTeam && awayTeam.includes('Kingsway A')) || (venueName && venueName.includes('Glyn'))) {
+      return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent('Glyn School Sports Hall, KT17 1NB')}`;
     }
 
     const addressMap: { [key: string]: string } = {
@@ -156,10 +156,10 @@ export default function GrahamSpicerBPage() {
       'Crusader Hall': 'The Crusader Hall, SM6 0HL',
       'The Rosehill Pavilion': 'The Rosehill Pavilion, SM1 3HH',
       'Sir Philip Game Centre': '38 Morland Avenue, CR0 6EA',
-      'Glyn School Sports Hall': 'Glyn School, KT17 1NB',
     };
 
-    const targetAddress = addressMap[venueName] || venueName;
+    // 如果對照表搵到，直接用完整地址；如果搵唔到，自動將 venueName 同 postcode 拼埋一齊去搜尋確保精準
+    const targetAddress = addressMap[venueName] || `${venueName}, Sutton, UK`;
     return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(targetAddress)}`;
   };
 
@@ -265,7 +265,7 @@ export default function GrahamSpicerBPage() {
                 <h2 className="text-sm font-black text-white tracking-tight whitespace-nowrap overflow-x-auto">
                   {formatTeamNameShort(currentMatchTarget?.homeTeam)} vs {formatTeamNameShort(currentMatchTarget?.awayTeam)}
                 </h2>
-                {/* 帶有自動地圖導航地址嘅 Venue 連結 */}
+                {/* 帶有強制定向完整地址/Postcode 嘅 Venue 連結 */}
                 <p className="mt-1">
                   <a
                     href={getGoogleMapsUrl(currentMatchTarget?.venue, currentMatchTarget?.homeTeam, currentMatchTarget?.awayTeam)}
