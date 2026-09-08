@@ -143,24 +143,10 @@ export default function GrahamSpicerBPage() {
     return formatted;
   };
 
-  // 確保每一個場地查詢都強制帶上完整地址/Postcode，避免 Google Maps 彈出多個同名混淆結果
-  const getGoogleMapsUrl = (venueName: string, homeTeam: string, awayTeam: string) => {
-    // 檢查係咪對陣 Kingsway A 或 Glyn School
-    if ((homeTeam && homeTeam.includes('Kingsway A')) || (awayTeam && awayTeam.includes('Kingsway A')) || (venueName && venueName.includes('Glyn'))) {
-      return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent('Glyn School Sports Hall, KT17 1NB')}`;
-    }
-
-    const addressMap: { [key: string]: string } = {
-      'Eldon Phab': 'Eldon PHAB Hall, CR0 1DN',
-      'Graham Spicer Table Tennis Club': '15 Dukes Avenue, KT3 4HL',
-      'Crusader Hall': 'The Crusader Hall, SM6 0HL',
-      'The Rosehill Pavilion': 'The Rosehill Pavilion, SM1 3HH',
-      'Sir Philip Game Centre': '38 Morland Avenue, CR0 6EA',
-    };
-
-    // 如果對照表搵到，直接用完整地址；如果搵唔到，自動將 venueName 同 postcode 拼埋一齊去搜尋確保精準
-    const targetAddress = addressMap[venueName] || `${venueName}, Sutton, UK`;
-    return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(targetAddress)}`;
+  // 優先採用 Excel (或 JSON) 中提供的精準地址，若無則降級為預設搜尋
+  const getGoogleMapsUrl = (venue: string, venueAddress?: string) => {
+    const addressToUse = (venueAddress && venueAddress.trim() !== '') ? venueAddress : `${venue}, UK`;
+    return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(addressToUse)}`;
   };
 
   const getMatchStructure = () => {
@@ -265,10 +251,9 @@ export default function GrahamSpicerBPage() {
                 <h2 className="text-sm font-black text-white tracking-tight whitespace-nowrap overflow-x-auto">
                   {formatTeamNameShort(currentMatchTarget?.homeTeam)} vs {formatTeamNameShort(currentMatchTarget?.awayTeam)}
                 </h2>
-                {/* 帶有強制定向完整地址/Postcode 嘅 Venue 連結 */}
                 <p className="mt-1">
                   <a
-                    href={getGoogleMapsUrl(currentMatchTarget?.venue, currentMatchTarget?.homeTeam, currentMatchTarget?.awayTeam)}
+                    href={getGoogleMapsUrl(currentMatchTarget?.venue, currentMatchTarget?.venueAddress)}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-1 text-[11px] text-blue-400 hover:text-blue-300 font-medium underline transition"
@@ -376,7 +361,7 @@ export default function GrahamSpicerBPage() {
                   </h3>
                   <div className="mt-1" onClick={(e) => e.stopPropagation()}>
                     <a
-                      href={getGoogleMapsUrl(item.venue, item.homeTeam, item.awayTeam)}
+                      href={getGoogleMapsUrl(item.venue, item.venueAddress)}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-1 text-[11px] text-blue-400 hover:text-blue-300 font-medium underline"
