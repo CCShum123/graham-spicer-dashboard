@@ -143,12 +143,27 @@ export default function GrahamSpicerBPage() {
     return formatted;
   };
 
-  const getMatchStructure = () => {
-    const [p1, p2, p3] = selectedLineup;
-    const ourNames = [p1 || 'Player 1', p2 || 'Player 2', p3 || 'Player 3'];
-    const [opp1, opp2, opp3] = opponentNames;
-    const oppNamesList = [opp1 || 'Opp 1', opp2 || 'Opp 2', opp3 || 'Opp 3'];
+  // 根據你提供嘅 Excel 內容建立對應嘅精準 Google Maps 地址對照表
+  const getGoogleMapsUrl = (venueName: string, homeTeam: string, awayTeam: string) => {
+    // 檢查係咪對陣 Kingsway A，自動對應返 Glyn School 嘅精準地址
+    if ((homeTeam && homeTeam.includes('Kingsway A')) || (awayTeam && awayTeam.includes('Kingsway A'))) {
+      return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent('Glyn School, KT17 1NB')}`;
+    }
 
+    const addressMap: { [key: string]: string } = {
+      'Eldon Phab': 'Eldon PHAB Hall, CR0 1DN',
+      'Graham Spicer Table Tennis Club': '15 Dukes Avenue, KT3 4HL',
+      'Crusader Hall': 'The Crusader Hall, SM6 0HL',
+      'The Rosehill Pavilion': 'The Rosehill Pavilion, SM1 3HH',
+      'Sir Philip Game Centre': '38 Morland Avenue, CR0 6EA',
+      'Glyn School Sports Hall': 'Glyn School, KT17 1NB',
+    };
+
+    const targetAddress = addressMap[venueName] || venueName;
+    return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(targetAddress)}`;
+  };
+
+  const getMatchStructure = () => {
     return [
       { match: 1, label: 'A v X', homeCode: 'A', awayCode: 'X' },
       { match: 2, label: 'B v Y', homeCode: 'B', awayCode: 'Y' },
@@ -250,7 +265,18 @@ export default function GrahamSpicerBPage() {
                 <h2 className="text-sm font-black text-white tracking-tight whitespace-nowrap overflow-x-auto">
                   {formatTeamNameShort(currentMatchTarget?.homeTeam)} vs {formatTeamNameShort(currentMatchTarget?.awayTeam)}
                 </h2>
-                <p className="text-[11px] text-gray-400 mt-1">📍 {currentMatchTarget?.venue}</p>
+                {/* 帶有自動地圖導航地址嘅 Venue 連結 */}
+                <p className="mt-1">
+                  <a
+                    href={getGoogleMapsUrl(currentMatchTarget?.venue, currentMatchTarget?.homeTeam, currentMatchTarget?.awayTeam)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 text-[11px] text-blue-400 hover:text-blue-300 font-medium underline transition"
+                  >
+                    <span>📍</span>
+                    <span>{currentMatchTarget?.venue}</span>
+                  </a>
+                </p>
               </div>
 
               <div className="text-right shrink-0 space-y-0.5">
@@ -333,22 +359,34 @@ export default function GrahamSpicerBPage() {
             {data?.fixtures?.map((item: any) => (
               <div
                 key={item.id}
-                onClick={() => {
-                  setSelectedFixtureId(item.id);
-                  setActiveTab('next');
-                }}
-                className="bg-[#0f1626] border border-gray-800/80 hover:border-blue-500/60 cursor-pointer transition rounded-2xl p-3.5 flex justify-between items-center shadow gap-2"
+                className="bg-[#0f1626] border border-gray-800/80 hover:border-blue-500/60 transition rounded-2xl p-3.5 flex justify-between items-center shadow gap-2"
               >
-                <div className="min-w-0 flex-1">
+                <div 
+                  onClick={() => {
+                    setSelectedFixtureId(item.id);
+                    setActiveTab('next');
+                  }}
+                  className="min-w-0 flex-1 cursor-pointer"
+                >
                   <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded uppercase ${item.type === 'HOME' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400'}`}>
                     {item.type}
                   </span>
                   <h3 className="text-sm font-black text-gray-100 mt-1 whitespace-nowrap overflow-x-auto">
                     {formatTeamNameShort(item.homeTeam)} vs {formatTeamNameShort(item.awayTeam)}
                   </h3>
-                  <p className="text-[11px] text-gray-400 mt-1">📍 {item.venue}</p>
+                  <div className="mt-1" onClick={(e) => e.stopPropagation()}>
+                    <a
+                      href={getGoogleMapsUrl(item.venue, item.homeTeam, item.awayTeam)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 text-[11px] text-blue-400 hover:text-blue-300 font-medium underline"
+                    >
+                      <span>📍</span>
+                      <span>{item.venue}</span>
+                    </a>
+                  </div>
                 </div>
-                <div className="text-right shrink-0">
+                <div className="text-right shrink-0 cursor-pointer" onClick={() => { setSelectedFixtureId(item.id); setActiveTab('next'); }}>
                   <span className="text-[10px] text-blue-400 font-bold whitespace-nowrap">{item.day} {item.date} {item.month} {item.year}</span>
                 </div>
               </div>
@@ -387,7 +425,6 @@ export default function GrahamSpicerBPage() {
               <div><span className="text-gray-400">Division:</span> <strong className="text-white">{data?.season || 'Division 2'}</strong></div>
             </div>
 
-            {/* 上方球員名單表格：強制平分左右兩半 (w-1/2)，各自佔 50% 闊度 */}
             <div className="border border-gray-700 rounded-lg overflow-hidden">
               <table className="w-full text-center text-xs border-collapse table-fixed">
                 <thead>
@@ -412,7 +449,6 @@ export default function GrahamSpicerBPage() {
                     
                     return (
                       <tr key={row.index} className="bg-[#0a0e19]">
-                        {/* Home Team 半邊 (w-1/2)：A碼 + 球員名/對手 + 勝場 */}
                         <td className="border border-gray-700 p-1 w-1/2">
                           <div className="flex items-center gap-1">
                             <span className="w-7 shrink-0 font-bold text-blue-400 text-center">{row.codeH}</span>
@@ -438,7 +474,6 @@ export default function GrahamSpicerBPage() {
                           </div>
                         </td>
 
-                        {/* Away Team 半邊 (w-1/2)：X碼 + 球員名/對手 + 勝場 */}
                         <td className="border border-gray-700 p-1 w-1/2">
                           <div className="flex items-center gap-1">
                             <span className="w-7 shrink-0 font-bold text-amber-400 text-center">{row.codeX}</span>
