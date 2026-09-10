@@ -16,10 +16,6 @@ export default function Home() {
   const [selectedLineup, setSelectedLineup] = useState<string[]>(['', '', '']);
   const [showMatchCard, setShowMatchCard] = useState(false);
   const [opponentNames, setOpponentNames] = useState<string[]>(['', '', '']);
-  
-  // State for Venue Map Modal
-  const [showMapModal, setShowMapModal] = useState(false);
-  const [activeVenue, setActiveVenue] = useState<{ name: string; address: string } | null>(null);
 
   const [gameScores, setGameScores] = useState<{ [key: number]: { left: string; right: string }[] }>({
     1: Array(5).fill({ left: '', right: '' }),
@@ -133,12 +129,10 @@ export default function Home() {
     return formatted;
   };
 
-  const openMapPopup = (venueName: string, venueAddress: string) => {
-    setActiveVenue({
-      name: venueName || 'Venue',
-      address: venueAddress || venueName || 'London'
-    });
-    setShowMapModal(true);
+  const openGoogleMaps = (venueName: string, venueAddress: string) => {
+    const addressToUse = venueAddress || venueName || 'London';
+    const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(addressToUse)}`;
+    window.open(mapsUrl, '_blank');
   };
 
   const getMatchStructure = () => {
@@ -207,7 +201,7 @@ export default function Home() {
                   {formatTeamNameShort(currentMatchTarget?.homeTeam)} vs {formatTeamNameShort(currentMatchTarget?.awayTeam)}
                 </h2>
                 <p 
-                  onClick={() => openMapPopup(currentMatchTarget?.venue, currentMatchTarget?.venueAddress)}
+                  onClick={() => openGoogleMaps(currentMatchTarget?.venue, currentMatchTarget?.venueAddress)}
                   className="text-[11px] text-blue-400 hover:text-blue-300 underline cursor-pointer mt-1 flex items-center gap-1 transition"
                 >
                   <span>📍 {currentMatchTarget?.venue}</span>
@@ -312,7 +306,7 @@ export default function Home() {
                   <p 
                     onClick={(e) => {
                       e.stopPropagation();
-                      openMapPopup(item.venue, item.venueAddress);
+                      openGoogleMaps(item.venue, item.venueAddress);
                     }}
                     className="text-[11px] text-blue-400 hover:text-blue-300 underline cursor-pointer mt-1 inline-block"
                   >
@@ -349,43 +343,6 @@ export default function Home() {
         )}
 
       </div>
-
-      {/* Google Maps Embed Popup Modal */}
-      {showMapModal && activeVenue && (
-        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-center justify-center p-3">
-          <div className="bg-[#0f1626] border border-gray-700 w-full max-w-lg rounded-2xl p-3 space-y-3 shadow-2xl">
-            
-            <div className="flex justify-between items-center border-b border-gray-800 pb-2">
-              <div>
-                <h3 className="text-xs font-black tracking-wider text-white uppercase">{activeVenue.name}</h3>
-                <p className="text-[10px] text-gray-400">{activeVenue.address}</p>
-              </div>
-              <button onClick={() => setShowMapModal(false)} className="bg-gray-800 hover:bg-gray-700 text-gray-300 w-7 h-7 rounded-full font-bold text-xs flex items-center justify-center">✕</button>
-            </div>
-
-            <div className="w-full h-80 rounded-xl overflow-hidden border border-gray-700">
-              <iframe
-                title="Venue Location Map"
-                width="100%"
-                height="100%"
-                style={{ border: 0 }}
-                loading="lazy"
-                allowFullScreen
-                src={`https://maps.google.com/maps?q=${encodeURIComponent(activeVenue.address)}&t=&z=15&ie=UTF8&iwloc=&output=embed`}
-              ></iframe>
-            </div>
-
-            <a
-              href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(activeVenue.address)}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block w-full text-center bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 rounded-xl text-xs shadow"
-            >
-              Open in Google Maps App ↗
-            </a>
-          </div>
-        </div>
-      )}
 
       {showMatchCard && (
         <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-center justify-center p-2">
