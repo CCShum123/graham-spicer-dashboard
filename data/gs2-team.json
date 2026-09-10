@@ -298,5 +298,28 @@
     "",
     ""
   ],
-  "gameScores": {}
+  "gameScores": {
+    "1": [
+      {
+        "left": "3",
+        "right": ""
+      },
+      {
+        "left": "",
+        "right": ""
+      },
+      {
+        "left": "",
+        "right": ""
+      },
+      {
+        "left": "",
+        "right": ""
+      },
+      {
+        "left": "",
+        "right": ""
+      }
+    ]
+  }
 }
