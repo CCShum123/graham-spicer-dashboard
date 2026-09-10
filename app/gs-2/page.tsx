@@ -15,6 +15,7 @@ export default function Home() {
   const [selectedPlayer, setSelectedPlayer] = useState('');
   const [selectedLineup, setSelectedLineup] = useState<string[]>(['', '', '']);
   const [showMatchCard, setShowMatchCard] = useState(false);
+  const [showMapModal, setShowMapModal] = useState(false);
   const [opponentNames, setOpponentNames] = useState<string[]>(['', '', '']);
 
   const [gameScores, setGameScores] = useState<{ [key: number]: { left: string; right: string }[] }>({
@@ -227,7 +228,17 @@ export default function Home() {
                 <h2 className="text-sm font-black text-white tracking-tight whitespace-nowrap overflow-x-auto">
                   {formatTeamNameShort(currentMatchTarget?.homeTeam)} vs {formatTeamNameShort(currentMatchTarget?.awayTeam)}
                 </h2>
-                <p className="text-[11px] text-gray-400 mt-1">📍 {currentMatchTarget?.venue}</p>
+                
+                {/* Venue with Google Maps Link Trigger */}
+                <div className="flex items-center gap-2 mt-1">
+                  <p className="text-[11px] text-gray-400">📍 {currentMatchTarget?.venue}</p>
+                  <button
+                    onClick={() => setShowMapModal(true)}
+                    className="text-[10px] bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 border border-blue-500/30 px-2 py-0.5 rounded font-bold transition"
+                  >
+                    🗺️ Map
+                  </button>
+                </div>
               </div>
 
               <div className="text-right shrink-0 space-y-0.5">
@@ -350,6 +361,47 @@ export default function Home() {
 
       </div>
 
+      {/* Google Maps Modal */}
+      {showMapModal && (
+        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-center justify-center p-3">
+          <div className="bg-[#0f1626] border border-gray-700 w-full max-w-lg rounded-2xl p-3 space-y-3 shadow-2xl">
+            <div className="flex justify-between items-center border-b border-gray-800 pb-2">
+              <h3 className="text-xs font-black tracking-wider text-white uppercase">Venue Location: {currentMatchTarget?.venue}</h3>
+              <button onClick={() => setShowMapModal(false)} className="bg-gray-800 hover:bg-gray-700 text-gray-300 w-7 h-7 rounded-full font-bold text-xs flex items-center justify-center">✕</button>
+            </div>
+            
+            <div className="w-full h-72 rounded-xl overflow-hidden border border-gray-700 bg-[#0a0e19]">
+              <iframe
+                title="Google Map Venue"
+                width="100%"
+                height="100%"
+                style={{ border: 0 }}
+                loading="lazy"
+                src={`https://www.google.com/maps/embed/v1/place?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || ''}&q=${encodeURIComponent(currentMatchTarget?.venue || 'Graham Spicer Institute, 15 Dukes Avenue, New Malden, KT3 4HL')}`}
+              ></iframe>
+            </div>
+
+            <div className="flex justify-between items-center gap-2">
+              <a
+                href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(currentMatchTarget?.venue || 'Graham Spicer Institute, 15 Dukes Avenue, New Malden, KT3 4HL')}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex-1 bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 rounded-xl text-center text-xs shadow"
+              >
+                Open in Google Maps App ↗
+              </a>
+              <button
+                onClick={() => setShowMapModal(false)}
+                className="bg-gray-800 hover:bg-gray-700 text-gray-300 font-bold px-4 py-2 rounded-xl text-xs"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Match Card Modal */}
       {showMatchCard && (
         <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-center justify-center p-2">
           <div className="bg-[#0f1626] border border-gray-700 w-full max-w-xl rounded-2xl p-3 space-y-3 max-h-[95vh] overflow-y-auto shadow-2xl">
