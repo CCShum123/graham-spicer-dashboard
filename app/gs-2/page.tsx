@@ -33,7 +33,7 @@ export default function Home() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const res = await fetch('/gs-2/api/team-data');
+        const res = await fetch('/gs-b/api/team-data');
         if (!res.ok) throw new Error(`API status: ${res.status}`);
         const json = await res.json();
         if (json.success && json.data) {
@@ -71,7 +71,7 @@ export default function Home() {
     opponentNames?: any;
   }) => {
     try {
-      await fetch('/gs-2/api/team-data', {
+      await fetch('/gs-b/api/team-data', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
