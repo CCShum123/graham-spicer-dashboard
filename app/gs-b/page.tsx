@@ -222,34 +222,12 @@ export default function GrahamSpicerBPage() {
   const { totalH, totalA } = getTotalResults();
 
   return (
-    <main className="min-h-screen bg-[#070a12] text-white pb-24 font-sans text-xs">
-      <header className="sticky top-0 z-20 bg-[#070a12]/90 px-4 py-3 border-b border-gray-800/40 flex justify-between items-center">
+    <main className="min-h-screen bg-[#070a12] text-white pb-28 font-sans text-xs">
+      <header className="sticky top-0 z-20 bg-[#070a12]/90 px-4 py-3 border-b border-gray-800/40 flex justify-between items-center backdrop-blur-md">
         <h1 className="text-base font-black tracking-tight text-white">
-          {activeTab === 'next' && <>GRAHAM SPICER <span className="text-blue-500">B</span></>}
-          {activeTab === 'fixtures' && 'FIXTURES'}
-          {activeTab === 'player' && 'PLAYER'}
+          GRAHAM SPICER <span className="text-blue-500">B</span>
         </h1>
         <div className="flex items-center gap-2">
-          <nav className="flex gap-1 bg-[#121929] p-1 rounded-md border border-gray-700/60">
-            <button
-              onClick={() => setActiveTab('next')}
-              className={`px-2.5 py-1 rounded font-bold text-[11px] transition ${activeTab === 'next' ? 'bg-blue-600 text-white' : 'text-gray-300 hover:text-white'}`}
-            >
-              Next
-            </button>
-            <button
-              onClick={() => setActiveTab('fixtures')}
-              className={`px-2.5 py-1 rounded font-bold text-[11px] transition ${activeTab === 'fixtures' ? 'bg-blue-600 text-white' : 'text-gray-300 hover:text-white'}`}
-            >
-              Fixtures
-            </button>
-            <button
-              onClick={() => setActiveTab('player')}
-              className={`px-2.5 py-1 rounded font-bold text-[11px] transition ${activeTab === 'player' ? 'bg-blue-600 text-white' : 'text-gray-300 hover:text-white'}`}
-            >
-              Players
-            </button>
-          </nav>
           <span className="bg-[#121929] text-xs text-gray-300 px-3 py-1 rounded-md border border-gray-700/60 font-semibold">{data?.season}</span>
         </div>
       </header>
@@ -261,7 +239,7 @@ export default function GrahamSpicerBPage() {
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-1.5 mb-1">
                   <span className="text-[10px] font-bold text-blue-400 uppercase tracking-wider">
-                    {selectedFixtureId === data?.nextFixture?.id ? 'NEXT FIXTURE' : 'SELECTED FIXTURE'}
+                    {selectedFixtureId === data?.nextFixture?.id ? 'COMING FIXTURE' : 'SELECTED FIXTURE'}
                   </span>
                   <span className={`text-[9px] font-black px-1.5 py-0.5 rounded ${isHomeTeam ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-amber-500/20 text-amber-400 border border-amber-500/30'}`}>
                     {isHomeTeam ? 'HOME' : 'AWAY'}
@@ -411,6 +389,34 @@ export default function GrahamSpicerBPage() {
           </div>
         )}
       </div>
+
+      {/* Bottom Navigation Bar */}
+      <nav className="fixed bottom-0 left-0 right-0 z-30 bg-[#070a12]/95 backdrop-blur-md border-t border-gray-800/60 px-6 py-3 flex justify-around items-center max-w-md mx-auto">
+        <button
+          onClick={() => setActiveTab('fixtures')}
+          className={`text-[11px] font-extrabold uppercase tracking-wider transition ${activeTab === 'fixtures' ? 'text-blue-500' : 'text-gray-400 hover:text-gray-200'}`}
+        >
+          FIXTURES
+        </button>
+
+        <button
+          onClick={() => setActiveTab('next')}
+          className={`w-12 h-12 rounded-full flex items-center justify-center shadow-lg border transition ${
+            activeTab === 'next'
+              ? 'bg-blue-600 border-blue-400 shadow-blue-500/30'
+              : 'bg-[#121929] border-gray-700/80 hover:bg-[#1c273c]'
+          }`}
+        >
+          <span className="text-xl">🏓</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('player')}
+          className={`text-[11px] font-extrabold uppercase tracking-wider transition ${activeTab === 'player' ? 'text-blue-500' : 'text-gray-400 hover:text-gray-200'}`}
+        >
+          PLAYER
+        </button>
+      </nav>
 
       {showMatchCard && (
         <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-center justify-center p-2">
