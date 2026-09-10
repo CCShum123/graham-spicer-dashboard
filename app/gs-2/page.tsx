@@ -163,7 +163,6 @@ export default function Home() {
     }
   };
 
-  // Calculate total match scores dynamically based on individual game wins per match
   let totalH = 0;
   let totalA = 0;
 
@@ -229,14 +228,14 @@ export default function Home() {
                   {formatTeamNameShort(currentMatchTarget?.homeTeam)} vs {formatTeamNameShort(currentMatchTarget?.awayTeam)}
                 </h2>
                 
-                {/* Venue with Google Maps Link Trigger */}
-                <div className="flex items-center gap-2 mt-1">
-                  <p className="text-[11px] text-gray-400">📍 {currentMatchTarget?.venue}</p>
+                {/* Clickable Venue Text matching GS-B implementation */}
+                <div className="mt-1">
                   <button
                     onClick={() => setShowMapModal(true)}
-                    className="text-[10px] bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 border border-blue-500/30 px-2 py-0.5 rounded font-bold transition"
+                    className="text-[11px] text-gray-400 hover:text-blue-400 text-left transition flex items-center gap-1 group"
                   >
-                    🗺️ Map
+                    <span>📍</span>
+                    <span className="underline decoration-gray-600 group-hover:decoration-blue-400">{currentMatchTarget?.venue}</span>
                   </button>
                 </div>
               </div>
