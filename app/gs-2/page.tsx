@@ -210,19 +210,23 @@ export default function Home() {
 
               <div className="text-right shrink-0 space-y-1">
                 <p className="text-[11px] text-gray-200 font-semibold whitespace-nowrap">🕒 {currentMatchTarget?.day} {currentMatchTarget?.date} {currentMatchTarget?.month} {currentMatchTarget?.year} {currentMatchTarget?.time}</p>
-                {data?.nextFixture && (
-                 <button
-                  onClick={() => {
-                   const nextId = data.nextFixture.id || data.fixtures?.find((f: any) => f.id === data.nextFixture)?.id || data.fixtures?.[0]?.id;
-                  if (nextId) {
-                   setSelectedFixtureId(nextId);
-                  }
-                }}
-                className="text-[10px] font-bold text-blue-400 hover:text-blue-300 bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/30 px-2 py-0.5 rounded-md transition cursor-pointer"
-              >
-                Next Match -&gt;
-              </button>
-            )}
+                {data?.fixtures && (() => {
+                  // 根據日期順序搵出 fixtures 入面邊場係「下一場」
+                  const sortedFixtures = [...data.fixtures].sort((a: any, b: any) => new Date(a.dateObj || a.date).getTime() - new Date(b.dateObj || b.date).getTime());
+                  const currentIndex = sortedFixtures.findIndex((f: any) => f.id === selectedFixtureId);
+                  const nextFixtureItem = currentIndex !== -1 && currentIndex < sortedFixtures.length - 1 ? sortedFixtures[currentIndex + 1] : null;
+
+                  if (!nextFixtureItem) return null;
+
+                  return (
+                    <button
+                      onClick={() => setSelectedFixtureId(nextFixtureItem.id)}
+                      className="text-[10px] font-bold text-blue-400 hover:text-blue-300 bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/30 px-2 py-0.5 rounded-md transition cursor-pointer"
+                    >
+                      Next Match -&gt;
+                    </button>
+                  );
+                })()}
               </div>
             </div>
 
