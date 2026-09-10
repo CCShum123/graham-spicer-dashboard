@@ -106,6 +106,18 @@ export default function GrahamSpicerBPage() {
   const currentMatchTarget = data?.fixtures?.find((f: any) => f.id === selectedFixtureId) || data?.nextFixture;
   const isHomeTeam = currentMatchTarget?.type === 'HOME';
 
+  // 轉去下一個 match 嘅 function
+  const handleNextMatch = () => {
+    if (!data?.fixtures || data.fixtures.length === 0) return;
+    const currentIndex = data.fixtures.findIndex((f: any) => f.id === selectedFixtureId);
+    if (currentIndex !== -1 && currentIndex < data.fixtures.length - 1) {
+      setSelectedFixtureId(data.fixtures[currentIndex + 1].id);
+    } else {
+      // 如果已經係最後一個，或者搵唔到，可以選擇循環返去第一個或者唔郁
+      setSelectedFixtureId(data.fixtures[0].id);
+    }
+  };
+
   const allPlayerNames = data?.players?.map((p: any) => p.subName) || [];
   const currentAvailability = availabilityMap[selectedFixtureId] || { going: [], cantGo: [], tbc: [...allPlayerNames] };
 
@@ -143,7 +155,6 @@ export default function GrahamSpicerBPage() {
     return formatted;
   };
 
-  // 優先採用 Excel (或 JSON) 中提供的精準地址，若無則降級為預設搜尋
   const getGoogleMapsUrl = (venue: string, venueAddress?: string) => {
     const addressToUse = (venueAddress && venueAddress.trim() !== '') ? venueAddress : `${venue}, UK`;
     return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(addressToUse)}`;
@@ -240,14 +251,26 @@ export default function GrahamSpicerBPage() {
             
             <div className="flex justify-between items-start border-b border-gray-800/80 pb-3 gap-1.5">
               <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-1.5 mb-1">
-                  <span className="text-[10px] font-bold text-blue-400 uppercase tracking-wider">
-                    {selectedFixtureId === data?.nextFixture?.id ? 'NEXT FIXTURE' : 'SELECTED FIXTURE'}
-                  </span>
-                  <span className={`text-[9px] font-black px-1.5 py-0.5 rounded ${isHomeTeam ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-amber-500/20 text-amber-400 border border-amber-500/30'}`}>
-                    {isHomeTeam ? 'HOME' : 'AWAY'}
-                  </span>
+                <div className="flex items-center justify-between mb-1">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[10px] font-bold text-blue-400 uppercase tracking-wider">
+                      COMING FIXTURE
+                    </span>
+                    <span className={`text-[9px] font-black px-1.5 py-0.5 rounded ${isHomeTeam ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-amber-500/20 text-amber-400 border border-amber-500/30'}`}>
+                      {isHomeTeam ? 'HOME' : 'AWAY'}
+                    </span>
+                  </div>
+                  
+                  {/* 新增的 next match -> button */}
+                  <button
+                    onClick={handleNextMatch}
+                    className="bg-blue-600/20 hover:bg-blue-600/40 text-blue-400 border border-blue-500/30 text-[10px] font-bold px-2 py-0.5 rounded transition flex items-center gap-1"
+                  >
+                    <span>next match</span>
+                    <span>-&gt;</span>
+                  </button>
                 </div>
+
                 <h2 className="text-sm font-black text-white tracking-tight whitespace-nowrap overflow-x-auto">
                   {formatTeamNameShort(currentMatchTarget?.homeTeam)} vs {formatTeamNameShort(currentMatchTarget?.awayTeam)}
                 </h2>
@@ -606,9 +629,9 @@ export default function GrahamSpicerBPage() {
                                     return updatedScores;
                                   });
                                 }}
-                                className="w-3.5 bg-transparent text-center text-[11px] font-bold text-white outline-none"
+                                className="w-4 bg-transparent text-center text-[11px] font-bold text-white outline-none"
                               />
-                              <span className="text-gray-400 font-bold text-[10px]">:</span>
+                              <span className="text-gray-500 text-[10px]">-</span>
                               <input
                                 type="text"
                                 inputMode="numeric"
@@ -624,15 +647,16 @@ export default function GrahamSpicerBPage() {
                                     return updatedScores;
                                   });
                                 }}
-                                className="w-3.5 bg-transparent text-center text-[11px] font-bold text-white outline-none"
+                                className="w-4 bg-transparent text-center text-[11px] font-bold text-white outline-none"
                               />
                             </div>
                           </td>
                         ))}
 
-                        <td className="border border-gray-700 p-1 text-gray-500 font-semibold">-</td>
-
-                        <td className="border border-gray-700 p-1 font-black text-emerald-400 bg-emerald-950/20">
+                        <td className="border border-gray-700 p-1 font-bold text-gray-300">
+                          {matchWinnerResult}
+                        </td>
+                        <td className="border border-gray-700 p-1 font-bold text-emerald-400 bg-[#0a0e19]">
                           {displayWon}
                         </td>
                       </tr>
@@ -642,34 +666,16 @@ export default function GrahamSpicerBPage() {
               </table>
             </div>
 
-            <div className="bg-[#0a0e19] border border-gray-700 rounded-lg p-2.5 flex justify-between items-center px-4 font-bold text-xs">
-              <span className="tracking-wider text-blue-400">RESULT (Total Matches Won)</span>
-              <div className="flex gap-4">
-                <span className="bg-[#121929] px-2.5 py-1 rounded border border-gray-700">Home: <strong className="text-emerald-400 text-sm">{totalH}</strong></span>
-                <span className="bg-[#121929] px-2.5 py-1 rounded border border-gray-700">Away: <strong className="text-emerald-400 text-sm">{totalA}</strong></span>
-              </div>
+            <div className="flex justify-between items-center bg-[#0a0e19] p-2 rounded-lg border border-gray-700 font-bold">
+              <span className="text-gray-400">Total Matches Won:</span>
+              <span className="text-sm text-white">
+                {isHomeTeam ? 'GS B' : formatTeamNameShort(currentMatchTarget?.homeTeam)} <span className="text-emerald-400">{totalH}</span> - <span className="text-amber-400">{totalA}</span> {!isHomeTeam ? 'GS B' : formatTeamNameShort(currentMatchTarget?.awayTeam)}
+              </span>
             </div>
 
-            <button
-              onClick={() => {
-                syncDataToBackend({});
-                setShowMatchCard(false);
-              }}
-              className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2 rounded-xl text-xs shadow"
-            >
-              Save & Close (Sync to Cloud)
-            </button>
           </div>
         </div>
       )}
-
-      <nav className="fixed bottom-0 left-0 right-0 z-30 bg-[#070a12]/95 border-t border-gray-800/80 backdrop-blur-xl">
-        <div className="max-w-md mx-auto flex justify-around items-center h-14 px-4">
-          <button onClick={() => setActiveTab('fixtures')} className={`text-xs font-bold ${activeTab === 'fixtures' ? 'text-blue-500' : 'text-gray-500'}`}>FIXTURES</button>
-          <button onClick={() => { setSelectedFixtureId(data?.nextFixture?.id); setActiveTab('next'); }} className={`w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white text-base font-black ${activeTab === 'next' ? 'ring-2 ring-blue-400' : ''}`}>🏓</button>
-          <button onClick={() => setActiveTab('player')} className={`text-xs font-bold ${activeTab === 'player' ? 'text-blue-500' : 'text-gray-500'}`}>PLAYER</button>
-        </div>
-      </nav>
 
     </main>
   );
