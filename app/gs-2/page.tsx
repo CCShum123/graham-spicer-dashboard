@@ -162,6 +162,39 @@ export default function Home() {
     }
   };
 
+  // Calculate total match scores dynamically based on individual game wins per match
+  let totalH = 0;
+  let totalA = 0;
+
+  const calculatedMatchResults = getMatchStructure().map((m) => {
+    const games = gameScores[m.match] || [];
+    let leftWon = 0;
+    let rightWon = 0;
+
+    games.forEach(g => {
+      const lVal = parseInt(g.left, 10);
+      const rVal = parseInt(g.right, 10);
+      if (!isNaN(lVal) && !isNaN(rVal)) {
+        if (lVal > rVal) leftWon++;
+        else if (rVal > lVal) rightWon++;
+      }
+    });
+
+    let displayWon = '-';
+    if (leftWon > 0 || rightWon > 0) {
+      displayWon = `${leftWon} - ${rightWon}`;
+      if (leftWon > rightWon) {
+        if (isHomeTeam) totalH++;
+        else totalA++;
+      } else if (rightWon > leftWon) {
+        if (isHomeTeam) totalA++;
+        else totalH++;
+      }
+    }
+
+    return { ...m, displayWon, leftWon, rightWon };
+  });
+
   if (loading) return <div className="flex min-h-screen items-center justify-center bg-[#070a12] text-white text-xs">Loading...</div>;
 
   return (
@@ -359,7 +392,8 @@ export default function Home() {
                   </tr>
                 </thead>
                 <tbody>
-                  {getMatchStructure().map((m, index) => {
+                  {calculatedMatchResults.map((m, index) => {
+                    const { displayWon } = m;
                     return (
                       <tr key={m.match} className="hover:bg-gray-800/30">
                         <td className="border border-gray-700 p-1 font-black">{m.match}</td>
@@ -463,11 +497,28 @@ export default function Home() {
                             <td className="border border-gray-700 p-1 text-left font-bold text-white whitespace-normal break-words max-w-[90px]">{m.our}</td>
                           </>
                         )}
+
+                        <td className="border border-gray-700 p-1 bg-[#121929] text-center font-bold text-emerald-400 text-xs">
+                          {displayWon}
+                        </td>
                       </tr>
                     );
                   })}
                 </tbody>
               </table>
+            </div>
+
+            <div className="bg-[#121929] border border-gray-700 p-2.5 rounded-xl flex justify-between items-center text-xs font-black">
+              <span className="text-gray-300 uppercase tracking-wider">Total Match Score:</span>
+              <div className="flex items-center gap-2">
+                <span className="bg-[#0a0e19] border border-gray-700 px-3 py-1 rounded-lg text-emerald-400">
+                  Home: {totalH}
+                </span>
+                <span className="text-gray-500">-</span>
+                <span className="bg-[#0a0e19] border border-gray-700 px-3 py-1 rounded-lg text-amber-400">
+                  Away: {totalA}
+                </span>
+              </div>
             </div>
 
             <button
