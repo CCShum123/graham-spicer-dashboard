@@ -216,6 +216,16 @@ export default function GrahamSpicerBPage() {
     return wins > 0 ? wins : '-';
   };
 
+  const handleNextMatchClick = () => {
+    if (!data?.fixtures || data.fixtures.length === 0) return;
+    const currentIndex = data.fixtures.findIndex((f: any) => f.id === selectedFixtureId);
+    if (currentIndex !== -1 && currentIndex < data.fixtures.length - 1) {
+      setSelectedFixtureId(data.fixtures[currentIndex + 1].id);
+    } else if (data.fixtures.length > 0) {
+      setSelectedFixtureId(data.fixtures[0].id);
+    }
+  };
+
   if (loading) return <div className="flex min-h-screen items-center justify-center bg-[#070a12] text-white text-xs">Loading...</div>;
   if (error) return <div className="flex min-h-screen items-center justify-center bg-[#070a12] text-rose-400 text-xs">Error: {error}</div>;
 
@@ -248,7 +258,7 @@ export default function GrahamSpicerBPage() {
                 <h2 className="text-sm font-black text-white tracking-tight whitespace-nowrap overflow-x-auto">
                   {formatTeamNameShort(currentMatchTarget?.homeTeam)} vs {formatTeamNameShort(currentMatchTarget?.awayTeam)}
                 </h2>
-                <p className="mt-1">
+                <p className="mt-1 flex items-center justify-between">
                   <a
                     href={getGoogleMapsUrl(currentMatchTarget?.venue, currentMatchTarget?.venueAddress)}
                     target="_blank"
@@ -258,6 +268,12 @@ export default function GrahamSpicerBPage() {
                     <span>📍</span>
                     <span>{currentMatchTarget?.venue}</span>
                   </a>
+                  <button
+                    onClick={handleNextMatchClick}
+                    className="bg-[#1c273c] hover:bg-blue-600/30 text-blue-400 border border-blue-500/40 px-2 py-0.5 rounded-lg text-[10px] font-bold transition"
+                  >
+                    Next match-&gt;
+                  </button>
                 </p>
               </div>
 
