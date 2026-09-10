@@ -113,7 +113,6 @@ export default function GrahamSpicerBPage() {
     if (currentIndex !== -1 && currentIndex < data.fixtures.length - 1) {
       setSelectedFixtureId(data.fixtures[currentIndex + 1].id);
     } else {
-      // 如果已經係最後一個，或者搵唔到，可以選擇循環返去第一個或者唔郁
       setSelectedFixtureId(data.fixtures[0].id);
     }
   };
@@ -261,7 +260,6 @@ export default function GrahamSpicerBPage() {
                     </span>
                   </div>
                   
-                  {/* 新增的 next match -> button */}
                   <button
                     onClick={handleNextMatch}
                     className="bg-blue-600/20 hover:bg-blue-600/40 text-blue-400 border border-blue-500/30 text-[10px] font-bold px-2 py-0.5 rounded transition flex items-center gap-1"
@@ -418,6 +416,33 @@ export default function GrahamSpicerBPage() {
         )}
 
       </div>
+
+      {/* 底部導航欄 (Fix 咗唔見咗嘅 3 個掣) */}
+      <nav className="fixed bottom-0 left-0 right-0 z-30 bg-[#070a12]/95 border-t border-gray-800/80 backdrop-blur-md px-4 py-2 flex justify-around">
+        <button
+          onClick={() => setActiveTab('next')}
+          className={`flex flex-col items-center gap-1 py-1 px-4 rounded-xl transition ${activeTab === 'next' ? 'text-blue-400 font-black' : 'text-gray-400 hover:text-gray-200 font-medium'}`}
+        >
+          <span className="text-base">📅</span>
+          <span className="text-[10px] tracking-wider">NEXT</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('fixtures')}
+          className={`flex flex-col items-center gap-1 py-1 px-4 rounded-xl transition ${activeTab === 'fixtures' ? 'text-blue-400 font-black' : 'text-gray-400 hover:text-gray-200 font-medium'}`}
+        >
+          <span className="text-base">📋</span>
+          <span className="text-[10px] tracking-wider">FIXTURES</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('player')}
+          className={`flex flex-col items-center gap-1 py-1 px-4 rounded-xl transition ${activeTab === 'player' ? 'text-blue-400 font-black' : 'text-gray-400 hover:text-gray-200 font-medium'}`}
+        >
+          <span className="text-base">👥</span>
+          <span className="text-[10px] tracking-wider">PLAYER</span>
+        </button>
+      </nav>
 
       {showMatchCard && (
         <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-center justify-center p-2">
