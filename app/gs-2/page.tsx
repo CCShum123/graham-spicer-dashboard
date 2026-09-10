@@ -191,7 +191,7 @@ export default function Home() {
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-1.5 mb-1">
                   <span className="text-[10px] font-bold text-blue-400 uppercase tracking-wider">
-                    {selectedFixtureId === data?.nextFixture?.id ? 'NEXT FIXTURE' : 'SELECTED FIXTURE'}
+                    {selectedFixtureId === data?.nextFixture?.id ? 'COMING FIXTURE' : 'SELECTED FIXTURE'}
                   </span>
                   <span className={`text-[9px] font-black px-1.5 py-0.5 rounded ${isHomeTeam ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-amber-500/20 text-amber-400 border border-amber-500/30'}`}>
                     {isHomeTeam ? 'HOME' : 'AWAY'}
@@ -208,8 +208,16 @@ export default function Home() {
                 </p>
               </div>
 
-              <div className="text-right shrink-0 space-y-0.5">
+              <div className="text-right shrink-0 space-y-1">
                 <p className="text-[11px] text-gray-200 font-semibold whitespace-nowrap">🕒 {currentMatchTarget?.day} {currentMatchTarget?.date} {currentMatchTarget?.month} {currentMatchTarget?.year} {currentMatchTarget?.time}</p>
+                {data?.nextFixture?.id && (
+                  <button
+                    onClick={() => setSelectedFixtureId(data.nextFixture.id)}
+                    className="text-[10px] font-bold text-blue-400 hover:text-blue-300 bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/30 px-2 py-0.5 rounded-md transition"
+                  >
+                    Next Match -&gt;
+                  </button>
+                )}
               </div>
             </div>
 
