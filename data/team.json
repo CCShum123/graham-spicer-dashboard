@@ -310,7 +310,8 @@
     "match-1": {
       "going": [
         "CC",
-        "Ajay"
+        "Ajay",
+        "Daniel"
       ],
       "cantGo": [
         "Brandon",
@@ -322,7 +323,6 @@
         "Rohit"
       ],
       "tbc": [
-        "Daniel",
         "Benjamin"
       ]
     },
