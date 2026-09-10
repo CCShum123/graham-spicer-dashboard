@@ -400,7 +400,12 @@ export default function GrahamSpicerBPage() {
         </button>
 
         <button
-          onClick={() => setActiveTab('next')}
+          onClick={() => {
+            if (data?.nextFixture?.id) {
+              setSelectedFixtureId(data.nextFixture.id);
+            }
+            setActiveTab('next');
+          }}
           className={`w-12 h-12 rounded-full flex items-center justify-center shadow-lg border transition ${
             activeTab === 'next'
               ? 'bg-blue-600 border-blue-400 shadow-blue-500/30'
