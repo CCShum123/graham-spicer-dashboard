@@ -258,7 +258,7 @@ export default function GrahamSpicerBPage() {
                 <h2 className="text-sm font-black text-white tracking-tight whitespace-nowrap overflow-x-auto">
                   {formatTeamNameShort(currentMatchTarget?.homeTeam)} vs {formatTeamNameShort(currentMatchTarget?.awayTeam)}
                 </h2>
-                <p className="mt-1 flex items-center justify-between">
+                <p className="mt-1">
                   <a
                     href={getGoogleMapsUrl(currentMatchTarget?.venue, currentMatchTarget?.venueAddress)}
                     target="_blank"
@@ -268,17 +268,17 @@ export default function GrahamSpicerBPage() {
                     <span>📍</span>
                     <span>{currentMatchTarget?.venue}</span>
                   </a>
-                  <button
-                    onClick={handleNextMatchClick}
-                    className="bg-[#1c273c] hover:bg-blue-600/30 text-blue-400 border border-blue-500/40 px-2 py-0.5 rounded-lg text-[10px] font-bold transition"
-                  >
-                    Next match-&gt;
-                  </button>
                 </p>
               </div>
 
-              <div className="text-right shrink-0 space-y-0.5">
+              <div className="text-right shrink-0 space-y-1 flex flex-col items-end">
                 <p className="text-[11px] text-gray-200 font-semibold whitespace-nowrap">🕒 {currentMatchTarget?.day} {currentMatchTarget?.date} {currentMatchTarget?.month} {currentMatchTarget?.year} {currentMatchTarget?.time}</p>
+                <button
+                  onClick={handleNextMatchClick}
+                  className="bg-[#1c273c] hover:bg-blue-600/30 text-blue-400 border border-blue-500/40 px-2 py-0.5 rounded-lg text-[10px] font-bold transition"
+                >
+                  Next match-&gt;
+                </button>
               </div>
             </div>
 
