@@ -210,14 +210,19 @@ export default function Home() {
 
               <div className="text-right shrink-0 space-y-1">
                 <p className="text-[11px] text-gray-200 font-semibold whitespace-nowrap">🕒 {currentMatchTarget?.day} {currentMatchTarget?.date} {currentMatchTarget?.month} {currentMatchTarget?.year} {currentMatchTarget?.time}</p>
-                {data?.nextFixture?.id && (
-                  <button
-                    onClick={() => setSelectedFixtureId(data.nextFixture.id)}
-                    className="text-[10px] font-bold text-blue-400 hover:text-blue-300 bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/30 px-2 py-0.5 rounded-md transition"
-                  >
-                    Next Match -&gt;
-                  </button>
-                )}
+                {data?.nextFixture && (
+                 <button
+                  onClick={() => {
+                   const nextId = data.nextFixture.id || data.fixtures?.find((f: any) => f.id === data.nextFixture)?.id || data.fixtures?.[0]?.id;
+                  if (nextId) {
+                   setSelectedFixtureId(nextId);
+                  }
+                }}
+                className="text-[10px] font-bold text-blue-400 hover:text-blue-300 bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/30 px-2 py-0.5 rounded-md transition cursor-pointer"
+              >
+                Next Match -&gt;
+              </button>
+            )}
               </div>
             </div>
 
