@@ -106,17 +106,6 @@ export default function GrahamSpicerBPage() {
   const currentMatchTarget = data?.fixtures?.find((f: any) => f.id === selectedFixtureId) || data?.nextFixture;
   const isHomeTeam = currentMatchTarget?.type === 'HOME';
 
-  // 轉去下一個 match 嘅 function
-  const handleNextMatch = () => {
-    if (!data?.fixtures || data.fixtures.length === 0) return;
-    const currentIndex = data.fixtures.findIndex((f: any) => f.id === selectedFixtureId);
-    if (currentIndex !== -1 && currentIndex < data.fixtures.length - 1) {
-      setSelectedFixtureId(data.fixtures[currentIndex + 1].id);
-    } else {
-      setSelectedFixtureId(data.fixtures[0].id);
-    }
-  };
-
   const allPlayerNames = data?.players?.map((p: any) => p.subName) || [];
   const currentAvailability = availabilityMap[selectedFixtureId] || { going: [], cantGo: [], tbc: [...allPlayerNames] };
 
@@ -236,9 +225,7 @@ export default function GrahamSpicerBPage() {
 
       <header className="sticky top-0 z-20 bg-[#070a12]/90 px-4 py-3 border-b border-gray-800/40 flex justify-between items-center">
         <h1 className="text-base font-black tracking-tight text-white">
-          {activeTab === 'next' && <>GRAHAM SPICER <span className="text-blue-500">B</span></>}
-          {activeTab === 'fixtures' && 'FIXTURES'}
-          {activeTab === 'player' && 'PLAYER'}
+          GRAHAM SPICER <span className="text-blue-500">B</span>
         </h1>
         <span className="bg-[#121929] text-xs text-gray-300 px-3 py-1 rounded-md border border-gray-700/60 font-semibold">{data?.season}</span>
       </header>
@@ -250,23 +237,13 @@ export default function GrahamSpicerBPage() {
             
             <div className="flex justify-between items-start border-b border-gray-800/80 pb-3 gap-1.5">
               <div className="min-w-0 flex-1">
-                <div className="flex items-center justify-between mb-1">
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-[10px] font-bold text-blue-400 uppercase tracking-wider">
-                      COMING FIXTURE
-                    </span>
-                    <span className={`text-[9px] font-black px-1.5 py-0.5 rounded ${isHomeTeam ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-amber-500/20 text-amber-400 border border-amber-500/30'}`}>
-                      {isHomeTeam ? 'HOME' : 'AWAY'}
-                    </span>
-                  </div>
-                  
-                  <button
-                    onClick={handleNextMatch}
-                    className="bg-blue-600/20 hover:bg-blue-600/40 text-blue-400 border border-blue-500/30 text-[10px] font-bold px-2 py-0.5 rounded transition flex items-center gap-1"
-                  >
-                    <span>next match</span>
-                    <span>-&gt;</span>
-                  </button>
+                <div className="flex items-center gap-1.5 mb-1">
+                  <span className="text-[10px] font-bold text-blue-400 uppercase tracking-wider">
+                    NEXT FIXTURE
+                  </span>
+                  <span className={`text-[9px] font-black px-1.5 py-0.5 rounded ${isHomeTeam ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-amber-500/20 text-amber-400 border border-amber-500/30'}`}>
+                    {isHomeTeam ? 'HOME' : 'AWAY'}
+                  </span>
                 </div>
 
                 <h2 className="text-sm font-black text-white tracking-tight whitespace-nowrap overflow-x-auto">
@@ -417,30 +394,27 @@ export default function GrahamSpicerBPage() {
 
       </div>
 
-      {/* 底部導航欄 (Fix 咗唔見咗嘅 3 個掣) */}
-      <nav className="fixed bottom-0 left-0 right-0 z-30 bg-[#070a12]/95 border-t border-gray-800/80 backdrop-blur-md px-4 py-2 flex justify-around">
+      {/* 底部導航欄（完全還原你原本嘅樣：左右文字、中間有乒乓波 Icon 嘅圓形掣） */}
+      <nav className="fixed bottom-0 left-0 right-0 z-30 bg-[#070a12]/95 border-t border-gray-800/80 backdrop-blur-md px-8 py-2.5 flex justify-between items-center">
         <button
-          onClick={() => setActiveTab('next')}
-          className={`flex flex-col items-center gap-1 py-1 px-4 rounded-xl transition ${activeTab === 'next' ? 'text-blue-400 font-black' : 'text-gray-400 hover:text-gray-200 font-medium'}`}
+          onClick={() => setActiveTab('fixtures')}
+          className={`text-[11px] font-bold tracking-wider transition ${activeTab === 'fixtures' ? 'text-blue-400' : 'text-gray-400 hover:text-gray-200'}`}
         >
-          <span className="text-base">📅</span>
-          <span className="text-[10px] tracking-wider">NEXT</span>
+          FIXTURES
         </button>
 
         <button
-          onClick={() => setActiveTab('fixtures')}
-          className={`flex flex-col items-center gap-1 py-1 px-4 rounded-xl transition ${activeTab === 'fixtures' ? 'text-blue-400 font-black' : 'text-gray-400 hover:text-gray-200 font-medium'}`}
+          onClick={() => setActiveTab('next')}
+          className="w-12 h-12 rounded-full bg-blue-600 hover:bg-blue-500 shadow-lg shadow-blue-600/40 border border-blue-400/40 flex items-center justify-center transition transform active:scale-95 -mt-4"
         >
-          <span className="text-base">📋</span>
-          <span className="text-[10px] tracking-wider">FIXTURES</span>
+          <span className="text-xl">🏓</span>
         </button>
 
         <button
           onClick={() => setActiveTab('player')}
-          className={`flex flex-col items-center gap-1 py-1 px-4 rounded-xl transition ${activeTab === 'player' ? 'text-blue-400 font-black' : 'text-gray-400 hover:text-gray-200 font-medium'}`}
+          className={`text-[11px] font-bold tracking-wider transition ${activeTab === 'player' ? 'text-blue-400' : 'text-gray-400 hover:text-gray-200'}`}
         >
-          <span className="text-base">👥</span>
-          <span className="text-[10px] tracking-wider">PLAYER</span>
+          PLAYER
         </button>
       </nav>
 
