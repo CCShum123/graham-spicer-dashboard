@@ -570,7 +570,7 @@ export default function GrahamSpicerBPage() {
                                     setDoublesCodesH(val);
                                     syncDataToBackend({ doublesCodesH: val });
                                   }}
-                                  className="w-7 h-6 bg-[#121a2d] border border-gray-700 rounded text-center text-white font-bold p-0 outline-none text-[11px]"
+                                  className="w-7 h-6 bg-[#121a2d] border border-gray-700 rounded text-center text-white font-bold p-0 outline-none text-[11px] appearance-none"
                                 >
                                   <option value="">-</option>
                                   <option value="A">A</option>
@@ -585,7 +585,7 @@ export default function GrahamSpicerBPage() {
                                     setDoublesCodesH(val);
                                     syncDataToBackend({ doublesCodesH: val });
                                   }}
-                                  className="w-7 h-6 bg-[#121a2d] border border-gray-700 rounded text-center text-white font-bold p-0 outline-none text-[11px]"
+                                  className="w-7 h-6 bg-[#121a2d] border border-gray-700 rounded text-center text-white font-bold p-0 outline-none text-[11px] appearance-none"
                                 >
                                   <option value="">-</option>
                                   <option value="A">A</option>
@@ -603,7 +603,7 @@ export default function GrahamSpicerBPage() {
                                     setDoublesCodesA(val);
                                     syncDataToBackend({ doublesCodesA: val });
                                   }}
-                                  className="w-7 h-6 bg-[#121a2d] border border-gray-700 rounded text-center text-white font-bold p-0 outline-none text-[11px]"
+                                  className="w-7 h-6 bg-[#121a2d] border border-gray-700 rounded text-center text-white font-bold p-0 outline-none text-[11px] appearance-none"
                                 >
                                   <option value="">-</option>
                                   <option value="X">X</option>
@@ -618,7 +618,7 @@ export default function GrahamSpicerBPage() {
                                     setDoublesCodesA(val);
                                     syncDataToBackend({ doublesCodesA: val });
                                   }}
-                                  className="w-7 h-6 bg-[#121a2d] border border-gray-700 rounded text-center text-white font-bold p-0 outline-none text-[11px]"
+                                  className="w-7 h-6 bg-[#121a2d] border border-gray-700 rounded text-center text-white font-bold p-0 outline-none text-[11px] appearance-none"
                                 >
                                   <option value="">-</option>
                                   <option value="X">X</option>
