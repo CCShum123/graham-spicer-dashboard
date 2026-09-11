@@ -443,7 +443,7 @@ export default function GrahamSpicerBPage() {
         <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-center justify-center p-2">
           <div className="bg-[#0f1626] border border-gray-700 w-full max-w-xl rounded-2xl p-3 space-y-3 max-h-[95vh] overflow-y-auto shadow-2xl">
             <div className="flex justify-between items-center border-b border-gray-800 pb-2">
-              <h3 className="text-xs font-black tracking-wider text-white uppercase">SUTTON & DISTRICT TABLE TENNIS LEAGUE - MATCH CARD</h3>
+              <h3 className="text-xs font-black tracking-wider text-white uppercase">SUTTON & DISTRICT TT LEAGUE - MATCH CARD</h3>
               <button onClick={() => setShowMatchCard(false)} className="bg-gray-800 hover:bg-gray-700 text-gray-300 w-7 h-7 rounded-full font-bold text-xs flex items-center justify-center">✕</button>
             </div>
 
@@ -536,7 +536,7 @@ export default function GrahamSpicerBPage() {
               <table className="w-full text-center border-collapse border border-gray-700 text-xs">
                 <thead>
                   <tr className="bg-[#121929] text-gray-300 text-[10px]">
-                    <th className="border border-gray-700 p-1 w-28 font-bold">Match Order</th>
+                    <th className="border border-gray-700 p-1 w-20 font-bold">Match Order</th>
                     <th className="border border-gray-700 p-1 w-10 font-bold">Game 1</th>
                     <th className="border border-gray-700 p-1 w-10 font-bold">Game 2</th>
                     <th className="border border-gray-700 p-1 w-10 font-bold">Game 3</th>
@@ -560,70 +560,72 @@ export default function GrahamSpicerBPage() {
                       <tr key={m.match} className="hover:bg-gray-800/30">
                         <td className="border border-gray-700 p-1 font-bold text-blue-400 bg-[#0a0e19]">
                           {m.match === 10 ? (
-                            <div className="flex items-center justify-center gap-1 text-[11px]">
-                              <select
-                                value={doublesCodesH.substring(0, 1)}
-                                onChange={(e) => {
-                                  const secondChar = doublesCodesH.substring(1, 2) || 'B';
-                                  const val = e.target.value + secondChar;
-                                  setDoublesCodesH(val);
-                                  syncDataToBackend({ doublesCodesH: val });
-                                }}
-                                className="w-8 h-7 bg-[#121a2d] border border-gray-700 rounded text-center text-white font-bold p-0 outline-none text-[11px]"
-                              >
-                                <option value="">-</option>
-                                <option value="A">A</option>
-                                <option value="B">B</option>
-                                <option value="C">C</option>
-                              </select>
-                              <select
-                                value={doublesCodesH.substring(1, 2)}
-                                onChange={(e) => {
-                                  const firstChar = doublesCodesH.substring(0, 1) || 'A';
-                                  const val = firstChar + e.target.value;
-                                  setDoublesCodesH(val);
-                                  syncDataToBackend({ doublesCodesH: val });
-                                }}
-                                className="w-8 h-7 bg-[#121a2d] border border-gray-700 rounded text-center text-white font-bold p-0 outline-none text-[11px]"
-                              >
-                                <option value="">-</option>
-                                <option value="A">A</option>
-                                <option value="B">B</option>
-                                <option value="C">C</option>
-                              </select>
-
-                              <span className="text-gray-300 font-bold px-0.5">v</span>
-
-                              <select
-                                value={doublesCodesA.substring(0, 1)}
-                                onChange={(e) => {
-                                  const secondChar = doublesCodesA.substring(1, 2) || 'Y';
-                                  const val = e.target.value + secondChar;
-                                  setDoublesCodesA(val);
-                                  syncDataToBackend({ doublesCodesA: val });
-                                }}
-                                className="w-8 h-7 bg-[#121a2d] border border-gray-700 rounded text-center text-white font-bold p-0 outline-none text-[11px]"
-                              >
-                                <option value="">-</option>
-                                <option value="X">X</option>
-                                <option value="Y">Y</option>
-                                <option value="Z">Z</option>
-                              </select>
-                              <select
-                                value={doublesCodesA.substring(1, 2)}
-                                onChange={(e) => {
-                                  const firstChar = doublesCodesA.substring(0, 1) || 'X';
-                                  const val = firstChar + e.target.value;
-                                  setDoublesCodesA(val);
-                                  syncDataToBackend({ doublesCodesA: val });
-                                }}
-                                className="w-8 h-7 bg-[#121a2d] border border-gray-700 rounded text-center text-white font-bold p-0 outline-none text-[11px]"
-                              >
-                                <option value="">-</option>
-                                <option value="X">X</option>
-                                <option value="Y">Y</option>
-                                <option value="Z">Z</option>
-                              </select>
+                            <div className="flex flex-col items-center justify-center gap-1 text-[11px] py-0.5">
+                              <div className="flex items-center justify-center gap-1">
+                                <select
+                                  value={doublesCodesH.substring(0, 1)}
+                                  onChange={(e) => {
+                                    const secondChar = doublesCodesH.substring(1, 2) || 'B';
+                                    const val = e.target.value + secondChar;
+                                    setDoublesCodesH(val);
+                                    syncDataToBackend({ doublesCodesH: val });
+                                  }}
+                                  className="w-7 h-6 bg-[#121a2d] border border-gray-700 rounded text-center text-white font-bold p-0 outline-none text-[11px]"
+                                >
+                                  <option value="">-</option>
+                                  <option value="A">A</option>
+                                  <option value="B">B</option>
+                                  <option value="C">C</option>
+                                </select>
+                                <select
+                                  value={doublesCodesH.substring(1, 2)}
+                                  onChange={(e) => {
+                                    const firstChar = doublesCodesH.substring(0, 1) || 'A';
+                                    const val = firstChar + e.target.value;
+                                    setDoublesCodesH(val);
+                                    syncDataToBackend({ doublesCodesH: val });
+                                  }}
+                                  className="w-7 h-6 bg-[#121a2d] border border-gray-700 rounded text-center text-white font-bold p-0 outline-none text-[11px]"
+                                >
+                                  <option value="">-</option>
+                                  <option value="A">A</option>
+                                  <option value="B">B</option>
+                                  <option value="C">C</option>
+                                </select>
+                              </div>
+                              <span className="text-gray-300 font-bold leading-none">v</span>
+                              <div className="flex items-center justify-center gap-1">
+                                <select
+                                  value={doublesCodesA.substring(0, 1)}
+                                  onChange={(e) => {
+                                    const secondChar = doublesCodesA.substring(1, 2) || 'Y';
+                                    const val = e.target.value + secondChar;
+                                    setDoublesCodesA(val);
+                                    syncDataToBackend({ doublesCodesA: val });
+                                  }}
+                                  className="w-7 h-6 bg-[#121a2d] border border-gray-700 rounded text-center text-white font-bold p-0 outline-none text-[11px]"
+                                >
+                                  <option value="">-</option>
+                                  <option value="X">X</option>
+                                  <option value="Y">Y</option>
+                                  <option value="Z">Z</option>
+                                </select>
+                                <select
+                                  value={doublesCodesA.substring(1, 2)}
+                                  onChange={(e) => {
+                                    const firstChar = doublesCodesA.substring(0, 1) || 'X';
+                                    const val = firstChar + e.target.value;
+                                    setDoublesCodesA(val);
+                                    syncDataToBackend({ doublesCodesA: val });
+                                  }}
+                                  className="w-7 h-6 bg-[#121a2d] border border-gray-700 rounded text-center text-white font-bold p-0 outline-none text-[11px]"
+                                >
+                                  <option value="">-</option>
+                                  <option value="X">X</option>
+                                  <option value="Y">Y</option>
+                                  <option value="Z">Z</option>
+                                </select>
+                              </div>
                             </div>
                           ) : (
                             m.label
