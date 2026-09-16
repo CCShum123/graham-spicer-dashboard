@@ -13,29 +13,41 @@ export default function GrahamSpicerBPage() {
   const [availabilityMap, setAvailabilityMap] = useState<{ [key: string]: { going: string[]; cantGo: string[]; tbc: string[] } }>({});
 
   const [selectedPlayer, setSelectedPlayer] = useState('');
-  const [selectedLineup, setSelectedLineup] = useState<string[]>(['', '', '']);
+  
+  // 每場獨立的 Lineup, Match Card Record 等資料 (以 fixtureId 作為 key)
+  const [fixtureMatchRecords, setFixtureMatchRecords] = useState<{
+    [fixtureId: string]: {
+      lineup: string[];
+      opponentNames: string[];
+      doublesCodesH: string;
+      doublesCodesA: string;
+      gameScores: { [key: number]: { left: string; right: string }[] };
+    };
+  }>({});
+
   const [showMatchCard, setShowMatchCard] = useState(false);
-  const [opponentNames, setOpponentNames] = useState<string[]>(['', '', '']);
-
-  // 第 10 場雙打代號選擇
-  const [doublesCodesH, setDoublesCodesH] = useState<string>('');
-  const [doublesCodesA, setDoublesCodesA] = useState<string>('');
-
-  // 1 到 10 場比分
-  const [gameScores, setGameScores] = useState<{ [key: number]: { left: string; right: string }[] }>({
-    1: Array(5).fill({ left: '', right: '' }),
-    2: Array(5).fill({ left: '', right: '' }),
-    3: Array(5).fill({ left: '', right: '' }),
-    4: Array(5).fill({ left: '', right: '' }),
-    5: Array(5).fill({ left: '', right: '' }),
-    6: Array(5).fill({ left: '', right: '' }),
-    7: Array(5).fill({ left: '', right: '' }),
-    8: Array(5).fill({ left: '', right: '' }),
-    9: Array(5).fill({ left: '', right: '' }),
-    10: Array(5).fill({ left: '', right: '' }),
-  });
 
   const syncTimeoutRef = useRef<any>(null);
+
+  // 預設空的每場比賽賽果結構
+  const getDefaultFixtureRecord = () => ({
+    lineup: ['', '', ''],
+    opponentNames: ['', '', ''],
+    doublesCodesH: '',
+    doublesCodesA: '',
+    gameScores: {
+      1: Array(5).fill({ left: '', right: '' }),
+      2: Array(5).fill({ left: '', right: '' }),
+      3: Array(5).fill({ left: '', right: '' }),
+      4: Array(5).fill({ left: '', right: '' }),
+      5: Array(5).fill({ left: '', right: '' }),
+      6: Array(5).fill({ left: '', right: '' }),
+      7: Array(5).fill({ left: '', right: '' }),
+      8: Array(5).fill({ left: '', right: '' }),
+      9: Array(5).fill({ left: '', right: '' }),
+      10: Array(5).fill({ left: '', right: '' }),
+    },
+  });
 
   useEffect(() => {
     async function fetchData() {
@@ -45,9 +57,13 @@ export default function GrahamSpicerBPage() {
         const json = await res.json();
         if (json.success && json.data) {
           setData(json.data);
+          
+          let initialFixtureId = '';
           if (json.data.nextFixture?.id) {
-            setSelectedFixtureId(json.data.nextFixture.id);
+            initialFixtureId = json.data.nextFixture.id;
+            setSelectedFixtureId(initialFixtureId);
           }
+
           if (json.data.availabilityMap) {
             setAvailabilityMap(json.data.availabilityMap);
           } else if (json.data.fixtures && json.data.players) {
@@ -58,11 +74,23 @@ export default function GrahamSpicerBPage() {
             });
             setAvailabilityMap(initialMap);
           }
-          if (json.data.lineup) setSelectedLineup(json.data.lineup);
-          if (json.data.gameScores) setGameScores(json.data.gameScores);
-          if (json.data.opponentNames) setOpponentNames(json.data.opponentNames);
-          if (json.data.doublesCodesH !== undefined) setDoublesCodesH(json.data.doublesCodesH);
-          if (json.data.doublesCodesA !== undefined) setDoublesCodesA(json.data.doublesCodesA);
+
+          // 處理後端傳回來的獨立紀錄，或者相容舊的單一欄位結構
+          if (json.data.fixtureMatchRecords) {
+            setFixtureMatchRecords(json.data.fixtureMatchRecords);
+          } else if (json.data.fixtures) {
+            const initialRecords: any = {};
+            json.data.fixtures.forEach((f: any) => {
+              initialRecords[f.id] = {
+                lineup: f.id === initialFixtureId && json.data.lineup ? json.data.lineup : ['', '', ''],
+                opponentNames: f.id === initialFixtureId && json.data.opponentNames ? json.data.opponentNames : ['', '', ''],
+                doublesCodesH: f.id === initialFixtureId && json.data.doublesCodesH !== undefined ? json.data.doublesCodesH : '',
+                doublesCodesA: f.id === initialFixtureId && json.data.doublesCodesA !== undefined ? json.data.doublesCodesA : '',
+                gameScores: f.id === initialFixtureId && json.data.gameScores ? json.data.gameScores : getDefaultFixtureRecord().gameScores,
+              };
+            });
+            setFixtureMatchRecords(initialRecords);
+          }
         }
       } catch (err: any) {
         setError(err.message || 'Failed to load team data');
@@ -75,11 +103,7 @@ export default function GrahamSpicerBPage() {
 
   const syncDataToBackend = (updatedState: {
     availabilityMap?: any;
-    lineup?: any;
-    gameScores?: any;
-    opponentNames?: any;
-    doublesCodesH?: string;
-    doublesCodesA?: string;
+    fixtureMatchRecords?: any;
   }) => {
     if (syncTimeoutRef.current) clearTimeout(syncTimeoutRef.current);
 
@@ -90,11 +114,7 @@ export default function GrahamSpicerBPage() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             availabilityMap: updatedState.availabilityMap || availabilityMap,
-            lineup: updatedState.lineup || selectedLineup,
-            gameScores: updatedState.gameScores || gameScores,
-            opponentNames: updatedState.opponentNames || opponentNames,
-            doublesCodesH: updatedState.doublesCodesH !== undefined ? updatedState.doublesCodesH : doublesCodesH,
-            doublesCodesA: updatedState.doublesCodesA !== undefined ? updatedState.doublesCodesA : doublesCodesA,
+            fixtureMatchRecords: updatedState.fixtureMatchRecords || fixtureMatchRecords,
           }),
         });
       } catch (err) {
@@ -108,6 +128,27 @@ export default function GrahamSpicerBPage() {
 
   const allPlayerNames = data?.players?.map((p: any) => p.subName) || [];
   const currentAvailability = availabilityMap[selectedFixtureId] || { going: [], cantGo: [], tbc: [...allPlayerNames] };
+
+  // 取得當前選中比賽的獨立 record，若未初始化則給預設空白
+  const currentFixtureRecord = fixtureMatchRecords[selectedFixtureId] || getDefaultFixtureRecord();
+  const selectedLineup = currentFixtureRecord.lineup || ['', '', ''];
+  const opponentNames = currentFixtureRecord.opponentNames || ['', '', ''];
+  const doublesCodesH = currentFixtureRecord.doublesCodesH || '';
+  const doublesCodesA = currentFixtureRecord.doublesCodesA || '';
+  const gameScores = currentFixtureRecord.gameScores || getDefaultFixtureRecord().gameScores;
+
+  const updateCurrentFixtureRecord = (updates: Partial<typeof currentFixtureRecord>) => {
+    const updatedRecord = {
+      ...currentFixtureRecord,
+      ...updates,
+    };
+    const newRecords = {
+      ...fixtureMatchRecords,
+      [selectedFixtureId]: updatedRecord,
+    };
+    setFixtureMatchRecords(newRecords);
+    syncDataToBackend({ fixtureMatchRecords: newRecords });
+  };
 
   const handleStatusChange = (status: 'going' | 'cantGo' | 'tbc') => {
     if (!selectedPlayer) {
@@ -333,8 +374,7 @@ export default function GrahamSpicerBPage() {
                       onChange={(e) => {
                         const updated = [...selectedLineup];
                         updated[i] = e.target.value;
-                        setSelectedLineup(updated);
-                        syncDataToBackend({ lineup: updated });
+                        updateCurrentFixtureRecord({ lineup: updated });
                       }}
                       className="w-full bg-[#121a2d] border border-gray-700 rounded-xl p-1.5 text-xs text-gray-100 font-medium outline-none"
                     >
@@ -489,8 +529,7 @@ export default function GrahamSpicerBPage() {
                                   onChange={(e) => {
                                     const updatedOpp = [...opponentNames];
                                     updatedOpp[row.index] = e.target.value;
-                                    setOpponentNames(updatedOpp);
-                                    syncDataToBackend({ opponentNames: updatedOpp });
+                                    updateCurrentFixtureRecord({ opponentNames: updatedOpp });
                                   }}
                                   placeholder={`Opp ${row.index + 1}`}
                                   className="w-full bg-[#121a2d] border border-gray-700 rounded p-1 text-[11px] font-semibold text-white outline-none"
@@ -514,8 +553,7 @@ export default function GrahamSpicerBPage() {
                                   onChange={(e) => {
                                     const updatedOpp = [...opponentNames];
                                     updatedOpp[row.index] = e.target.value;
-                                    setOpponentNames(updatedOpp);
-                                    syncDataToBackend({ opponentNames: updatedOpp });
+                                    updateCurrentFixtureRecord({ opponentNames: updatedOpp });
                                   }}
                                   placeholder={`Opp ${row.index + 1}`}
                                   className="w-full bg-[#121a2d] border border-gray-700 rounded p-1 text-[11px] font-semibold text-white outline-none"
@@ -567,8 +605,7 @@ export default function GrahamSpicerBPage() {
                                   onChange={(e) => {
                                     const secondChar = doublesCodesH.substring(1, 2) || 'B';
                                     const val = e.target.value + secondChar;
-                                    setDoublesCodesH(val);
-                                    syncDataToBackend({ doublesCodesH: val });
+                                    updateCurrentFixtureRecord({ doublesCodesH: val });
                                   }}
                                   className="w-7 h-6 bg-[#121a2d] border border-gray-700 rounded text-center text-white font-bold p-0 outline-none text-[11px] appearance-none text-center [&>option]:text-center"
                                   style={{ textAlignLast: 'center' }}
@@ -583,8 +620,7 @@ export default function GrahamSpicerBPage() {
                                   onChange={(e) => {
                                     const firstChar = doublesCodesH.substring(0, 1) || 'A';
                                     const val = firstChar + e.target.value;
-                                    setDoublesCodesH(val);
-                                    syncDataToBackend({ doublesCodesH: val });
+                                    updateCurrentFixtureRecord({ doublesCodesH: val });
                                   }}
                                   className="w-7 h-6 bg-[#121a2d] border border-gray-700 rounded text-center text-white font-bold p-0 outline-none text-[11px] appearance-none text-center [&>option]:text-center"
                                   style={{ textAlignLast: 'center' }}
@@ -602,8 +638,7 @@ export default function GrahamSpicerBPage() {
                                   onChange={(e) => {
                                     const secondChar = doublesCodesA.substring(1, 2) || 'Y';
                                     const val = e.target.value + secondChar;
-                                    setDoublesCodesA(val);
-                                    syncDataToBackend({ doublesCodesA: val });
+                                    updateCurrentFixtureRecord({ doublesCodesA: val });
                                   }}
                                   className="w-7 h-6 bg-[#121a2d] border border-gray-700 rounded text-center text-white font-bold p-0 outline-none text-[11px] appearance-none text-center [&>option]:text-center"
                                   style={{ textAlignLast: 'center' }}
@@ -618,8 +653,7 @@ export default function GrahamSpicerBPage() {
                                   onChange={(e) => {
                                     const firstChar = doublesCodesA.substring(0, 1) || 'X';
                                     const val = firstChar + e.target.value;
-                                    setDoublesCodesA(val);
-                                    syncDataToBackend({ doublesCodesA: val });
+                                    updateCurrentFixtureRecord({ doublesCodesA: val });
                                   }}
                                   className="w-7 h-6 bg-[#121a2d] border border-gray-700 rounded text-center text-white font-bold p-0 outline-none text-[11px] appearance-none text-center [&>option]:text-center"
                                   style={{ textAlignLast: 'center' }}
@@ -646,13 +680,10 @@ export default function GrahamSpicerBPage() {
                                 value={gameScores[m.match]?.[gIdx]?.left || ''}
                                 onChange={(e) => {
                                   const val = e.target.value;
-                                  setGameScores(prev => {
-                                    const currentMatchGames = [...(prev[m.match] || Array(5).fill({ left: '', right: '' }))];
-                                    currentMatchGames[gIdx] = { ...currentMatchGames[gIdx], left: val };
-                                    const updatedScores = { ...prev, [m.match]: currentMatchGames };
-                                    syncDataToBackend({ gameScores: updatedScores });
-                                    return updatedScores;
-                                  });
+                                  const currentMatchGames = [...(gameScores[m.match] || Array(5).fill({ left: '', right: '' }))];
+                                  currentMatchGames[gIdx] = { ...currentMatchGames[gIdx], left: val };
+                                  const updatedScores = { ...gameScores, [m.match]: currentMatchGames };
+                                  updateCurrentFixtureRecord({ gameScores: updatedScores });
                                 }}
                                 className="w-5 text-center bg-transparent text-white font-bold outline-none text-[11px]"
                               />
@@ -664,13 +695,10 @@ export default function GrahamSpicerBPage() {
                                 value={gameScores[m.match]?.[gIdx]?.right || ''}
                                 onChange={(e) => {
                                   const val = e.target.value;
-                                  setGameScores(prev => {
-                                    const currentMatchGames = [...(prev[m.match] || Array(5).fill({ left: '', right: '' }))];
-                                    currentMatchGames[gIdx] = { ...currentMatchGames[gIdx], right: val };
-                                    const updatedScores = { ...prev, [m.match]: currentMatchGames };
-                                    syncDataToBackend({ gameScores: updatedScores });
-                                    return updatedScores;
-                                  });
+                                  const currentMatchGames = [...(gameScores[m.match] || Array(5).fill({ left: '', right: '' }))];
+                                  currentMatchGames[gIdx] = { ...currentMatchGames[gIdx], right: val };
+                                  const updatedScores = { ...gameScores, [m.match]: currentMatchGames };
+                                  updateCurrentFixtureRecord({ gameScores: updatedScores });
                                 }}
                                 className="w-5 text-center bg-transparent text-white font-bold outline-none text-[11px]"
                               />
