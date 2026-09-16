@@ -14,7 +14,7 @@ export default function GrahamSpicerBPage() {
 
   const [selectedPlayer, setSelectedPlayer] = useState('');
   
-  // 每場獨立的 Lineup, Match Card Record 等資料 (以 fixtureId 作為 key)
+  // 每場獨立的 Lineup, Match Card Record 等資料 (以 fixtureId 作為 key)，直接對應並同步儲存
   const [fixtureMatchRecords, setFixtureMatchRecords] = useState<{
     [fixtureId: string]: {
       lineup: string[];
@@ -29,7 +29,6 @@ export default function GrahamSpicerBPage() {
 
   const syncTimeoutRef = useRef<any>(null);
 
-  // 預設空的每場比賽賽果結構
   const getDefaultFixtureRecord = () => ({
     lineup: ['', '', ''],
     opponentNames: ['', '', ''],
@@ -75,7 +74,6 @@ export default function GrahamSpicerBPage() {
             setAvailabilityMap(initialMap);
           }
 
-          // 處理後端傳回來的獨立紀錄，或者相容舊的單一欄位結構
           if (json.data.fixtureMatchRecords) {
             setFixtureMatchRecords(json.data.fixtureMatchRecords);
           } else if (json.data.fixtures) {
@@ -129,7 +127,7 @@ export default function GrahamSpicerBPage() {
   const allPlayerNames = data?.players?.map((p: any) => p.subName) || [];
   const currentAvailability = availabilityMap[selectedFixtureId] || { going: [], cantGo: [], tbc: [...allPlayerNames] };
 
-  // 取得當前選中比賽的獨立 record，若未初始化則給預設空白
+  // 取得當前選中比賽的獨立 record
   const currentFixtureRecord = fixtureMatchRecords[selectedFixtureId] || getDefaultFixtureRecord();
   const selectedLineup = currentFixtureRecord.lineup || ['', '', ''];
   const opponentNames = currentFixtureRecord.opponentNames || ['', '', ''];
