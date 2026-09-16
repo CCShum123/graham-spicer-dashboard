@@ -1,8 +1,41 @@
+import { NextResponse } from 'next/server';
+
+const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
+const GITHUB_REPO = process.env.GITHUB_REPO; // e.g., 'username/repo-name'
+const GITHUB_BRANCH = process.env.GITHUB_BRANCH || 'main';
+const FILE_PATH = 'data/team.json';
+
+const GITHUB_API_URL = `https://api.github.com/repos/${GITHUB_REPO}/contents/${FILE_PATH}`;
+
+export async function GET() {
+  try {
+    const res = await fetch(`${GITHUB_API_URL}?ref=${GITHUB_BRANCH}`, {
+      headers: {
+        Authorization: `Bearer ${GITHUB_TOKEN}`,
+        Accept: 'application/vnd.github+json',
+      },
+      cache: 'no-store',
+    });
+
+    if (!res.ok) {
+      throw new Error(`GitHub fetch failed with status ${res.status}`);
+    }
+
+    const fileData = await res.json();
+    const buffer = Buffer.from(fileData.content, 'base64');
+    const data = JSON.parse(buffer.toString('utf-8'));
+
+    return NextResponse.json({ success: true, data });
+  } catch (err: any) {
+    console.error('GitHub GET Error:', err.message);
+    return NextResponse.json({ success: false, error: err.message }, { status: 500 });
+  }
+}
+
 export async function POST(request: Request) {
   try {
     const body = await request.json();
 
-    // 1. 先從 GitHub 拎現有檔案嘅內容同埋 sha (GitHub 每次更新檔案必須提供上一個版本嘅 sha)
     const getRes = await fetch(`${GITHUB_API_URL}?ref=${GITHUB_BRANCH}`, {
       headers: {
         Authorization: `Bearer ${GITHUB_TOKEN}`,
@@ -22,10 +55,9 @@ export async function POST(request: Request) {
       Buffer.from(fileData.content, 'base64').toString('utf-8')
     );
 
-    // 2. 安全地合併資料（已加入 fixtureMatchRecords 以支援每場獨立嘅 lineup 同 match card 紀錄）
     if (body) {
       if (body.availabilityMap) existingContent.availabilityMap = body.availabilityMap;
-      if (body.fixtureMatchRecords) existingContent.fixtureMatchRecords = body.fixtureMatchRecords; // <--- 呢度係新加入嘅關鍵！
+      if (body.fixtureMatchRecords) existingContent.fixtureMatchRecords = body.fixtureMatchRecords;
       if (body.lineup) existingContent.lineup = body.lineup;
       if (body.gameScores) existingContent.gameScores = body.gameScores;
       if (body.opponentNames) existingContent.opponentNames = body.opponentNames;
@@ -33,7 +65,6 @@ export async function POST(request: Request) {
       if (body.doublesCodesA !== undefined) existingContent.doublesCodesA = body.doublesCodesA;
     }
 
-    // 3. 用 PUT 請求叫 GitHub API 自動幫你 commit 新檔案
     const updatedContentBase64 = Buffer.from(
       JSON.stringify(existingContent, null, 2)
     ).toString('base64');
