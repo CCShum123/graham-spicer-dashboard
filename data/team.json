@@ -709,7 +709,7 @@
       "gameScores": {
         "1": [
           {
-            "left": "",
+            "left": "3",
             "right": ""
           },
           {
@@ -755,9 +755,9 @@
     },
     "match-2": {
       "lineup": [
-        "Peter",
         "Brandon",
-        "Hojeong"
+        "Hojeong",
+        ""
       ],
       "opponentNames": [
         "",
