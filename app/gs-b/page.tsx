@@ -455,7 +455,21 @@ export default function GrahamSpicerBPage() {
 
         <button
           onClick={() => {
-            if (data?.nextFixture?.id) {
+            if (data?.fixtures && data.fixtures.length > 0) {
+              const today = new Date();
+              today.setHours(0, 0, 0, 0);
+
+              const upcomingMatch = data.fixtures.find((f: any) => {
+                const matchDate = new Date(`${f.year || 2026} ${f.month} ${f.date}`);
+                return matchDate >= today;
+              });
+
+              if (upcomingMatch) {
+                setSelectedFixtureId(upcomingMatch.id);
+              } else if (data?.nextFixture?.id) {
+                setSelectedFixtureId(data.nextFixture.id);
+              }
+            } else if (data?.nextFixture?.id) {
               setSelectedFixtureId(data.nextFixture.id);
             }
             setActiveTab('next');
