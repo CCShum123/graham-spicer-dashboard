@@ -7,7 +7,8 @@ export default function GrahamSpicerBPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const [activeTab, setActiveTab] = useState<'next' | 'fixtures' | 'player'>('next');
+  // 新增 'misc' 到 activeTab 狀態中
+  const [activeTab, setActiveTab] = useState<'next' | 'fixtures' | 'player' | 'misc'>('next');
   const [selectedFixtureId, setSelectedFixtureId] = useState<string>('');
 
   const [availabilityMap, setAvailabilityMap] = useState<{ [key: string]: { going: string[]; cantGo: string[]; tbc: string[] } }>({});
@@ -276,18 +277,16 @@ export default function GrahamSpicerBPage() {
   // 穩陣版 Helper：將任何 fixture 物件轉成可信賴嘅 JavaScript Date 物件
   const getFixtureDateObj = (f: any) => {
     if (!f) return new Date();
-    // 組合出標準日期格式，例如 "Sep 17 2026"
     const dateStr = `${f.month || 'Sep'} ${f.date || 1} ${f.year || 2026}`;
     const d = new Date(dateStr);
     if (isNaN(d.getTime())) {
-      // 萬一解析失敗嘅安全預設
       return new Date(2026, 8, 17);
     }
     d.setHours(0, 0, 0, 0);
     return d;
   };
 
-  // 判斷當前選中的比賽是否已經過去 (只有日期嚴格細過今日先算 PAST)
+  // 判斷當前選中的比賽是否已經過去
   const isPastFixture = (() => {
     if (!currentMatchTarget) return false;
     const today = new Date();
@@ -468,10 +467,45 @@ export default function GrahamSpicerBPage() {
             ))}
           </div>
         )}
+
+        {/* 新增的 MISC 頁面內容 */}
+        {activeTab === 'misc' && (
+          <div className="space-y-3">
+            <div className="bg-[#0f1626] border border-gray-800/80 rounded-2xl p-4 space-y-4 shadow-xl">
+              <h3 className="text-xs font-black tracking-wider text-blue-400 uppercase border-b border-gray-800/80 pb-2">LEAGUE TABLES</h3>
+              
+              <div className="space-y-3">
+                <div className="bg-[#0a0e19] border border-gray-800/60 rounded-xl p-3 hover:border-blue-500/50 transition">
+                  <a
+                    href="https://sdttl.ttleagues.com/league/4624/division/13138/table"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs font-bold text-gray-100 hover:text-blue-400 underline flex items-center justify-between transition"
+                  >
+                    <span>Table 2026-27 Season</span>
+                    <span className="text-blue-400 text-sm">🔗</span>
+                  </a>
+                </div>
+
+                <div className="bg-[#0a0e19] border border-gray-800/60 rounded-xl p-3 hover:border-blue-500/50 transition">
+                  <a
+                    href="https://sdttl.ttleagues.com/league/3938/division/10975/table"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs font-bold text-gray-100 hover:text-blue-400 underline flex items-center justify-between transition"
+                  >
+                    <span>Table 2025-26 Season</span>
+                    <span className="text-blue-400 text-sm">🔗</span>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Bottom Navigation Bar */}
-      <nav className="fixed bottom-0 left-0 right-0 z-30 bg-[#070a12]/95 backdrop-blur-md border-t border-gray-800/60 px-6 py-3 flex justify-around items-center max-w-md mx-auto">
+      <nav className="fixed bottom-0 left-0 right-0 z-30 bg-[#070a12]/95 backdrop-blur-md border-t border-gray-800/60 px-4 py-3 flex justify-around items-center max-w-md mx-auto">
         <button
           onClick={() => setActiveTab('fixtures')}
           className={`text-[11px] font-extrabold uppercase tracking-wider transition ${activeTab === 'fixtures' ? 'text-blue-500' : 'text-gray-400 hover:text-gray-200'}`}
@@ -485,7 +519,6 @@ export default function GrahamSpicerBPage() {
               const today = new Date();
               today.setHours(0, 0, 0, 0);
 
-              // 尋找第一場日期大於或等於今日嘅比賽作為最近嚟緊一場
               const upcomingMatch = data.fixtures.find((f: any) => {
                 const matchDate = getFixtureDateObj(f);
                 return matchDate.getTime() >= today.getTime();
@@ -515,6 +548,14 @@ export default function GrahamSpicerBPage() {
           className={`text-[11px] font-extrabold uppercase tracking-wider transition ${activeTab === 'player' ? 'text-blue-500' : 'text-gray-400 hover:text-gray-200'}`}
         >
           PLAYER
+        </button>
+
+        {/* 新增在 PLAYER 按鈕右側的 MISC 按鈕 */}
+        <button
+          onClick={() => setActiveTab('misc')}
+          className={`text-[11px] font-extrabold uppercase tracking-wider transition ${activeTab === 'misc' ? 'text-blue-500' : 'text-gray-400 hover:text-gray-200'}`}
+        >
+          MISC
         </button>
       </nav>
 
