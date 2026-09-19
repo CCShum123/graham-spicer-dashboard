@@ -573,8 +573,7 @@ export default function GrahamSpicerBPage() {
                   <table className="w-full text-center border-collapse border border-gray-700 text-[10px] table-fixed">
                     <thead>
                       <tr className="bg-[#121929] text-gray-300">
-                        <th className="border border-gray-700 p-1 font-bold w-[72px]">Date</th>
-                        <th className="border border-gray-700 p-1 font-bold w-[36px]"></th>
+                        <th className="border border-gray-700 p-1 font-bold w-[95px]">Date</th>
                         <th className="border border-gray-700 p-1 font-bold">Home</th>
                         <th className="border border-gray-700 p-1 font-bold">Away</th>
                         <th className="border border-gray-700 p-1 font-bold">Venue</th>
@@ -582,24 +581,23 @@ export default function GrahamSpicerBPage() {
                     </thead>
                     <tbody>
                       {tvView === 'GS1' && [
-                        { date: '06-10-26', day: 'Tue', home: 'GS 1', away: 'Cheam', venue: 'GSTTC' },
-                        { date: '15-10-26', day: 'Thu', home: 'GS 3', away: 'GS 1', venue: 'GSTTC' },
-                        { date: '27-10-26', day: 'Tue', home: 'GS 1', away: 'GS 5', venue: 'GSTTC' },
-                        { date: '04-11-26', day: 'Wed', home: 'Malden 1', away: 'GS 1', venue: 'Malden TTC' },
-                        { date: '17-11-26', day: 'Tue', home: 'GS 1', away: 'GS 4', venue: 'GSTTC' },
-                        { date: '24-11-26', day: 'Tue', home: 'Teddington 1', away: 'GS 1', venue: 'Teddington TTC' },
-                        { date: '08-12-26', day: 'Tue', home: 'GS 1', away: 'GS 2', venue: 'GSTTC' },
-                        { date: '26-01-27', day: 'Tue', home: 'Cheam', away: 'GS 1', venue: 'Cheam Social Club' },
-                        { date: '02-02-27', day: 'Tue', home: 'GS 1', away: 'GS 3', venue: 'GSTTC' },
-                        { date: '16-02-27', day: 'Tue', home: 'GS 5', away: 'GS 1', venue: 'GSTTC' },
-                        { date: '23-02-27', day: 'Tue', home: 'GS 1', away: 'Malden 1', venue: 'GSTTC' },
-                        { date: '10-03-27', day: 'Wed', home: 'GS 4', away: 'GS 1', venue: 'GSTTC' },
-                        { date: '16-03-27', day: 'Tue', home: 'GS 1', away: 'Teddington 1', venue: 'GSTTC' },
-                        { date: '25-03-27', day: 'Thu', home: 'GS 2', away: 'GS 1', venue: 'GSTTC' },
+                        { date: '06-10-26 (Tue)', home: 'GS 1', away: 'Cheam', venue: 'GSTTC' },
+                        { date: '15-10-26 (Thu)', home: 'GS 3', away: 'GS 1', venue: 'GSTTC' },
+                        { date: '27-10-26 (Tue)', home: 'GS 1', away: 'GS 5', venue: 'GSTTC' },
+                        { date: '04-11-26 (Wed)', home: 'Malden 1', away: 'GS 1', venue: 'Malden TTC' },
+                        { date: '17-11-26 (Tue)', home: 'GS 1', away: 'GS 4', venue: 'GSTTC' },
+                        { date: '24-11-26 (Tue)', home: 'Teddington 1', away: 'GS 1', venue: 'Teddington TTC' },
+                        { date: '08-12-26 (Tue)', home: 'GS 1', away: 'GS 2', venue: 'GSTTC' },
+                        { date: '26-01-27 (Tue)', home: 'Cheam', away: 'GS 1', venue: 'Cheam Social Club' },
+                        { date: '02-02-27 (Tue)', home: 'GS 1', away: 'GS 3', venue: 'GSTTC' },
+                        { date: '16-02-27 (Tue)', home: 'GS 5', away: 'GS 1', venue: 'GSTTC' },
+                        { date: '23-02-27 (Tue)', home: 'GS 1', away: 'Malden 1', venue: 'GSTTC' },
+                        { date: '10-03-27 (Wed)', home: 'GS 4', away: 'GS 1', venue: 'GSTTC' },
+                        { date: '16-03-27 (Tue)', home: 'GS 1', away: 'Teddington 1', venue: 'GSTTC' },
+                        { date: '25-03-27 (Thu)', home: 'GS 2', away: 'GS 1', venue: 'GSTTC' },
                       ].map((row, idx) => (
                         <tr key={idx} className="hover:bg-gray-800/30">
                           <td className="border border-gray-700 p-1 whitespace-nowrap">{row.date}</td>
-                          <td className="border border-gray-700 p-1 whitespace-nowrap">{row.day}</td>
                           <td className="border border-gray-700 p-1 font-bold truncate">{row.home}</td>
                           <td className="border border-gray-700 p-1 font-bold truncate">{row.away}</td>
                           <td className="border border-gray-700 p-1 truncate">{row.venue}</td>
@@ -607,24 +605,23 @@ export default function GrahamSpicerBPage() {
                       ))}
 
                       {tvView === 'GS2' && [
-                        { date: '29-09-26', day: 'Tue', home: 'Cheam', away: 'GS 2', venue: 'Cheam Social Club' },
-                        { date: '08-10-26', day: 'Thu', home: 'GS 2', away: 'GS 3', venue: 'GSTTC' },
-                        { date: '13-10-26', day: 'Tue', home: 'GS 5', away: 'GS 2', venue: 'GSTTC' },
-                        { date: '29-10-26', day: 'Thu', home: 'GS 2', away: 'Malden 1', venue: 'GSTTC' },
-                        { date: '04-11-26', day: 'Wed', home: 'GS 4', away: 'GS 2', venue: 'GSTTC' },
-                        { date: '19-11-26', day: 'Thu', home: 'GS 2', away: 'Teddington 1', venue: 'GSTTC' },
-                        { date: '08-12-26', day: 'Tue', home: 'GS 1', away: 'GS 2', venue: 'GSTTC' },
-                        { date: '14-01-27', day: 'Thu', home: 'GS 2', away: 'Cheam', venue: 'GSTTC' },
-                        { date: '28-01-27', day: 'Thu', home: 'GS 3', away: 'GS 2', venue: 'GSTTC' },
-                        { date: '04-02-27', day: 'Thu', home: 'GS 2', away: 'GS 5', venue: 'GSTTC' },
-                        { date: '17-02-27', day: 'Wed', home: 'Malden 1', away: 'GS 2', venue: 'Malden TTC' },
-                        { date: '25-02-27', day: 'Thu', home: 'GS 2', away: 'GS 4', venue: 'GSTTC' },
-                        { date: '09-03-27', day: 'Tue', home: 'Teddington 1', away: 'GS 2', venue: 'Teddington TTC' },
-                        { date: '25-03-27', day: 'Thu', home: 'GS 2', away: 'GS 1', venue: 'GSTTC' },
+                        { date: '29-09-26 (Tue)', home: 'Cheam', away: 'GS 2', venue: 'Cheam Social Club' },
+                        { date: '08-10-26 (Thu)', home: 'GS 2', away: 'GS 3', venue: 'GSTTC' },
+                        { date: '13-10-26 (Tue)', home: 'GS 5', away: 'GS 2', venue: 'GSTTC' },
+                        { date: '29-10-26 (Thu)', home: 'GS 2', away: 'Malden 1', venue: 'GSTTC' },
+                        { date: '04-11-26 (Wed)', home: 'GS 4', away: 'GS 2', venue: 'GSTTC' },
+                        { date: '19-11-26 (Thu)', home: 'GS 2', away: 'Teddington 1', venue: 'GSTTC' },
+                        { date: '08-12-26 (Tue)', home: 'GS 1', away: 'GS 2', venue: 'GSTTC' },
+                        { date: '14-01-27 (Thu)', home: 'GS 2', away: 'Cheam', venue: 'GSTTC' },
+                        { date: '28-01-27 (Thu)', home: 'GS 3', away: 'GS 2', venue: 'GSTTC' },
+                        { date: '04-02-27 (Thu)', home: 'GS 2', away: 'GS 5', venue: 'GSTTC' },
+                        { date: '17-02-27 (Wed)', home: 'Malden 1', away: 'GS 2', venue: 'Malden TTC' },
+                        { date: '25-02-27 (Thu)', home: 'GS 2', away: 'GS 4', venue: 'GSTTC' },
+                        { date: '09-03-27 (Tue)', home: 'Teddington 1', away: 'GS 2', venue: 'Teddington TTC' },
+                        { date: '25-03-27 (Thu)', home: 'GS 2', away: 'GS 1', venue: 'GSTTC' },
                       ].map((row, idx) => (
                         <tr key={idx} className="hover:bg-gray-800/30">
                           <td className="border border-gray-700 p-1 whitespace-nowrap">{row.date}</td>
-                          <td className="border border-gray-700 p-1 whitespace-nowrap">{row.day}</td>
                           <td className="border border-gray-700 p-1 font-bold truncate">{row.home}</td>
                           <td className="border border-gray-700 p-1 font-bold truncate">{row.away}</td>
                           <td className="border border-gray-700 p-1 truncate">{row.venue}</td>
@@ -632,24 +629,23 @@ export default function GrahamSpicerBPage() {
                       ))}
 
                       {tvView === 'GS3' && [
-                        { date: '23-09-26', day: 'Wed', home: 'GS 4', away: 'GS 3', venue: 'GSTTC' },
-                        { date: '01-10-26', day: 'Thu', home: 'GS 3', away: 'Teddington 1', venue: 'GSTTC' },
-                        { date: '08-10-26', day: 'Thu', home: 'GS 2', away: 'GS 3', venue: 'GSTTC' },
-                        { date: '15-10-26', day: 'Thu', home: 'GS 3', away: 'GS 1', venue: 'GSTTC' },
-                        { date: '05-11-26', day: 'Thu', home: 'GS 3', away: 'Cheam', venue: 'GSTTC' },
-                        { date: '24-11-26', day: 'Tue', home: 'GS 5', away: 'GS 3', venue: 'GSTTC' },
-                        { date: '10-12-26', day: 'Thu', home: 'GS 3', away: 'Malden 1', venue: 'GSTTC' },
-                        { date: '07-01-27', day: 'Thu', home: 'GS 3', away: 'GS 4', venue: 'GSTTC' },
-                        { date: '12-01-27', day: 'Tue', home: 'Teddington 1', away: 'GS 3', venue: 'Teddington TTC' },
-                        { date: '28-01-27', day: 'Thu', home: 'GS 3', away: 'GS 2', venue: 'GSTTC' },
-                        { date: '02-02-27', day: 'Tue', home: 'GS 1', away: 'GS 3', venue: 'GSTTC' },
-                        { date: '23-02-27', day: 'Tue', home: 'Cheam', away: 'GS 3', venue: 'Cheam Social Club' },
-                        { date: '18-03-27', day: 'Thu', home: 'GS 3', away: 'GS 5', venue: 'GSTTC' },
-                        { date: '24-03-27', day: 'Wed', home: 'Malden 1', away: 'GS 3', venue: 'Malden TTC' },
+                        { date: '23-09-26 (Wed)', home: 'GS 4', away: 'GS 3', venue: 'GSTTC' },
+                        { date: '01-10-26 (Thu)', home: 'GS 3', away: 'Teddington 1', venue: 'GSTTC' },
+                        { date: '08-10-26 (Thu)', home: 'GS 2', away: 'GS 3', venue: 'GSTTC' },
+                        { date: '15-10-26 (Thu)', home: 'GS 3', away: 'GS 1', venue: 'GSTTC' },
+                        { date: '05-11-26 (Thu)', home: 'GS 3', away: 'Cheam', venue: 'GSTTC' },
+                        { date: '24-11-26 (Tue)', home: 'GS 5', away: 'GS 3', venue: 'GSTTC' },
+                        { date: '10-12-26 (Thu)', home: 'GS 3', away: 'Malden 1', venue: 'GSTTC' },
+                        { date: '07-01-27 (Thu)', home: 'GS 3', away: 'GS 4', venue: 'GSTTC' },
+                        { date: '12-01-27 (Tue)', home: 'Teddington 1', away: 'GS 3', venue: 'Teddington TTC' },
+                        { date: '28-01-27 (Thu)', home: 'GS 3', away: 'GS 2', venue: 'GSTTC' },
+                        { date: '02-02-27 (Tue)', home: 'GS 1', away: 'GS 3', venue: 'GSTTC' },
+                        { date: '23-02-27 (Tue)', home: 'Cheam', away: 'GS 3', venue: 'Cheam Social Club' },
+                        { date: '18-03-27 (Thu)', home: 'GS 3', away: 'GS 5', venue: 'GSTTC' },
+                        { date: '24-03-27 (Wed)', home: 'Malden 1', away: 'GS 3', venue: 'Malden TTC' },
                       ].map((row, idx) => (
                         <tr key={idx} className="hover:bg-gray-800/30">
                           <td className="border border-gray-700 p-1 whitespace-nowrap">{row.date}</td>
-                          <td className="border border-gray-700 p-1 whitespace-nowrap">{row.day}</td>
                           <td className="border border-gray-700 p-1 font-bold truncate">{row.home}</td>
                           <td className="border border-gray-700 p-1 font-bold truncate">{row.away}</td>
                           <td className="border border-gray-700 p-1 truncate">{row.venue}</td>
@@ -657,24 +653,23 @@ export default function GrahamSpicerBPage() {
                       ))}
 
                       {tvView === 'GS5' && [
-                        { date: '23-09-26', day: 'Wed', home: 'Malden 1', away: 'GS 5', venue: 'Malden TTC' },
-                        { date: '29-09-26', day: 'Tue', home: 'GS 5', away: 'GS 4', venue: 'GSTTC' },
-                        { date: '06-10-26', day: 'Tue', home: 'Teddington 1', away: 'GS 5', venue: 'Teddington TTC' },
-                        { date: '13-10-26', day: 'Tue', home: 'GS 5', away: 'GS 2', venue: 'GSTTC' },
-                        { date: '27-10-26', day: 'Tue', home: 'GS 1', away: 'GS 5', venue: 'GSTTC' },
-                        { date: '17-11-26', day: 'Tue', home: 'Cheam', away: 'GS 5', venue: 'Cheam Social Club' },
-                        { date: '24-11-26', day: 'Tue', home: 'GS 5', away: 'GS 3', venue: 'GSTTC' },
-                        { date: '05-01-27', day: 'Tue', home: 'GS 5', away: 'Malden 1', venue: 'GSTTC' },
-                        { date: '13-01-27', day: 'Wed', home: 'GS 4', away: 'GS 5', venue: 'GSTTC' },
-                        { date: '26-01-27', day: 'Tue', home: 'GS 5', away: 'Teddington 1', venue: 'Teddington TTC' },
-                        { date: '04-02-27', day: 'Thu', home: 'GS 2', away: 'GS 5', venue: 'GSTTC' },
-                        { date: '16-02-27', day: 'Tue', home: 'GS 5', away: 'GS 1', venue: 'GSTTC' },
-                        { date: '09-03-27', day: 'Tue', home: 'GS 5', away: 'Cheam', venue: 'GSTTC' },
-                        { date: '18-03-27', day: 'Thu', home: 'GS 3', away: 'GS 5', venue: 'GSTTC' },
+                        { date: '23-09-26 (Wed)', home: 'Malden 1', away: 'GS 5', venue: 'Malden TTC' },
+                        { date: '29-09-26 (Tue)', home: 'GS 5', away: 'GS 4', venue: 'GSTTC' },
+                        { date: '06-10-26 (Tue)', home: 'Teddington 1', away: 'GS 5', venue: 'Teddington TTC' },
+                        { date: '13-10-26 (Tue)', home: 'GS 5', away: 'GS 2', venue: 'GSTTC' },
+                        { date: '27-10-26 (Tue)', home: 'GS 1', away: 'GS 5', venue: 'GSTTC' },
+                        { date: '17-11-26 (Tue)', home: 'Cheam', away: 'GS 5', venue: 'Cheam Social Club' },
+                        { date: '24-11-26 (Tue)', home: 'GS 5', away: 'GS 3', venue: 'GSTTC' },
+                        { date: '05-01-27 (Tue)', home: 'GS 5', away: 'Malden 1', venue: 'GSTTC' },
+                        { date: '13-01-27 (Wed)', home: 'GS 4', away: 'GS 5', venue: 'GSTTC' },
+                        { date: '26-01-27 (Tue)', home: 'GS 5', away: 'Teddington 1', venue: 'Teddington TTC' },
+                        { date: '04-02-27 (Thu)', home: 'GS 2', away: 'GS 5', venue: 'GSTTC' },
+                        { date: '16-02-27 (Tue)', home: 'GS 5', away: 'GS 1', venue: 'GSTTC' },
+                        { date: '09-03-27 (Tue)', home: 'GS 5', away: 'Cheam', venue: 'GSTTC' },
+                        { date: '18-03-27 (Thu)', home: 'GS 3', away: 'GS 5', venue: 'GSTTC' },
                       ].map((row, idx) => (
                         <tr key={idx} className="hover:bg-gray-800/30">
                           <td className="border border-gray-700 p-1 whitespace-nowrap">{row.date}</td>
-                          <td className="border border-gray-700 p-1 whitespace-nowrap">{row.day}</td>
                           <td className="border border-gray-700 p-1 font-bold truncate">{row.home}</td>
                           <td className="border border-gray-700 p-1 font-bold truncate">{row.away}</td>
                           <td className="border border-gray-700 p-1 truncate">{row.venue}</td>
