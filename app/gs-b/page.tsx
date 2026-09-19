@@ -14,6 +14,9 @@ export default function GrahamSpicerBPage() {
 
   const [selectedPlayer, setSelectedPlayer] = useState('');
   
+  // 新增：用於控制 MISC 頁面中 Thames Valley 顯示哪一個球隊的表格 ('GS1' | 'GS2' | 'GS3' | 'GS5' | null)
+  const [tvView, setTvView] = useState<string | null>(null);
+  
   // 每場獨立的 Lineup, Match Card Record 等資料 (以 fixtureId 作為 key)，直接對應並同步儲存
   const [fixtureMatchRecords, setFixtureMatchRecords] = useState<{
     [fixtureId: string]: {
@@ -127,7 +130,6 @@ export default function GrahamSpicerBPage() {
   const allPlayerNames = data?.players?.map((p: any) => p.subName) || [];
   const currentAvailability = availabilityMap[selectedFixtureId] || { going: [], cantGo: [], tbc: [...allPlayerNames] };
 
-  // 取得當前選中比賽的獨立 record
   const currentFixtureRecord = fixtureMatchRecords[selectedFixtureId] || getDefaultFixtureRecord();
   const selectedLineup = currentFixtureRecord.lineup || ['', '', ''];
   const opponentNames = currentFixtureRecord.opponentNames || ['', '', ''];
@@ -187,7 +189,6 @@ export default function GrahamSpicerBPage() {
     return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(addressToUse)}`;
   };
 
-  // 取得特定球員對應的外部個人網頁連結
   const getPlayerProfileUrl = (subName: string) => {
     if (subName === 'CC') {
       return 'https://sdttl.ttleagues.com/league/4624/player/637d039b-0db1-4439-9542-03465b51513b';
@@ -494,35 +495,198 @@ export default function GrahamSpicerBPage() {
 
         {activeTab === 'misc' && (
           <div className="space-y-3">
-            <div className="bg-[#0f1626] border border-gray-800/80 rounded-2xl p-4 space-y-4 shadow-xl">
-              <h3 className="text-xs font-black tracking-wider text-blue-400 uppercase border-b border-gray-800/80 pb-2">LEAGUE TABLES</h3>
-              
-              <div className="space-y-3">
-                <div className="bg-[#0a0e19] border border-gray-800/60 rounded-xl p-3 hover:border-blue-500/50 transition">
-                  <a
-                    href="https://sdttl.ttleagues.com/league/4624/division/13138/table"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-xs font-bold text-gray-100 hover:text-blue-400 underline flex items-center justify-between transition"
-                  >
-                    <span>Table 2026-27 Season</span>
-                    <span className="text-blue-400 text-sm">🔗</span>
-                  </a>
+            {tvView === null ? (
+              <>
+                <div className="bg-[#0f1626] border border-gray-800/80 rounded-2xl p-4 space-y-4 shadow-xl">
+                  <h3 className="text-xs font-black tracking-wider text-blue-400 uppercase border-b border-gray-800/80 pb-2">LEAGUE TABLES</h3>
+                  
+                  <div className="space-y-3">
+                    <div className="bg-[#0a0e19] border border-gray-800/60 rounded-xl p-3 hover:border-blue-500/50 transition">
+                      <a
+                        href="https://sdttl.ttleagues.com/league/4624/division/13138/table"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs font-bold text-gray-100 hover:text-blue-400 underline flex items-center justify-between transition"
+                      >
+                        <span>Table 2026-27 Season</span>
+                        <span className="text-blue-400 text-sm">🔗</span>
+                      </a>
+                    </div>
+
+                    <div className="bg-[#0a0e19] border border-gray-800/60 rounded-xl p-3 hover:border-blue-500/50 transition">
+                      <a
+                        href="https://sdttl.ttleagues.com/league/3938/division/10975/table"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs font-bold text-gray-100 hover:text-blue-400 underline flex items-center justify-between transition"
+                      >
+                        <span>Table 2025-26 Season</span>
+                        <span className="text-blue-400 text-sm">🔗</span>
+                      </a>
+                    </div>
+                  </div>
                 </div>
 
-                <div className="bg-[#0a0e19] border border-gray-800/60 rounded-xl p-3 hover:border-blue-500/50 transition">
-                  <a
-                    href="https://sdttl.ttleagues.com/league/3938/division/10975/table"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-xs font-bold text-gray-100 hover:text-blue-400 underline flex items-center justify-between transition"
+                <div className="bg-[#0f1626] border border-gray-800/80 rounded-2xl p-4 space-y-4 shadow-xl">
+                  <h3 className="text-xs font-black tracking-wider text-blue-400 uppercase border-b border-gray-800/80 pb-2">Thames Valley Table Tennis League Fixture</h3>
+                  <div className="flex flex-wrap gap-2 pt-1">
+                    <button
+                      onClick={() => setTvView('GS1')}
+                      className="bg-[#1c273c] hover:bg-blue-600/35 text-blue-400 border border-blue-500/40 px-3 py-2 rounded-xl text-xs font-bold transition"
+                    >
+                      GS 1
+                    </button>
+                    <button
+                      onClick={() => setTvView('GS2')}
+                      className="bg-[#1c273c] hover:bg-blue-600/35 text-blue-400 border border-blue-500/40 px-3 py-2 rounded-xl text-xs font-bold transition"
+                    >
+                      GS 2
+                    </button>
+                    <button
+                      onClick={() => setTvView('GS3')}
+                      className="bg-[#1c273c] hover:bg-blue-600/35 text-blue-400 border border-blue-500/40 px-3 py-2 rounded-xl text-xs font-bold transition"
+                    >
+                      GS 3
+                    </button>
+                    <button
+                      onClick={() => setTvView('GS5')}
+                      className="bg-[#1c273c] hover:bg-blue-600/35 text-blue-400 border border-blue-500/40 px-3 py-2 rounded-xl text-xs font-bold transition"
+                    >
+                      GS 5
+                    </button>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <div className="bg-[#0f1626] border border-gray-800/80 rounded-2xl p-4 space-y-4 shadow-xl">
+                <div className="flex justify-between items-center border-b border-gray-800/80 pb-2">
+                  <h3 className="text-xs font-black tracking-wider text-blue-400 uppercase">
+                    Fixture for {tvView === 'GS1' ? 'GS 1' : tvView === 'GS2' ? 'GS 2' : tvView === 'GS3' ? 'GS 3' : 'GS 5'}
+                  </h3>
+                  <button
+                    onClick={() => setTvView(null)}
+                    className="bg-[#1c273c] hover:bg-blue-600/35 text-blue-400 border border-blue-500/40 px-2.5 py-1 rounded-lg text-xs font-bold transition"
                   >
-                    <span>Table 2025-26 Season</span>
-                    <span className="text-blue-400 text-sm">🔗</span>
-                  </a>
+                    Back
+                  </button>
+                </div>
+
+                <div className="overflow-x-auto">
+                  <table className="w-full text-center border-collapse border border-gray-700 text-[11px]">
+                    <thead>
+                      <tr className="bg-[#121929] text-gray-300">
+                        <th className="border border-gray-700 p-1.5 font-bold">Date</th>
+                        <th className="border border-gray-700 p-1.5 font-bold"></th>
+                        <th className="border border-gray-700 p-1.5 font-bold">Home</th>
+                        <th className="border border-gray-700 p-1.5 font-bold">Away</th>
+                        <th className="border border-gray-700 p-1.5 font-bold">Venue</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {tvView === 'GS1' && [
+                        { date: '06-Oct-26', day: 'Tue', home: 'GS 1', away: 'Cheam', venue: 'GSTTC' },
+                        { date: '15-Oct-26', day: 'Thu', home: 'GS 3', away: 'GS 1', venue: 'GSTTC' },
+                        { date: '27-Oct-26', day: 'Tue', home: 'GS 1', away: 'GS 5', venue: 'GSTTC' },
+                        { date: '04-Nov-26', day: 'Wed', home: 'Malden 1', away: 'GS 1', venue: 'Malden TTC' },
+                        { date: '17-Nov-26', day: 'Tue', home: 'GS 1', away: 'GS 4', venue: 'GSTTC' },
+                        { date: '24-Nov-26', day: 'Tue', home: 'Teddington 1', away: 'GS 1', venue: 'Teddington TTC' },
+                        { date: '08-Dec-26', day: 'Tue', home: 'GS 1', away: 'GS 2', venue: 'GSTTC' },
+                        { date: '26-Jan-27', day: 'Tue', home: 'Cheam', away: 'GS 1', venue: 'Cheam Social Club' },
+                        { date: '02-Feb-27', day: 'Tue', home: 'GS 1', away: 'GS 3', venue: 'GSTTC' },
+                        { date: '16-Feb-27', day: 'Tue', home: 'GS 5', away: 'GS 1', venue: 'GSTTC' },
+                        { date: '23-Feb-27', day: 'Tue', home: 'GS 1', away: 'Malden 1', venue: 'GSTTC' },
+                        { date: '10-Mar-27', day: 'Wed', home: 'GS 4', away: 'GS 1', venue: 'GSTTC' },
+                        { date: '16-Mar-27', day: 'Tue', home: 'GS 1', away: 'Teddington 1', venue: 'GSTTC' },
+                        { date: '25-Mar-27', day: 'Thu', home: 'GS 2', away: 'GS 1', venue: 'GSTTC' },
+                      ].map((row, idx) => (
+                        <tr key={idx} className="hover:bg-gray-800/30">
+                          <td className="border border-gray-700 p-1.5">{row.date}</td>
+                          <td className="border border-gray-700 p-1.5">{row.day}</td>
+                          <td className="border border-gray-700 p-1.5 font-bold">{row.home}</td>
+                          <td className="border border-gray-700 p-1.5 font-bold">{row.away}</td>
+                          <td className="border border-gray-700 p-1.5">{row.venue}</td>
+                        </tr>
+                      ))}
+
+                      {tvView === 'GS2' && [
+                        { date: '29-Sep-26', day: 'Tue', home: 'Cheam', away: 'GS 2', venue: 'Cheam Social Club' },
+                        { date: '08-Oct-26', day: 'Thu', home: 'GS 2', away: 'GS 3', venue: 'GSTTC' },
+                        { date: '13-Oct-26', day: 'Tue', home: 'GS 5', away: 'GS 2', venue: 'GSTTC' },
+                        { date: '29-Oct-26', day: 'Thu', home: 'GS 2', away: 'Malden 1', venue: 'GSTTC' },
+                        { date: '04-Nov-26', day: 'Wed', home: 'GS 4', away: 'GS 2', venue: 'GSTTC' },
+                        { date: '19-Nov-26', day: 'Thu', home: 'GS 2', away: 'Teddington 1', venue: 'GSTTC' },
+                        { date: '08-Dec-26', day: 'Tue', home: 'GS 1', away: 'GS 2', venue: 'GSTTC' },
+                        { date: '14-Jan-27', day: 'Thu', home: 'GS 2', away: 'Cheam', venue: 'GSTTC' },
+                        { date: '28-Jan-27', day: 'Thu', home: 'GS 3', away: 'GS 2', venue: 'GSTTC' },
+                        { date: '04-Feb-27', day: 'Thu', home: 'GS 2', away: 'GS 5', venue: 'GSTTC' },
+                        { date: '17-Feb-27', day: 'Wed', home: 'Malden 1', away: 'GS 2', venue: 'Malden TTC' },
+                        { date: '25-Feb-27', day: 'Thu', home: 'GS 2', away: 'GS 4', venue: 'GSTTC' },
+                        { date: '09-Mar-27', day: 'Tue', home: 'Teddington 1', away: 'GS 2', venue: 'Teddington TTC' },
+                        { date: '25-Mar-27', day: 'Thu', home: 'GS 2', away: 'GS 1', venue: 'GSTTC' },
+                      ].map((row, idx) => (
+                        <tr key={idx} className="hover:bg-gray-800/30">
+                          <td className="border border-gray-700 p-1.5">{row.date}</td>
+                          <td className="border border-gray-700 p-1.5">{row.day}</td>
+                          <td className="border border-gray-700 p-1.5 font-bold">{row.home}</td>
+                          <td className="border border-gray-700 p-1.5 font-bold">{row.away}</td>
+                          <td className="border border-gray-700 p-1.5">{row.venue}</td>
+                        </tr>
+                      ))}
+
+                      {tvView === 'GS3' && [
+                        { date: '23-Sep-26', day: 'Wed', home: 'GS 4', away: 'GS 3', venue: 'GSTTC' },
+                        { date: '01-Oct-26', day: 'Thu', home: 'GS 3', away: 'Teddington 1', venue: 'GSTTC' },
+                        { date: '08-Oct-26', day: 'Thu', home: 'GS 2', away: 'GS 3', venue: 'GSTTC' },
+                        { date: '15-Oct-26', day: 'Thu', home: 'GS 3', away: 'GS 1', venue: 'GSTTC' },
+                        { date: '05-Nov-26', day: 'Thu', home: 'GS 3', away: 'Cheam', venue: 'GSTTC' },
+                        { date: '24-Nov-26', day: 'Tue', home: 'GS 5', away: 'GS 3', venue: 'GSTTC' },
+                        { date: '10-Dec-26', day: 'Thu', home: 'GS 3', away: 'Malden 1', venue: 'GSTTC' },
+                        { date: '07-Jan-27', day: 'Thu', home: 'GS 3', away: 'GS 4', venue: 'GSTTC' },
+                        { date: '12-Jan-27', day: 'Tue', home: 'Teddington 1', away: 'GS 3', venue: 'Teddington TTC' },
+                        { date: '28-Jan-27', day: 'Thu', home: 'GS 3', away: 'GS 2', venue: 'GSTTC' },
+                        { date: '02-Feb-27', day: 'Tue', home: 'GS 1', away: 'GS 3', venue: 'GSTTC' },
+                        { date: '23-Feb-27', day: 'Tue', home: 'Cheam', away: 'GS 3', venue: 'Cheam Social Club' },
+                        { date: '18-Mar-27', day: 'Thu', home: 'GS 3', away: 'GS 5', venue: 'GSTTC' },
+                        { date: '24-Mar-27', day: 'Wed', home: 'Malden 1', away: 'GS 3', venue: 'Malden TTC' },
+                      ].map((row, idx) => (
+                        <tr key={idx} className="hover:bg-gray-800/30">
+                          <td className="border border-gray-700 p-1.5">{row.date}</td>
+                          <td className="border border-gray-700 p-1.5">{row.day}</td>
+                          <td className="border border-gray-700 p-1.5 font-bold">{row.home}</td>
+                          <td className="border border-gray-700 p-1.5 font-bold">{row.away}</td>
+                          <td className="border border-gray-700 p-1.5">{row.venue}</td>
+                        </tr>
+                      ))}
+
+                      {tvView === 'GS5' && [
+                        { date: '23-Sep-26', day: 'Wed', home: 'Malden 1', away: 'GS 5', venue: 'Malden TTC' },
+                        { date: '29-Sep-26', day: 'Tue', home: 'GS 5', away: 'GS 4', venue: 'GSTTC' },
+                        { date: '06-Oct-26', day: 'Tue', home: 'Teddington 1', away: 'GS 5', venue: 'Teddington TTC' },
+                        { date: '13-Oct-26', day: 'Tue', home: 'GS 5', away: 'GS 2', venue: 'GSTTC' },
+                        { date: '27-Oct-26', day: 'Tue', home: 'GS 1', away: 'GS 5', venue: 'GSTTC' },
+                        { date: '17-Nov-26', day: 'Tue', home: 'Cheam', away: 'GS 5', venue: 'Cheam Social Club' },
+                        { date: '24-Nov-26', day: 'Tue', home: 'GS 5', away: 'GS 3', venue: 'GSTTC' },
+                        { date: '05-Jan-27', day: 'Tue', home: 'GS 5', away: 'Malden 1', venue: 'GSTTC' },
+                        { date: '13-Jan-27', day: 'Wed', home: 'GS 4', away: 'GS 5', venue: 'GSTTC' },
+                        { date: '26-Jan-27', day: 'Tue', home: 'GS 5', away: 'Teddington 1', venue: 'GSTTC' },
+                        { date: '04-Feb-27', day: 'Thu', home: 'GS 2', away: 'GS 5', venue: 'GSTTC' },
+                        { date: '16-Feb-27', day: 'Tue', home: 'GS 5', away: 'GS 1', venue: 'GSTTC' },
+                        { date: '09-Mar-27', day: 'Tue', home: 'GS 5', away: 'Cheam', venue: 'GSTTC' },
+                        { date: '18-Mar-27', day: 'Thu', home: 'GS 3', away: 'GS 5', venue: 'GSTTC' },
+                      ].map((row, idx) => (
+                        <tr key={idx} className="hover:bg-gray-800/30">
+                          <td className="border border-gray-700 p-1.5">{row.date}</td>
+                          <td className="border border-gray-700 p-1.5">{row.day}</td>
+                          <td className="border border-gray-700 p-1.5 font-bold">{row.home}</td>
+                          <td className="border border-gray-700 p-1.5 font-bold">{row.away}</td>
+                          <td className="border border-gray-700 p-1.5">{row.venue}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
               </div>
-            </div>
+            )}
           </div>
         )}
       </div>
