@@ -570,14 +570,14 @@ export default function GrahamSpicerBPage() {
                 </div>
 
                 <div className="overflow-x-auto">
-                  <table className="w-full text-center border-collapse border border-gray-700 text-[11px]">
+                  <table className="w-full text-center border-collapse border border-gray-700 text-[10px] table-fixed">
                     <thead>
                       <tr className="bg-[#121929] text-gray-300">
-                        <th className="border border-gray-700 p-1.5 font-bold">Date</th>
-                        <th className="border border-gray-700 p-1.5 font-bold"></th>
-                        <th className="border border-gray-700 p-1.5 font-bold">Home</th>
-                        <th className="border border-gray-700 p-1.5 font-bold">Away</th>
-                        <th className="border border-gray-700 p-1.5 font-bold">Venue</th>
+                        <th className="border border-gray-700 p-1 font-bold w-[72px]">Date</th>
+                        <th className="border border-gray-700 p-1 font-bold w-[36px]"></th>
+                        <th className="border border-gray-700 p-1 font-bold">Home</th>
+                        <th className="border border-gray-700 p-1 font-bold">Away</th>
+                        <th className="border border-gray-700 p-1 font-bold">Venue</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -598,11 +598,11 @@ export default function GrahamSpicerBPage() {
                         { date: '25-03-27', day: 'Thu', home: 'GS 2', away: 'GS 1', venue: 'GSTTC' },
                       ].map((row, idx) => (
                         <tr key={idx} className="hover:bg-gray-800/30">
-                          <td className="border border-gray-700 p-1.5">{row.date}</td>
-                          <td className="border border-gray-700 p-1.5">{row.day}</td>
-                          <td className="border border-gray-700 p-1.5 font-bold">{row.home}</td>
-                          <td className="border border-gray-700 p-1.5 font-bold">{row.away}</td>
-                          <td className="border border-gray-700 p-1.5">{row.venue}</td>
+                          <td className="border border-gray-700 p-1 whitespace-nowrap">{row.date}</td>
+                          <td className="border border-gray-700 p-1 whitespace-nowrap">{row.day}</td>
+                          <td className="border border-gray-700 p-1 font-bold truncate">{row.home}</td>
+                          <td className="border border-gray-700 p-1 font-bold truncate">{row.away}</td>
+                          <td className="border border-gray-700 p-1 truncate">{row.venue}</td>
                         </tr>
                       ))}
 
@@ -623,11 +623,11 @@ export default function GrahamSpicerBPage() {
                         { date: '25-03-27', day: 'Thu', home: 'GS 2', away: 'GS 1', venue: 'GSTTC' },
                       ].map((row, idx) => (
                         <tr key={idx} className="hover:bg-gray-800/30">
-                          <td className="border border-gray-700 p-1.5">{row.date}</td>
-                          <td className="border border-gray-700 p-1.5">{row.day}</td>
-                          <td className="border border-gray-700 p-1.5 font-bold">{row.home}</td>
-                          <td className="border border-gray-700 p-1.5 font-bold">{row.away}</td>
-                          <td className="border border-gray-700 p-1.5">{row.venue}</td>
+                          <td className="border border-gray-700 p-1 whitespace-nowrap">{row.date}</td>
+                          <td className="border border-gray-700 p-1 whitespace-nowrap">{row.day}</td>
+                          <td className="border border-gray-700 p-1 font-bold truncate">{row.home}</td>
+                          <td className="border border-gray-700 p-1 font-bold truncate">{row.away}</td>
+                          <td className="border border-gray-700 p-1 truncate">{row.venue}</td>
                         </tr>
                       ))}
 
@@ -648,11 +648,11 @@ export default function GrahamSpicerBPage() {
                         { date: '24-03-27', day: 'Wed', home: 'Malden 1', away: 'GS 3', venue: 'Malden TTC' },
                       ].map((row, idx) => (
                         <tr key={idx} className="hover:bg-gray-800/30">
-                          <td className="border border-gray-700 p-1.5">{row.date}</td>
-                          <td className="border border-gray-700 p-1.5">{row.day}</td>
-                          <td className="border border-gray-700 p-1.5 font-bold">{row.home}</td>
-                          <td className="border border-gray-700 p-1.5 font-bold">{row.away}</td>
-                          <td className="border border-gray-700 p-1.5">{row.venue}</td>
+                          <td className="border border-gray-700 p-1 whitespace-nowrap">{row.date}</td>
+                          <td className="border border-gray-700 p-1 whitespace-nowrap">{row.day}</td>
+                          <td className="border border-gray-700 p-1 font-bold truncate">{row.home}</td>
+                          <td className="border border-gray-700 p-1 font-bold truncate">{row.away}</td>
+                          <td className="border border-gray-700 p-1 truncate">{row.venue}</td>
                         </tr>
                       ))}
 
@@ -666,18 +666,18 @@ export default function GrahamSpicerBPage() {
                         { date: '24-11-26', day: 'Tue', home: 'GS 5', away: 'GS 3', venue: 'GSTTC' },
                         { date: '05-01-27', day: 'Tue', home: 'GS 5', away: 'Malden 1', venue: 'GSTTC' },
                         { date: '13-01-27', day: 'Wed', home: 'GS 4', away: 'GS 5', venue: 'GSTTC' },
-                        { date: '26-01-27', day: 'Tue', home: 'GS 5', away: 'Teddington 1', venue: 'GSTTC' },
+                        { date: '26-01-27', day: 'Tue', home: 'GS 5', away: 'Teddington 1', venue: 'Teddington TTC' },
                         { date: '04-02-27', day: 'Thu', home: 'GS 2', away: 'GS 5', venue: 'GSTTC' },
                         { date: '16-02-27', day: 'Tue', home: 'GS 5', away: 'GS 1', venue: 'GSTTC' },
                         { date: '09-03-27', day: 'Tue', home: 'GS 5', away: 'Cheam', venue: 'GSTTC' },
                         { date: '18-03-27', day: 'Thu', home: 'GS 3', away: 'GS 5', venue: 'GSTTC' },
                       ].map((row, idx) => (
                         <tr key={idx} className="hover:bg-gray-800/30">
-                          <td className="border border-gray-700 p-1.5">{row.date}</td>
-                          <td className="border border-gray-700 p-1.5">{row.day}</td>
-                          <td className="border border-gray-700 p-1.5 font-bold">{row.home}</td>
-                          <td className="border border-gray-700 p-1.5 font-bold">{row.away}</td>
-                          <td className="border border-gray-700 p-1.5">{row.venue}</td>
+                          <td className="border border-gray-700 p-1 whitespace-nowrap">{row.date}</td>
+                          <td className="border border-gray-700 p-1 whitespace-nowrap">{row.day}</td>
+                          <td className="border border-gray-700 p-1 font-bold truncate">{row.home}</td>
+                          <td className="border border-gray-700 p-1 font-bold truncate">{row.away}</td>
+                          <td className="border border-gray-700 p-1 truncate">{row.venue}</td>
                         </tr>
                       ))}
                     </tbody>
