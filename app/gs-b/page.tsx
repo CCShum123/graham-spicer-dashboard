@@ -273,13 +273,22 @@ export default function GrahamSpicerBPage() {
 
   const { totalH, totalA } = getTotalResults();
 
-  // 判斷當前選中的比賽是否已經過去
+  // 判斷當前選中的比賽是否已經過去 (用數字 YYYYMMDD 比較，精準穩陣)
   const isPastFixture = (() => {
     if (!currentMatchTarget) return false;
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const matchDate = new Date(`${currentMatchTarget.year || 2026} ${currentMatchTarget.month} ${currentMatchTarget.date}`);
-    return matchDate < today;
+    const now = new Date();
+    const todayNum = now.getFullYear() * 10000 + (now.getMonth() + 1) * 100 + now.getDate();
+
+    const mYear = Number(currentMatchTarget.year) || 2026;
+    const monthMap: { [key: string]: number } = {
+      Jan: 1, Feb: 2, Mar: 3, Apr: 4, May: 5, Jun: 6,
+      Jul: 7, Aug: 8, Sep: 9, Oct: 10, Nov: 11, Dec: 12
+    };
+    const mMonth = monthMap[currentMatchTarget.month] || 9;
+    const mDay = Number(currentMatchTarget.date) || 1;
+    const matchDateNum = mYear * 10000 + mMonth * 100 + mDay;
+
+    return matchDateNum < todayNum;
   })();
 
   return (
@@ -469,12 +478,19 @@ export default function GrahamSpicerBPage() {
           onClick={() => {
             if (data?.fixtures && data.fixtures.length > 0) {
               const now = new Date();
-              now.setHours(0, 0, 0, 0);
+              const todayNum = now.getFullYear() * 10000 + (now.getMonth() + 1) * 100 + now.getDate();
 
               const upcomingMatch = data.fixtures.find((f: any) => {
-                const mDate = new Date(`${f.year || 2026} ${f.month} ${f.date}`);
-                mDate.setHours(0, 0, 0, 0);
-                return mDate >= now;
+                const mYear = Number(f.year) || 2026;
+                const monthMap: { [key: string]: number } = {
+                  Jan: 1, Feb: 2, Mar: 3, Apr: 4, May: 5, Jun: 6,
+                  Jul: 7, Aug: 8, Sep: 9, Oct: 10, Nov: 11, Dec: 12
+                };
+                const mMonth = monthMap[f.month] || 9;
+                const mDay = Number(f.date) || 1;
+                const matchDateNum = mYear * 10000 + mMonth * 100 + mDay;
+
+                return matchDateNum >= todayNum;
               });
 
               if (upcomingMatch) {
