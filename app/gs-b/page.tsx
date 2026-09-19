@@ -273,7 +273,7 @@ export default function GrahamSpicerBPage() {
 
   const { totalH, totalA } = getTotalResults();
 
-  // 判斷當前選中的比賽是否已經過去 (用數字 YYYYMMDD 比較，精準穩陣)
+  // 判斷當前選中的比賽是否已經過去 (只有當比賽日期 < 今日日期時先算 past)
   const isPastFixture = (() => {
     if (!currentMatchTarget) return false;
     const now = new Date();
@@ -288,6 +288,7 @@ export default function GrahamSpicerBPage() {
     const mDay = Number(currentMatchTarget.date) || 1;
     const matchDateNum = mYear * 10000 + mMonth * 100 + mDay;
 
+    // 嚴格細過今日先係 past，今日或未來全部係 coming
     return matchDateNum < todayNum;
   })();
 
