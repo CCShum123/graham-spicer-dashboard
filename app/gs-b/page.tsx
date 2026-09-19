@@ -273,23 +273,27 @@ export default function GrahamSpicerBPage() {
 
   const { totalH, totalA } = getTotalResults();
 
-  // 判斷當前選中的比賽是否已經過去 (只有當比賽日期 < 今日日期時先算 past)
+  // 穩陣版日期轉換 helper（支援標準化解析英文月份）
+  const parseFixtureDateNum = (f: any) => {
+    if (!f) return 0;
+    const mYear = Number(f.year) || 2026;
+    const monthMap: { [key: string]: number } = {
+      Jan: 1, Janu: 1, Feb: 2.5, Mar: 3, Apr: 4, May: 5, Jun: 6,
+      Jul: 7, Aug: 8, Sep: 9, Sept: 9, Oct: 10, Nov: 11, Dec: 12
+    };
+    // 模糊比對月份前三字元
+    const monthKey = f.month ? f.month.substring(0, 3) : 'Sep';
+    const mMonth = monthMap[monthKey] || 9;
+    const mDay = Number(f.date) || 1;
+    return mYear * 10000 + mMonth * 100 + mDay;
+  };
+
+  // 判斷當前選中的比賽是否已經過去
   const isPastFixture = (() => {
     if (!currentMatchTarget) return false;
     const now = new Date();
     const todayNum = now.getFullYear() * 10000 + (now.getMonth() + 1) * 100 + now.getDate();
-
-    const mYear = Number(currentMatchTarget.year) || 2026;
-    const monthMap: { [key: string]: number } = {
-      Jan: 1, Feb: 2, Mar: 3, Apr: 4, May: 5, Jun: 6,
-      Jul: 7, Aug: 8, Sep: 9, Oct: 10, Nov: 11, Dec: 12
-    };
-    const mMonth = monthMap[currentMatchTarget.month] || 9;
-    const mDay = Number(currentMatchTarget.date) || 1;
-    const matchDateNum = mYear * 10000 + mMonth * 100 + mDay;
-
-    // 嚴格細過今日先係 past，今日或未來全部係 coming
-    return matchDateNum < todayNum;
+    return parseFixtureDateNum(currentMatchTarget) < todayNum;
   })();
 
   return (
@@ -481,17 +485,9 @@ export default function GrahamSpicerBPage() {
               const now = new Date();
               const todayNum = now.getFullYear() * 10000 + (now.getMonth() + 1) * 100 + now.getDate();
 
+              // 尋找第一場日期大於或等於今日嘅比賽作為最近嚟緊一場
               const upcomingMatch = data.fixtures.find((f: any) => {
-                const mYear = Number(f.year) || 2026;
-                const monthMap: { [key: string]: number } = {
-                  Jan: 1, Feb: 2, Mar: 3, Apr: 4, May: 5, Jun: 6,
-                  Jul: 7, Aug: 8, Sep: 9, Oct: 10, Nov: 11, Dec: 12
-                };
-                const mMonth = monthMap[f.month] || 9;
-                const mDay = Number(f.date) || 1;
-                const matchDateNum = mYear * 10000 + mMonth * 100 + mDay;
-
-                return matchDateNum >= todayNum;
+                return parseFixtureDateNum(f) >= todayNum;
               });
 
               if (upcomingMatch) {
