@@ -273,22 +273,23 @@ export default function GrahamSpicerBPage() {
 
   const { totalH, totalA } = getTotalResults();
 
-  // 穩陣版日期轉換 helper（支援標準化解析英文月份）
+  // 穩陣版日期轉換 helper（將任何格式的月份轉成數字）
   const parseFixtureDateNum = (f: any) => {
     if (!f) return 0;
     const mYear = Number(f.year) || 2026;
     const monthMap: { [key: string]: number } = {
-      Jan: 1, Janu: 1, Feb: 2.5, Mar: 3, Apr: 4, May: 5, Jun: 6,
-      Jul: 7, Aug: 8, Sep: 9, Sept: 9, Oct: 10, Nov: 11, Dec: 12
+      Jan: 1, Feb: 2, Mar: 3, Apr: 4, May: 5, Jun: 6,
+      Jul: 7, Aug: 8, Sep: 9, Oct: 10, Nov: 11, Dec: 12
     };
-    // 模糊比對月份前三字元
-    const monthKey = f.month ? f.month.substring(0, 3) : 'Sep';
+    const rawMonth = f.month ? f.month.trim() : 'Sep';
+    // 取前三個字母來對應月份
+    const monthKey = rawMonth.substring(0, 3);
     const mMonth = monthMap[monthKey] || 9;
     const mDay = Number(f.date) || 1;
     return mYear * 10000 + mMonth * 100 + mDay;
   };
 
-  // 判斷當前選中的比賽是否已經過去
+  // 判斷當前選中的比賽是否已經過去 (只有小於今日先係 past)
   const isPastFixture = (() => {
     if (!currentMatchTarget) return false;
     const now = new Date();
