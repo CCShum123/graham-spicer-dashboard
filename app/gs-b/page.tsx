@@ -241,15 +241,18 @@ export default function GrahamSpicerBPage() {
     return { totalH, totalA };
   };
 
+  // 修改：只計算 1 至 9 場單打的勝場數，不包括第 10 場雙打
   const getPlayerWonCount = (code: string) => {
     let wins = 0;
     const structure = getMatchStructure();
     structure.forEach((m) => {
-      const res = calculateMatchWinner(m.match);
-      if (res === 'L') {
-        if (m.homeCode.includes(code)) wins++;
-      } else if (res === 'R') {
-        if (m.awayCode.includes(code)) wins++;
+      if (m.match <= 9) { // 確保只計算單打 (1-9)
+        const res = calculateMatchWinner(m.match);
+        if (res === 'L') {
+          if (m.homeCode.includes(code)) wins++;
+        } else if (res === 'R') {
+          if (m.awayCode.includes(code)) wins++;
+        }
       }
     });
     return wins > 0 ? wins : '-';
@@ -270,6 +273,15 @@ export default function GrahamSpicerBPage() {
 
   const { totalH, totalA } = getTotalResults();
 
+  // 判斷當前選中的比賽是否已經過去 (小於今日日期)
+  const isPastFixture = (() => {
+    if (!currentMatchTarget) return false;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const matchDate = new Date(`${currentMatchTarget.year || 2026} ${currentMatchTarget.month} ${currentMatchTarget.date}`);
+    return matchDate < today;
+  })();
+
   return (
     <main className="min-h-screen bg-[#070a12] text-white pb-28 font-sans text-xs">
       <header className="sticky top-0 z-20 bg-[#070a12]/90 px-4 py-3 border-b border-gray-800/40 flex justify-between items-center backdrop-blur-md">
@@ -287,8 +299,9 @@ export default function GrahamSpicerBPage() {
             <div className="flex justify-between items-start border-b border-gray-800/80 pb-3 gap-1.5">
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-1.5 mb-1">
+                  {/* 修改 1 & 2：若比賽已過期顯示 PAST FIXTURE，否則統一顯示 COMING FIXTURE */}
                   <span className="text-[10px] font-bold text-blue-400 uppercase tracking-wider">
-                    {selectedFixtureId === data?.nextFixture?.id ? 'COMING FIXTURE' : 'SELECTED FIXTURE'}
+                    {isPastFixture ? 'PAST FIXTURE' : 'COMING FIXTURE'}
                   </span>
                   <span className={`text-[9px] font-black px-1.5 py-0.5 rounded ${isHomeTeam ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-amber-500/20 text-amber-400 border border-amber-500/30'}`}>
                     {isHomeTeam ? 'HOME' : 'AWAY'}
