@@ -241,12 +241,12 @@ export default function GrahamSpicerBPage() {
     return { totalH, totalA };
   };
 
-  // 修改：只計算 1 至 9 場單打的勝場數，不包括第 10 場雙打
+  // 只計算 1 至 9 場單打的勝場數，不包括第 10 場雙打
   const getPlayerWonCount = (code: string) => {
     let wins = 0;
     const structure = getMatchStructure();
     structure.forEach((m) => {
-      if (m.match <= 9) { // 確保只計算單打 (1-9)
+      if (m.match <= 9) {
         const res = calculateMatchWinner(m.match);
         if (res === 'L') {
           if (m.homeCode.includes(code)) wins++;
@@ -273,7 +273,7 @@ export default function GrahamSpicerBPage() {
 
   const { totalH, totalA } = getTotalResults();
 
-  // 判斷當前選中的比賽是否已經過去 (小於今日日期)
+  // 判斷當前選中的比賽是否已經過去
   const isPastFixture = (() => {
     if (!currentMatchTarget) return false;
     const today = new Date();
@@ -299,7 +299,6 @@ export default function GrahamSpicerBPage() {
             <div className="flex justify-between items-start border-b border-gray-800/80 pb-3 gap-1.5">
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-1.5 mb-1">
-                  {/* 修改 1 & 2：若比賽已過期顯示 PAST FIXTURE，否則統一顯示 COMING FIXTURE */}
                   <span className="text-[10px] font-bold text-blue-400 uppercase tracking-wider">
                     {isPastFixture ? 'PAST FIXTURE' : 'COMING FIXTURE'}
                   </span>
@@ -469,18 +468,19 @@ export default function GrahamSpicerBPage() {
         <button
           onClick={() => {
             if (data?.fixtures && data.fixtures.length > 0) {
-              const today = new Date();
-              today.setHours(0, 0, 0, 0);
+              const now = new Date();
+              now.setHours(0, 0, 0, 0);
 
               const upcomingMatch = data.fixtures.find((f: any) => {
-                const matchDate = new Date(`${f.year || 2026} ${f.month} ${f.date}`);
-                return matchDate >= today;
+                const mDate = new Date(`${f.year || 2026} ${f.month} ${f.date}`);
+                mDate.setHours(0, 0, 0, 0);
+                return mDate >= now;
               });
 
               if (upcomingMatch) {
                 setSelectedFixtureId(upcomingMatch.id);
-              } else if (data?.nextFixture?.id) {
-                setSelectedFixtureId(data.nextFixture.id);
+              } else {
+                setSelectedFixtureId(data.fixtures[data.fixtures.length - 1].id);
               }
             } else if (data?.nextFixture?.id) {
               setSelectedFixtureId(data.nextFixture.id);
