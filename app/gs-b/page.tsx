@@ -7,7 +7,6 @@ export default function GrahamSpicerBPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // 新增 'misc' 到 activeTab 狀態中
   const [activeTab, setActiveTab] = useState<'next' | 'fixtures' | 'player' | 'misc'>('next');
   const [selectedFixtureId, setSelectedFixtureId] = useState<string>('');
 
@@ -188,6 +187,20 @@ export default function GrahamSpicerBPage() {
     return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(addressToUse)}`;
   };
 
+  // 取得特定球員對應的外部個人網頁連結
+  const getPlayerProfileUrl = (subName: string) => {
+    if (subName === 'CC') {
+      return 'https://sdttl.ttleagues.com/league/4624/player/637d039b-0db1-4439-9542-03465b51513b';
+    }
+    if (subName === 'Daniel') {
+      return 'https://sdttl.ttleagues.com/league/4624/player/407de572-2622-4264-a62d-06b3d3230719';
+    }
+    if (subName === 'Ajay') {
+      return 'https://sdttl.ttleagues.com/league/4624/player/ed392470-8a86-4456-88bb-74b2f83485e0';
+    }
+    return '';
+  };
+
   const getMatchStructure = () => {
     return [
       { match: 1, label: 'A v X', homeCode: 'A', awayCode: 'X' },
@@ -242,7 +255,6 @@ export default function GrahamSpicerBPage() {
     return { totalH, totalA };
   };
 
-  // 只計算 1 至 9 場單打的勝場數，不包括第 10 場雙打
   const getPlayerWonCount = (code: string) => {
     let wins = 0;
     const structure = getMatchStructure();
@@ -274,7 +286,6 @@ export default function GrahamSpicerBPage() {
 
   const { totalH, totalA } = getTotalResults();
 
-  // 穩陣版 Helper：將任何 fixture 物件轉成可信賴嘅 JavaScript Date 物件
   const getFixtureDateObj = (f: any) => {
     if (!f) return new Date();
     const dateStr = `${f.month || 'Sep'} ${f.date || 1} ${f.year || 2026}`;
@@ -286,7 +297,6 @@ export default function GrahamSpicerBPage() {
     return d;
   };
 
-  // 判斷當前選中的比賽是否已經過去
   const isPastFixture = (() => {
     if (!currentMatchTarget) return false;
     const today = new Date();
@@ -455,20 +465,33 @@ export default function GrahamSpicerBPage() {
 
         {activeTab === 'player' && (
           <div className="space-y-2.5">
-            {data?.players?.map((player: any) => (
-              <div key={player.number} className="bg-[#0f1626] border border-gray-800/80 rounded-2xl p-3 flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <span className="w-8 h-8 rounded-xl bg-[#080c16] flex items-center justify-center font-black text-xs">{player.number}</span>
-                  <div>
-                    <h3 className="text-xs font-bold">{player.subName} <span className="text-[11px] text-gray-400 font-normal">({player.name})</span></h3>
+            {data?.players?.map((player: any) => {
+              const profileUrl = getPlayerProfileUrl(player.subName);
+              const cardContent = (
+                <div className="bg-[#0f1626] border border-gray-800/80 hover:border-blue-500/50 transition rounded-2xl p-3 flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <span className="w-8 h-8 rounded-xl bg-[#080c16] flex items-center justify-center font-black text-xs">{player.number}</span>
+                    <div>
+                      <h3 className="text-xs font-bold text-white">
+                        {player.subName} <span className="text-[11px] text-gray-400 font-normal">({player.name})</span>
+                      </h3>
+                    </div>
                   </div>
+                  {profileUrl && <span className="text-blue-400 text-sm">🔗</span>}
                 </div>
-              </div>
-            ))}
+              );
+
+              return profileUrl ? (
+                <a key={player.number} href={profileUrl} target="_blank" rel="noopener noreferrer" className="block transition">
+                  {cardContent}
+                </a>
+              ) : (
+                <div key={player.number}>{cardContent}</div>
+              );
+            })}
           </div>
         )}
 
-        {/* 新增的 MISC 頁面內容 */}
         {activeTab === 'misc' && (
           <div className="space-y-3">
             <div className="bg-[#0f1626] border border-gray-800/80 rounded-2xl p-4 space-y-4 shadow-xl">
@@ -550,7 +573,6 @@ export default function GrahamSpicerBPage() {
           PLAYER
         </button>
 
-        {/* 新增在 PLAYER 按鈕右側的 MISC 按鈕 */}
         <button
           onClick={() => setActiveTab('misc')}
           className={`text-[11px] font-extrabold uppercase tracking-wider transition ${activeTab === 'misc' ? 'text-blue-500' : 'text-gray-400 hover:text-gray-200'}`}
