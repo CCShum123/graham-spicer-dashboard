@@ -323,9 +323,14 @@ export default function GrahamSpicerBPage() {
   return (
     <main className="min-h-screen bg-[#070a12] text-white pb-28 font-sans text-xs">
       <header className="sticky top-0 z-20 bg-[#070a12]/90 px-4 py-3 border-b border-gray-800/40 flex justify-between items-center backdrop-blur-md">
-        <h1 className="text-xs sm:text-sm font-black tracking-tight text-white uppercase">
-          Sutton & District TT League
-        </h1>
+        <div>
+          <h1 className="text-[11px] font-semibold text-gray-400 uppercase tracking-tight">
+            Sutton & District TT League
+          </h1>
+          <h2 className="text-sm sm:text-base font-black tracking-tight text-white uppercase">
+            Graham Spicer B
+          </h2>
+        </div>
         <div className="flex items-center gap-2">
           <span className="bg-[#121929] text-xs text-gray-300 px-3 py-1 rounded-md border border-gray-700/60 font-semibold">{data?.season}</span>
         </div>
