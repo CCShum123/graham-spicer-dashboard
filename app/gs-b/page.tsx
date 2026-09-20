@@ -59,10 +59,30 @@ export default function GrahamSpicerBPage() {
           setData(json.data);
           
           let initialFixtureId = '';
-          if (json.data.nextFixture?.id) {
+        
+          // 【新加】前端自行根據「今天日期」去搵真正嚟緊嘅下一場比賽
+          const fixtures = json.data.fixtures || [];
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+
+          // 搵出日期大於或等於今日嘅第一場波
+          const upcomingFixture = fixtures.find((f: any) => {
+            const dateStr = `${f.month || 'Sep'} ${f.date || 1} ${f.year || 2026}`;
+            const d = new Date(dateStr);
+            d.setHours(0, 0, 0, 0);
+            return d.getTime() >= today.getTime();
+          });
+
+          if (upcomingFixture?.id) {
+            initialFixtureId = upcomingFixture.id;
+          } else if (json.data.nextFixture?.id) {
+            // 如果搵唔到未來嘅，先退守用後端提供嘅
             initialFixtureId = json.data.nextFixture.id;
-            setSelectedFixtureId(initialFixtureId);
+          } else if (fixtures.length > 0) {
+            initialFixtureId = fixtures[0].id;
           }
+
+        setSelectedFixtureId(initialFixtureId);
 
           if (json.data.availabilityMap) {
             setAvailabilityMap(json.data.availabilityMap);
