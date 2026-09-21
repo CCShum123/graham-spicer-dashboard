@@ -364,13 +364,14 @@
       ]
     },
     "match-3": {
-      "going": [],
+      "going": [
+        "CC"
+      ],
       "cantGo": [
         "Benjamin",
         "Ajay"
       ],
       "tbc": [
-        "CC",
         "Daniel",
         "Kit",
         "James",
