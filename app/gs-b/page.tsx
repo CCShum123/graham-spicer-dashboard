@@ -213,6 +213,15 @@ export default function GrahamSpicerBPage() {
     if (subName === 'Ajay') {
       return 'https://sdttl.ttleagues.com/league/4624/player/ed392470-8a86-4456-88bb-74b2f83485e0';
     }
+    if (subName === 'Hojeong') {
+      return 'https://sdttl.ttleagues.com/league/4624/player/080df0c9-b4b8-4a5d-9bac-3af3d22e56d4';
+    }
+    if (subName === 'Peter') {
+      return 'https://sdttl.ttleagues.com/league/4624/player/f2e6544b-0407-488b-8569-68526a29f1cd';
+    }
+    if (subName === 'Brandon') {
+      return 'https://sdttl.ttleagues.com/league/4624/player/4023ca50-862a-4b1b-b212-8b6f3c8366ba';
+    }
     return '';
   };
 
