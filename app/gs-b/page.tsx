@@ -430,12 +430,12 @@ export default function GrahamSpicerBPage() {
 
               <div className="text-right shrink-0 space-y-1 flex flex-col items-end">
                 <p className="text-[11px] text-gray-200 font-semibold whitespace-nowrap">🕒 {currentMatchTarget?.day} {currentMatchTarget?.date} {currentMatchTarget?.month} {currentMatchTarget?.year} {currentMatchTarget?.time}</p>
-                <div className="flex items-center gap-1.5">
+                <div className="flex flex-col items-end gap-1">
                   <button
                     onClick={handlePrevMatchClick}
                     className="bg-[#1c273c] hover:bg-blue-600/30 text-blue-400 border border-blue-500/40 px-2 py-0.5 rounded-lg text-[10px] font-bold transition"
                   >
-                    &lt;- Last match
+                    &lt;- Prev match
                   </button>
                   <button
                     onClick={handleNextMatchClick}
