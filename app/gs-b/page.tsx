@@ -56,7 +56,6 @@ export default function GrahamSpicerBPage() {
         if (!res.ok) throw new Error(`API status: ${res.status}`);
         const json = await res.json();
         if (json.success && json.data) {
-          // 手動插入 Knock out Cup 及 Handicap Cup 並按日期排序
           const extraFixtures = [
             {
               id: 'knockout-cup-oct19',
@@ -335,6 +334,16 @@ export default function GrahamSpicerBPage() {
     return wins > 0 ? wins : '-';
   };
 
+  const handlePrevMatchClick = () => {
+    if (!data?.fixtures || data.fixtures.length === 0) return;
+    const currentIndex = data.fixtures.findIndex((f: any) => f.id === selectedFixtureId);
+    if (currentIndex > 0) {
+      setSelectedFixtureId(data.fixtures[currentIndex - 1].id);
+    } else if (data.fixtures.length > 0) {
+      setSelectedFixtureId(data.fixtures[data.fixtures.length - 1].id);
+    }
+  };
+
   const handleNextMatchClick = () => {
     if (!data?.fixtures || data.fixtures.length === 0) return;
     const currentIndex = data.fixtures.findIndex((f: any) => f.id === selectedFixtureId);
@@ -421,12 +430,20 @@ export default function GrahamSpicerBPage() {
 
               <div className="text-right shrink-0 space-y-1 flex flex-col items-end">
                 <p className="text-[11px] text-gray-200 font-semibold whitespace-nowrap">🕒 {currentMatchTarget?.day} {currentMatchTarget?.date} {currentMatchTarget?.month} {currentMatchTarget?.year} {currentMatchTarget?.time}</p>
-                <button
-                  onClick={handleNextMatchClick}
-                  className="bg-[#1c273c] hover:bg-blue-600/30 text-blue-400 border border-blue-500/40 px-2 py-0.5 rounded-lg text-[10px] font-bold transition"
-                >
-                  Next match-&gt;
-                </button>
+                <div className="flex items-center gap-1.5">
+                  <button
+                    onClick={handlePrevMatchClick}
+                    className="bg-[#1c273c] hover:bg-blue-600/30 text-blue-400 border border-blue-500/40 px-2 py-0.5 rounded-lg text-[10px] font-bold transition"
+                  >
+                    &lt;- Last match
+                  </button>
+                  <button
+                    onClick={handleNextMatchClick}
+                    className="bg-[#1c273c] hover:bg-blue-600/30 text-blue-400 border border-blue-500/40 px-2 py-0.5 rounded-lg text-[10px] font-bold transition"
+                  >
+                    Next match-&gt;
+                  </button>
+                </div>
               </div>
             </div>
 
