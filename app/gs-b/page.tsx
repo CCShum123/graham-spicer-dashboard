@@ -420,7 +420,7 @@ export default function GrahamSpicerBPage() {
                     href={getGoogleMapsUrl(currentMatchTarget?.venue, currentMatchTarget?.venueAddress)}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 text-[11px] text-blue-400 hover:text-blue-300 font-medium underline transition"
+                    className="inline-flex items-center gap-1 text-[11px] text-blue-400 hover:text-blue-300 font-medium underline transition whitespace-nowrap"
                   >
                     <span>📍</span>
                     <span>{currentMatchTarget?.venue}</span>
@@ -546,7 +546,7 @@ export default function GrahamSpicerBPage() {
                       href={getGoogleMapsUrl(item.venue, item.venueAddress)}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 text-[11px] text-blue-400 hover:text-blue-300 font-medium underline"
+                      className="inline-flex items-center gap-1 text-[11px] text-blue-400 hover:text-blue-300 font-medium underline whitespace-nowrap"
                     >
                       <span>📍</span>
                       <span>{item.venue}</span>
