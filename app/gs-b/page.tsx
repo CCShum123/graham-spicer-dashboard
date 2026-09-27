@@ -56,6 +56,46 @@ export default function GrahamSpicerBPage() {
         if (!res.ok) throw new Error(`API status: ${res.status}`);
         const json = await res.json();
         if (json.success && json.data) {
+          // 手動插入 Knock out Cup 及 Handicap Cup 並按日期排序
+          const extraFixtures = [
+            {
+              id: 'knockout-cup-oct19',
+              cupType: 'Knock out Cup',
+              homeTeam: 'Graham Spicers B',
+              awayTeam: 'Woodmansterne A',
+              venue: 'Graham Spicer Table Tennis Club',
+              venueAddress: 'Graham Spicer Institute, 15 Dukes Avenue, KT3 4HL',
+              day: 'Mon',
+              date: 19,
+              month: 'OCT',
+              year: 2026,
+              time: '19:30',
+              type: 'HOME'
+            },
+            {
+              id: 'handicap-cup-nov16',
+              cupType: 'Handicap Cup',
+              homeTeam: 'Graham Spicers B',
+              awayTeam: 'York Gardens A',
+              venue: 'Graham Spicer Table Tennis Club',
+              venueAddress: 'Graham Spicer Institute, 15 Dukes Avenue, KT3 4HL',
+              day: 'Mon',
+              date: 16,
+              month: 'NOV',
+              year: 2026,
+              time: '19:30',
+              type: 'HOME'
+            }
+          ];
+
+          const combinedFixtures = [...(json.data.fixtures || []), ...extraFixtures].sort((a: any, b: any) => {
+            const dateA = new Date(`${a.month} ${a.date} ${a.year}`);
+            const dateB = new Date(`${b.month} ${b.date} ${b.year}`);
+            return dateA.getTime() - dateB.getTime();
+          });
+
+          json.data.fixtures = combinedFixtures;
+
           setData(json.data);
           
           let initialFixtureId = '';
@@ -354,6 +394,11 @@ export default function GrahamSpicerBPage() {
                   <span className="text-[10px] font-bold text-blue-400 uppercase tracking-wider">
                     {isPastFixture ? 'PAST FIXTURE' : 'COMING FIXTURE'}
                   </span>
+                  {currentMatchTarget?.cupType && (
+                    <span className="text-[9px] font-black px-1.5 py-0.5 rounded bg-purple-500/20 text-purple-400 border border-purple-500/30 uppercase">
+                      {currentMatchTarget.cupType}
+                    </span>
+                  )}
                   <span className={`text-[9px] font-black px-1.5 py-0.5 rounded ${isHomeTeam ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-amber-500/20 text-amber-400 border border-amber-500/30'}`}>
                     {isHomeTeam ? 'HOME' : 'AWAY'}
                   </span>
@@ -466,9 +511,16 @@ export default function GrahamSpicerBPage() {
                   }}
                   className="min-w-0 flex-1 cursor-pointer"
                 >
-                  <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded uppercase ${item.type === 'HOME' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400'}`}>
-                    {item.type}
-                  </span>
+                  <div className="flex items-center gap-1.5 mb-1">
+                    {item.cupType && (
+                      <span className="text-[9px] font-black px-1.5 py-0.5 rounded bg-purple-500/20 text-purple-400 uppercase">
+                        {item.cupType}
+                      </span>
+                    )}
+                    <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded uppercase ${item.type === 'HOME' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400'}`}>
+                      {item.type}
+                    </span>
+                  </div>
                   <h3 className="text-sm font-black text-gray-100 mt-1 whitespace-nowrap overflow-x-auto">
                     {formatTeamNameShort(item.homeTeam)} vs {formatTeamNameShort(item.awayTeam)}
                   </h3>
@@ -772,13 +824,20 @@ export default function GrahamSpicerBPage() {
         <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-center justify-center p-2">
           <div className="bg-[#0f1626] border border-gray-700 w-full max-w-xl rounded-2xl p-3 space-y-3 max-h-[95vh] overflow-y-auto shadow-2xl">
             <div className="flex justify-between items-center border-b border-gray-800 pb-2">
-              <h3 className="text-xs font-black tracking-wider text-white uppercase">SUTTON & DISTRICT TT LEAGUE - MATCH CARD</h3>
+              <h3 className="text-xs font-black tracking-wider text-white uppercase flex items-center gap-2">
+                <span>SUTTON & DISTRICT TT LEAGUE - MATCH CARD</span>
+                {currentMatchTarget?.cupType && (
+                  <span className="text-[10px] bg-purple-500/20 text-purple-400 border border-purple-500/30 px-2 py-0.5 rounded">
+                    {currentMatchTarget.cupType}
+                  </span>
+                )}
+              </h3>
               <button onClick={() => setShowMatchCard(false)} className="bg-gray-800 hover:bg-gray-700 text-gray-300 w-7 h-7 rounded-full font-bold text-xs flex items-center justify-center">✕</button>
             </div>
 
             <div className="grid grid-cols-2 gap-2 text-[11px] bg-[#0a0e19] p-2 rounded-lg border border-gray-700">
               <div><span className="text-gray-400">Date:</span> <strong className="text-white">{currentMatchTarget?.day} {currentMatchTarget?.date} {currentMatchTarget?.month} {currentMatchTarget?.year}</strong></div>
-              <div><span className="text-gray-400">Division:</span> <strong className="text-white">{data?.season || 'Division 2'}</strong></div>
+              <div><span className="text-gray-400">Division:</span> <strong className="text-white">{currentMatchTarget?.cupType || data?.season || 'Division 2'}</strong></div>
             </div>
 
             <div className="border border-gray-700 rounded-lg overflow-hidden">
