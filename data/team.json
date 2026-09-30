@@ -385,7 +385,8 @@
     "match-4": {
       "going": [
         "Benjamin",
-        "Ajay"
+        "Ajay",
+        "Kostlantyn"
       ],
       "cantGo": [
         "Brandon"
@@ -397,7 +398,6 @@
         "James",
         "Rohit",
         "Peter",
-        "Kostlantyn",
         "Hojeong"
       ]
     },
