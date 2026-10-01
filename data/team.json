@@ -43,8 +43,8 @@
     },
     {
       "number": 9,
-      "subName": "Kostlantyn",
-      "name": "Kostlantyn Motovilin"
+      "subName": "Kostiantyn",
+      "name": "Kostiantyn Motovilin"
     },
     {
       "number": 10,
@@ -320,7 +320,7 @@
         "Kit",
         "Peter",
         "Rohit",
-        "Kostlantyn"
+        "Kostiantyn"
       ],
       "tbc": [
         "Benjamin"
@@ -338,7 +338,7 @@
         "Benjamin",
         "Kit",
         "Rohit",
-        "Kostlantyn"
+        "Kostiantyn"
       ],
       "tbc": [
         "Daniel",
@@ -358,7 +358,7 @@
         "Rohit",
         "Peter",
         "Benjamin",
-        "Kostlantyn",
+        "Kostiantyn",
         "Hojeong",
         "Brandon"
       ]
@@ -377,7 +377,7 @@
       "tbc": [
         "Kit",
         "Rohit",
-        "Kostlantyn",
+        "Kostiantyn",
         "Hojeong",
         "Brandon"
       ]
@@ -386,7 +386,7 @@
       "going": [
         "Benjamin",
         "Ajay",
-        "Kostlantyn",
+        "Kostiantyn",
         "CC",
         "Kit",
         "Peter"
@@ -415,7 +415,7 @@
         "James",
         "Rohit",
         "Peter",
-        "Kostlantyn",
+        "Kostiantyn",
         "Hojeong"
       ]
     },
@@ -432,7 +432,7 @@
         "Rohit",
         "Peter",
         "Benjamin",
-        "Kostlantyn",
+        "Kostiantyn",
         "Hojeong",
         "Brandon"
       ]
@@ -450,7 +450,7 @@
         "Rohit",
         "Peter",
         "Benjamin",
-        "Kostlantyn",
+        "Kostiantyn",
         "Hojeong",
         "Brandon"
       ]
@@ -468,7 +468,7 @@
         "Rohit",
         "Peter",
         "Benjamin",
-        "Kostlantyn",
+        "Kostiantyn",
         "Hojeong",
         "Brandon"
       ]
@@ -486,7 +486,7 @@
         "Rohit",
         "Peter",
         "Benjamin",
-        "Kostlantyn",
+        "Kostiantyn",
         "Hojeong",
         "Brandon"
       ]
@@ -504,7 +504,7 @@
         "Rohit",
         "Peter",
         "Benjamin",
-        "Kostlantyn",
+        "Kostiantyn",
         "Hojeong",
         "Brandon"
       ]
@@ -522,7 +522,7 @@
         "Rohit",
         "Peter",
         "Benjamin",
-        "Kostlantyn",
+        "Kostiantyn",
         "Hojeong",
         "Brandon"
       ]
@@ -540,7 +540,7 @@
         "Rohit",
         "Peter",
         "Benjamin",
-        "Kostlantyn",
+        "Kostiantyn",
         "Hojeong",
         "Brandon"
       ]
@@ -558,7 +558,7 @@
         "Rohit",
         "Peter",
         "Benjamin",
-        "Kostlantyn",
+        "Kostiantyn",
         "Hojeong",
         "Brandon"
       ]
@@ -576,7 +576,7 @@
         "Rohit",
         "Peter",
         "Benjamin",
-        "Kostlantyn",
+        "Kostiantyn",
         "Hojeong",
         "Brandon"
       ]
@@ -594,7 +594,7 @@
         "Rohit",
         "Peter",
         "Benjamin",
-        "Kostlantyn",
+        "Kostiantyn",
         "Hojeong",
         "Brandon"
       ]
@@ -612,7 +612,7 @@
         "Rohit",
         "Peter",
         "Benjamin",
-        "Kostlantyn",
+        "Kostiantyn",
         "Hojeong",
         "Brandon"
       ]
@@ -630,7 +630,7 @@
         "Rohit",
         "Peter",
         "Benjamin",
-        "Kostlantyn",
+        "Kostiantyn",
         "Hojeong",
         "Brandon"
       ]
@@ -648,7 +648,7 @@
         "Rohit",
         "Peter",
         "Benjamin",
-        "Kostlantyn",
+        "Kostiantyn",
         "Hojeong",
         "Brandon"
       ]
@@ -666,7 +666,7 @@
         "Rohit",
         "Peter",
         "Benjamin",
-        "Kostlantyn",
+        "Kostiantyn",
         "Hojeong",
         "Brandon"
       ]
@@ -1443,7 +1443,7 @@
       "lineup": [
         "Kit",
         "Benjamin",
-        "Kostlantyn"
+        "Kostiantyn"
       ],
       "opponentNames": [
         "",
