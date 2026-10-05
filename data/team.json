@@ -1451,7 +1451,7 @@
         "Flatimo"
       ],
       "doublesCodesH": "BC",
-      "doublesCodesA": "XY",
+      "doublesCodesA": "XZ",
       "gameScores": {
         "1": [
           {
@@ -1653,7 +1653,7 @@
         ],
         "10": [
           {
-            "left": "",
+            "left": "7",
             "right": ""
           },
           {
