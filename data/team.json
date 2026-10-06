@@ -639,7 +639,9 @@
       "going": [
         "Ajay"
       ],
-      "cantGo": [],
+      "cantGo": [
+        "Brandon"
+      ],
       "tbc": [
         "CC",
         "Daniel",
@@ -649,8 +651,7 @@
         "Peter",
         "Benjamin",
         "Kostiantyn",
-        "Hojeong",
-        "Brandon"
+        "Hojeong"
       ]
     },
     "handicap-cup-nov16": {
