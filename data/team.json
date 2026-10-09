@@ -407,11 +407,12 @@
         "Ajay",
         "Brandon"
       ],
-      "cantGo": [],
+      "cantGo": [
+        "Kit"
+      ],
       "tbc": [
         "CC",
         "Daniel",
-        "Kit",
         "James",
         "Rohit",
         "Peter",
