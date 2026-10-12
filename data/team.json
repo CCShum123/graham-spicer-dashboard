@@ -4980,6 +4980,242 @@
           }
         ]
       }
+    },
+    "knockout-cup-oct19": {
+      "lineup": [
+        "Ajay",
+        "",
+        ""
+      ],
+      "opponentNames": [
+        "",
+        "",
+        ""
+      ],
+      "doublesCodesH": "",
+      "doublesCodesA": "",
+      "gameScores": {
+        "1": [
+          {
+            "left": "",
+            "right": ""
+          },
+          {
+            "left": "",
+            "right": ""
+          },
+          {
+            "left": "",
+            "right": ""
+          },
+          {
+            "left": "",
+            "right": ""
+          },
+          {
+            "left": "",
+            "right": ""
+          }
+        ],
+        "2": [
+          {
+            "left": "",
+            "right": ""
+          },
+          {
+            "left": "",
+            "right": ""
+          },
+          {
+            "left": "",
+            "right": ""
+          },
+          {
+            "left": "",
+            "right": ""
+          },
+          {
+            "left": "",
+            "right": ""
+          }
+        ],
+        "3": [
+          {
+            "left": "",
+            "right": ""
+          },
+          {
+            "left": "",
+            "right": ""
+          },
+          {
+            "left": "",
+            "right": ""
+          },
+          {
+            "left": "",
+            "right": ""
+          },
+          {
+            "left": "",
+            "right": ""
+          }
+        ],
+        "4": [
+          {
+            "left": "",
+            "right": ""
+          },
+          {
+            "left": "",
+            "right": ""
+          },
+          {
+            "left": "",
+            "right": ""
+          },
+          {
+            "left": "",
+            "right": ""
+          },
+          {
+            "left": "",
+            "right": ""
+          }
+        ],
+        "5": [
+          {
+            "left": "",
+            "right": ""
+          },
+          {
+            "left": "",
+            "right": ""
+          },
+          {
+            "left": "",
+            "right": ""
+          },
+          {
+            "left": "",
+            "right": ""
+          },
+          {
+            "left": "",
+            "right": ""
+          }
+        ],
+        "6": [
+          {
+            "left": "",
+            "right": ""
+          },
+          {
+            "left": "",
+            "right": ""
+          },
+          {
+            "left": "",
+            "right": ""
+          },
+          {
+            "left": "",
+            "right": ""
+          },
+          {
+            "left": "",
+            "right": ""
+          }
+        ],
+        "7": [
+          {
+            "left": "",
+            "right": ""
+          },
+          {
+            "left": "",
+            "right": ""
+          },
+          {
+            "left": "",
+            "right": ""
+          },
+          {
+            "left": "",
+            "right": ""
+          },
+          {
+            "left": "",
+            "right": ""
+          }
+        ],
+        "8": [
+          {
+            "left": "",
+            "right": ""
+          },
+          {
+            "left": "",
+            "right": ""
+          },
+          {
+            "left": "",
+            "right": ""
+          },
+          {
+            "left": "",
+            "right": ""
+          },
+          {
+            "left": "",
+            "right": ""
+          }
+        ],
+        "9": [
+          {
+            "left": "",
+            "right": ""
+          },
+          {
+            "left": "",
+            "right": ""
+          },
+          {
+            "left": "",
+            "right": ""
+          },
+          {
+            "left": "",
+            "right": ""
+          },
+          {
+            "left": "",
+            "right": ""
+          }
+        ],
+        "10": [
+          {
+            "left": "",
+            "right": ""
+          },
+          {
+            "left": "",
+            "right": ""
+          },
+          {
+            "left": "",
+            "right": ""
+          },
+          {
+            "left": "",
+            "right": ""
+          },
+          {
+            "left": "",
+            "right": ""
+          }
+        ]
+      }
     }
   }
 }
