@@ -404,13 +404,13 @@
     "match-5": {
       "going": [
         "Benjamin",
-        "Ajay",
         "Brandon",
         "Hojeong"
       ],
       "cantGo": [
         "Kit",
-        "Peter"
+        "Peter",
+        "Ajay"
       ],
       "tbc": [
         "CC",
