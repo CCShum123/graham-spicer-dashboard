@@ -261,6 +261,15 @@ export default function GrahamSpicerBPage() {
     if (subName === 'Brandon') {
       return 'https://sdttl.ttleagues.com/league/4624/player/4023ca50-862a-4b1b-b212-8b6f3c8366ba';
     }
+    if (subName === 'Kit') {
+      return 'https://sdttl.ttleagues.com/league/4624/player/4552c22d-aebe-4d11-afa8-21f7f2b2e198';
+    }
+    if (subName === 'Benjamin') {
+      return 'https://sdttl.ttleagues.com/league/4624/player/c76cb1e1-5755-4414-a6b1-53a583e559c6';
+    }
+    if (subName === 'Kostiantyn' || subName === 'Kostlantyn') {
+      return 'https://sdttl.ttleagues.com/league/4624/player/96299d34-ce79-4943-ad75-349e05760f50';
+    }
     return '';
   };
 
