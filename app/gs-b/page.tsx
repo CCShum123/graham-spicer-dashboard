@@ -288,8 +288,8 @@ export default function GrahamSpicerBPage() {
     ];
   };
 
-  const calculateMatchWinner = (matchNum: number) => {
-    const scores = gameScores[matchNum];
+  const calculateMatchWinner = (matchNum: number, scoresMap: any) => {
+    const scores = scoresMap[matchNum];
     if (!scores) return '';
 
     let leftWins = 0;
@@ -316,11 +316,43 @@ export default function GrahamSpicerBPage() {
     return '';
   };
 
+  const getFixtureTotalResults = (fixtureId: string, itemType: string) => {
+    const fRecord = fixtureMatchRecords[fixtureId];
+    if (!fRecord || !fRecord.gameScores) return null;
+
+    let totalH = 0;
+    let totalA = 0;
+    let hasAnyScore = false;
+
+    for (let m = 1; m <= 10; m++) {
+      const winner = calculateMatchWinner(m, fRecord.gameScores);
+      if (winner === 'L') totalH++;
+      if (winner === 'R') totalA++;
+      if (winner !== '') hasAnyScore = true;
+    }
+
+    if (!hasAnyScore && totalH === 0 && totalA === 0) return null;
+
+    const isHome = itemType === 'HOME';
+    const ourScore = isHome ? totalH : totalA;
+    const oppScore = isHome ? totalA : totalH;
+
+    let status = 'D';
+    if (ourScore > oppScore) status = 'W';
+    else if (ourScore < oppScore) status = 'L';
+
+    return { ourScore, oppScore, status };
+  };
+
+  const calculateMatchWinnerCurrent = (matchNum: number) => {
+    return calculateMatchWinner(matchNum, gameScores);
+  };
+
   const getTotalResults = () => {
     let totalH = 0;
     let totalA = 0;
     for (let m = 1; m <= 10; m++) {
-      const winner = calculateMatchWinner(m);
+      const winner = calculateMatchWinnerCurrent(m);
       if (winner === 'L') totalH++;
       if (winner === 'R') totalA++;
     }
@@ -332,7 +364,7 @@ export default function GrahamSpicerBPage() {
     const structure = getMatchStructure();
     structure.forEach((m) => {
       if (m.match <= 9) {
-        const res = calculateMatchWinner(m.match);
+        const res = calculateMatchWinnerCurrent(m.match);
         if (res === 'L') {
           if (m.homeCode.includes(code)) wins++;
         } else if (res === 'R') {
@@ -525,48 +557,67 @@ export default function GrahamSpicerBPage() {
 
         {activeTab === 'fixtures' && (
           <div className="space-y-2.5">
-            {data?.fixtures?.map((item: any) => (
-              <div
-                key={item.id}
-                className="bg-[#0f1626] border border-gray-800/80 hover:border-blue-500/60 transition rounded-2xl p-3.5 flex justify-between items-center shadow gap-2"
-              >
+            {data?.fixtures?.map((item: any) => {
+              const resData = getFixtureTotalResults(item.id, item.type);
+              return (
                 <div
-                  onClick={() => {
-                    setSelectedFixtureId(item.id);
-                    setActiveTab('next');
-                  }}
-                  className="min-w-0 flex-1 cursor-pointer"
+                  key={item.id}
+                  className="bg-[#0f1626] border border-gray-800/80 hover:border-blue-500/60 transition rounded-2xl p-3.5 flex justify-between items-center shadow gap-2"
                 >
-                  <div className="flex items-center gap-1.5 mb-1">
-                    {item.cupType && (
-                      <span className="text-[9px] font-black px-1.5 py-0.5 rounded bg-purple-500/20 text-purple-400 uppercase">
-                        {item.cupType}
+                  <div
+                    onClick={() => {
+                      setSelectedFixtureId(item.id);
+                      setActiveTab('next');
+                    }}
+                    className="min-w-0 flex-1 cursor-pointer"
+                  >
+                    <div className="flex items-center gap-1.5 mb-1">
+                      {item.cupType && (
+                        <span className="text-[9px] font-black px-1.5 py-0.5 rounded bg-purple-500/20 text-purple-400 uppercase">
+                          {item.cupType}
+                        </span>
+                      )}
+                      <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded uppercase ${item.type === 'HOME' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400'}`}>
+                        {item.type}
                       </span>
-                    )}
-                    <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded uppercase ${item.type === 'HOME' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400'}`}>
-                      {item.type}
-                    </span>
+                    </div>
+                    <div className="flex items-center gap-2 mt-1">
+                      <h3 className="text-sm font-black text-gray-100 whitespace-nowrap overflow-x-auto">
+                        {formatTeamNameShort(item.homeTeam)} vs {formatTeamNameShort(item.awayTeam)}
+                      </h3>
+                      {resData && (
+                        <div className="flex items-center gap-1 shrink-0">
+                          <span className={`w-5 h-5 rounded flex items-center justify-center text-[10px] font-black ${
+                            resData.status === 'W' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40' :
+                            resData.status === 'L' ? 'bg-rose-500/20 text-rose-400 border border-rose-500/40' :
+                            'bg-gray-500/20 text-gray-300 border border-gray-500/40'
+                          }`}>
+                            {resData.status}
+                          </span>
+                          <span className="text-[11px] font-bold text-gray-300">
+                            {resData.ourScore} - {resData.oppScore}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                    <div className="mt-1" onClick={(e) => e.stopPropagation()}>
+                      <a
+                        href={getGoogleMapsUrl(item.venue, item.venueAddress)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 text-[11px] text-blue-400 hover:text-blue-300 font-medium underline whitespace-nowrap"
+                      >
+                        <span>📍</span>
+                        <span>{item.venue}</span>
+                      </a>
+                    </div>
                   </div>
-                  <h3 className="text-sm font-black text-gray-100 mt-1 whitespace-nowrap overflow-x-auto">
-                    {formatTeamNameShort(item.homeTeam)} vs {formatTeamNameShort(item.awayTeam)}
-                  </h3>
-                  <div className="mt-1" onClick={(e) => e.stopPropagation()}>
-                    <a
-                      href={getGoogleMapsUrl(item.venue, item.venueAddress)}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 text-[11px] text-blue-400 hover:text-blue-300 font-medium underline whitespace-nowrap"
-                    >
-                      <span>📍</span>
-                      <span>{item.venue}</span>
-                    </a>
+                  <div className="text-right shrink-0 cursor-pointer" onClick={() => { setSelectedFixtureId(item.id); setActiveTab('next'); }}>
+                    <span className="text-[10px] text-blue-400 font-bold whitespace-nowrap">{item.day} {item.date} {item.month} {item.year}</span>
                   </div>
                 </div>
-                <div className="text-right shrink-0 cursor-pointer" onClick={() => { setSelectedFixtureId(item.id); setActiveTab('next'); }}>
-                  <span className="text-[10px] text-blue-400 font-bold whitespace-nowrap">{item.day} {item.date} {item.month} {item.year}</span>
-                </div>
-              </div>
-            )) || <p className="text-center text-gray-400">No fixtures available</p>}
+              );
+            }) || <p className="text-center text-gray-400">No fixtures available</p>}
           </div>
         )}
 
@@ -960,7 +1011,7 @@ export default function GrahamSpicerBPage() {
                 </thead>
                 <tbody>
                   {getMatchStructure().map((m) => {
-                    const matchWinnerResult = calculateMatchWinner(m.match);
+                    const matchWinnerResult = calculateMatchWinnerCurrent(m.match);
                     let displayWon = '';
                     if (matchWinnerResult === 'L') {
                       displayWon = m.homeCode;
