@@ -422,7 +422,9 @@
       ]
     },
     "match-7": {
-      "going": [],
+      "going": [
+        "Benjamin"
+      ],
       "cantGo": [
         "Ajay"
       ],
@@ -433,7 +435,6 @@
         "James",
         "Rohit",
         "Peter",
-        "Benjamin",
         "Kostiantyn",
         "Hojeong",
         "Brandon"
