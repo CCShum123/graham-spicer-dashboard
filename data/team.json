@@ -348,14 +348,14 @@
     "match-6": {
       "going": [
         "Benjamin",
-        "Ajay"
+        "Ajay",
+        "Daniel"
       ],
       "cantGo": [
         "CC",
         "Brandon"
       ],
       "tbc": [
-        "Daniel",
         "Kit",
         "James",
         "Rohit",
