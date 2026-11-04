@@ -658,11 +658,10 @@
       ]
     },
     "handicap-cup-nov16": {
-      "going": [
-        "Ajay"
-      ],
+      "going": [],
       "cantGo": [
-        "Brandon"
+        "Brandon",
+        "Ajay"
       ],
       "tbc": [
         "CC",
