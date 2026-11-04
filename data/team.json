@@ -478,10 +478,10 @@
       ]
     },
     "match-10": {
-      "going": [
+      "going": [],
+      "cantGo": [
         "Ajay"
       ],
-      "cantGo": [],
       "tbc": [
         "CC",
         "Daniel",
