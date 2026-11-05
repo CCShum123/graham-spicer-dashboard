@@ -498,7 +498,8 @@
     "match-11": {
       "going": [],
       "cantGo": [
-        "Ajay"
+        "Ajay",
+        "Benjamin"
       ],
       "tbc": [
         "CC",
@@ -507,7 +508,6 @@
         "James",
         "Rohit",
         "Peter",
-        "Benjamin",
         "Kostiantyn",
         "Hojeong",
         "Brandon"
