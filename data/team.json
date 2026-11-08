@@ -660,7 +660,9 @@
       ]
     },
     "handicap-cup-nov16": {
-      "going": [],
+      "going": [
+        "Peter"
+      ],
       "cantGo": [
         "Brandon",
         "Ajay"
@@ -671,7 +673,6 @@
         "Kit",
         "James",
         "Rohit",
-        "Peter",
         "Benjamin",
         "Kostiantyn",
         "Hojeong"
