@@ -661,7 +661,8 @@
     },
     "handicap-cup-nov16": {
       "going": [
-        "Peter"
+        "Peter",
+        "Kit"
       ],
       "cantGo": [
         "Brandon",
@@ -671,7 +672,6 @@
       "tbc": [
         "CC",
         "Daniel",
-        "Kit",
         "James",
         "Rohit",
         "Benjamin",
