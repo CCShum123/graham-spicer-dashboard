@@ -72,6 +72,20 @@ export default function GrahamSpicerBPage() {
               type: 'HOME'
             },
             {
+              id: 'knockout-cup-nov30',
+              cupType: 'Knock out Cup',
+              homeTeam: 'Graham Spicers B',
+              awayTeam: 'Rosehill C',
+              venue: 'Graham Spicer Table Tennis Club',
+              venueAddress: 'Graham Spicer Institute, 15 Dukes Avenue, KT3 4HL',
+              day: 'Mon',
+              date: 30,
+              month: 'NOV',
+              year: 2026,
+              time: '19:30',
+              type: 'HOME'
+            },
+            {
               id: 'handicap-cup-nov16',
               cupType: 'Handicap Cup',
               homeTeam: 'Graham Spicers B',
