@@ -443,13 +443,13 @@
     "match-8": {
       "going": [
         "Kostiantyn",
-        "Benjamin"
+        "Benjamin",
+        "CC"
       ],
       "cantGo": [
         "Ajay"
       ],
       "tbc": [
-        "CC",
         "Daniel",
         "Kit",
         "James",
