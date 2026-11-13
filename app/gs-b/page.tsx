@@ -10,7 +10,7 @@ export default function GrahamSpicerBPage() {
   const [activeTab, setActiveTab] = useState<'next' | 'fixtures' | 'player' | 'misc'>('next');
   const [selectedFixtureId, setSelectedFixtureId] = useState<string>('');
 
-  const [availabilityMap, setAvailabilityMap] = useState<{ [key: string]: { going: string[]; cantGo: string[]; tbc: string[] } }>({});
+  const [availabilityMap, setAvailabilityMap] = useState<{ [key: string]: { going: string[]; cantGo: string[]; tbc: string[]; pending?: string[] } }>({});
 
   const [selectedPlayer, setSelectedPlayer] = useState('');
   
@@ -29,6 +29,17 @@ export default function GrahamSpicerBPage() {
   const [showMatchCard, setShowMatchCard] = useState(false);
 
   const syncTimeoutRef = useRef<any>(null);
+
+  const isFromNov23 = (f: any) => {
+    if (!f) return false;
+    const dateStr = `${f.month || 'Sep'} ${f.date || 1} ${f.year || 2026}`;
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return false;
+    d.setHours(0, 0, 0, 0);
+    const cutoff = new Date(2026, 10, 23); // 23 Nov 2026 (month is 0-indexed: 10 = Nov)
+    cutoff.setHours(0, 0, 0, 0);
+    return d.getTime() >= cutoff.getTime();
+  };
 
   const getDefaultFixtureRecord = () => ({
     lineup: ['', '', ''],
@@ -133,13 +144,41 @@ export default function GrahamSpicerBPage() {
 
           setSelectedFixtureId(initialFixtureId);
 
+          const allPlayerNames = (json.data.players || []).map((p: any) => p.subName);
+
           if (json.data.availabilityMap) {
-            setAvailabilityMap(json.data.availabilityMap);
+            const normalizedMap: any = { ...json.data.availabilityMap };
+            combinedFixtures.forEach((f: any) => {
+              const existing = normalizedMap[f.id];
+              if (isFromNov23(f)) {
+                if (!existing) {
+                  normalizedMap[f.id] = { going: [], cantGo: [], tbc: [], pending: [...allPlayerNames] };
+                } else if (!Array.isArray(existing.pending)) {
+                  const going = existing.going || [];
+                  const cantGo = existing.cantGo || [];
+                  const oldTbc = existing.tbc || [];
+                  const accounted = new Set([...going, ...cantGo, ...oldTbc]);
+                  const missing = allPlayerNames.filter((n: string) => !accounted.has(n));
+                  normalizedMap[f.id] = {
+                    going,
+                    cantGo,
+                    tbc: [],
+                    pending: [...oldTbc, ...missing],
+                  };
+                }
+              } else if (!existing) {
+                normalizedMap[f.id] = { going: [], cantGo: [], tbc: [...allPlayerNames], pending: [] };
+              }
+            });
+            setAvailabilityMap(normalizedMap);
           } else if (json.data.fixtures && json.data.players) {
             const initialMap: any = {};
-            const allPlayerNames = json.data.players.map((p: any) => p.subName);
             json.data.fixtures.forEach((f: any) => {
-              initialMap[f.id] = { going: [], cantGo: [], tbc: [...allPlayerNames] };
+              if (isFromNov23(f)) {
+                initialMap[f.id] = { going: [], cantGo: [], tbc: [], pending: [...allPlayerNames] };
+              } else {
+                initialMap[f.id] = { going: [], cantGo: [], tbc: [...allPlayerNames], pending: [] };
+              }
             });
             setAvailabilityMap(initialMap);
           }
@@ -195,7 +234,10 @@ export default function GrahamSpicerBPage() {
   const isHomeTeam = currentMatchTarget?.type === 'HOME';
 
   const allPlayerNames = data?.players?.map((p: any) => p.subName) || [];
-  const currentAvailability = availabilityMap[selectedFixtureId] || { going: [], cantGo: [], tbc: [...allPlayerNames] };
+  const defaultAvail = isFromNov23(currentMatchTarget)
+    ? { going: [], cantGo: [], tbc: [], pending: [...allPlayerNames] }
+    : { going: [], cantGo: [], tbc: [...allPlayerNames], pending: [] };
+  const currentAvailability = availabilityMap[selectedFixtureId] || defaultAvail;
 
   const currentFixtureRecord = fixtureMatchRecords[selectedFixtureId] || getDefaultFixtureRecord();
   const selectedLineup = currentFixtureRecord.lineup || ['', '', ''];
@@ -224,10 +266,11 @@ export default function GrahamSpicerBPage() {
     }
 
     setAvailabilityMap((prev) => {
-      const targetAvail = prev[selectedFixtureId] || { going: [], cantGo: [], tbc: [...allPlayerNames] };
+      const targetAvail = prev[selectedFixtureId] || defaultAvail;
       const newGoing = (targetAvail.going || []).filter((p: string) => p !== selectedPlayer);
       const newCantGo = (targetAvail.cantGo || []).filter((p: string) => p !== selectedPlayer);
       const newTbc = (targetAvail.tbc || []).filter((p: string) => p !== selectedPlayer);
+      const newPending = (targetAvail.pending || []).filter((p: string) => p !== selectedPlayer);
 
       if (status === 'going') newGoing.push(selectedPlayer);
       if (status === 'cantGo') newCantGo.push(selectedPlayer);
@@ -235,7 +278,7 @@ export default function GrahamSpicerBPage() {
 
       const updatedMap = {
         ...prev,
-        [selectedFixtureId]: { going: newGoing, cantGo: newCantGo, tbc: newTbc }
+        [selectedFixtureId]: { going: newGoing, cantGo: newCantGo, tbc: newTbc, pending: newPending }
       };
 
       syncDataToBackend({ availabilityMap: updatedMap });
@@ -478,7 +521,7 @@ export default function GrahamSpicerBPage() {
                     className="inline-flex items-center gap-1 text-[11px] text-blue-400 hover:text-blue-300 font-medium underline transition whitespace-nowrap"
                   >
                     <span>📍</span>
-                    <span>{currentMatchTarget?.venue}</span>
+                    <span className="whitespace-nowrap">{currentMatchTarget?.venue}</span>
                   </a>
                 </p>
               </div>
@@ -530,6 +573,9 @@ export default function GrahamSpicerBPage() {
                 <p><strong className="text-emerald-400 uppercase">AVAILABLE:</strong> <span className="text-gray-200 font-medium">{(currentAvailability?.going || []).join(', ') || 'None'}</span></p>
                 <p><strong className="text-rose-400 uppercase">UNAVAILABLE:</strong> <span className="text-gray-200 font-medium">{(currentAvailability?.cantGo || []).join(', ') || 'None'}</span></p>
                 <p><strong className="text-amber-400 uppercase">TBC:</strong> <span className="text-gray-200 font-medium">{(currentAvailability?.tbc || []).join(', ') || 'None'}</span></p>
+                {isFromNov23(currentMatchTarget) && (
+                  <p><strong className="text-gray-400 uppercase">PENDING:</strong> <span className="text-gray-200 font-medium">{(currentAvailability?.pending || []).join(', ') || 'None'}</span></p>
+                )}
               </div>
             </div>
 
@@ -622,7 +668,7 @@ export default function GrahamSpicerBPage() {
                         className="inline-flex items-center gap-1 text-[11px] text-blue-400 hover:text-blue-300 font-medium underline whitespace-nowrap"
                       >
                         <span>📍</span>
-                        <span>{item.venue}</span>
+                        <span className="whitespace-nowrap">{item.venue}</span>
                       </a>
                     </div>
                   </div>
