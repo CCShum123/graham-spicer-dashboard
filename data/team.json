@@ -449,7 +449,8 @@
       "cantGo": [
         "Ajay"
       ],
-      "tbc": [
+      "tbc": [],
+      "pending": [
         "Daniel",
         "Kit",
         "James",
@@ -465,7 +466,8 @@
         "Ajay",
         "Benjamin"
       ],
-      "tbc": [
+      "tbc": [],
+      "pending": [
         "CC",
         "Daniel",
         "Kit",
@@ -482,7 +484,8 @@
       "cantGo": [
         "Ajay"
       ],
-      "tbc": [
+      "tbc": [],
+      "pending": [
         "CC",
         "Daniel",
         "Kit",
@@ -501,7 +504,8 @@
         "Ajay",
         "Benjamin"
       ],
-      "tbc": [
+      "tbc": [],
+      "pending": [
         "CC",
         "Daniel",
         "Kit",
@@ -518,7 +522,8 @@
       "cantGo": [
         "Ajay"
       ],
-      "tbc": [
+      "tbc": [],
+      "pending": [
         "CC",
         "Daniel",
         "Kit",
@@ -538,7 +543,8 @@
       "cantGo": [
         "Ajay"
       ],
-      "tbc": [
+      "tbc": [],
+      "pending": [
         "CC",
         "Daniel",
         "Kit",
@@ -555,7 +561,8 @@
       "cantGo": [
         "Ajay"
       ],
-      "tbc": [
+      "tbc": [],
+      "pending": [
         "CC",
         "Daniel",
         "Kit",
@@ -573,7 +580,8 @@
       "cantGo": [
         "Ajay"
       ],
-      "tbc": [
+      "tbc": [],
+      "pending": [
         "CC",
         "Daniel",
         "Kit",
@@ -591,7 +599,8 @@
       "cantGo": [
         "Ajay"
       ],
-      "tbc": [
+      "tbc": [],
+      "pending": [
         "CC",
         "Daniel",
         "Kit",
@@ -609,7 +618,8 @@
       "cantGo": [
         "Ajay"
       ],
-      "tbc": [
+      "tbc": [],
+      "pending": [
         "CC",
         "Daniel",
         "Kit",
@@ -627,7 +637,8 @@
       "cantGo": [
         "Ajay"
       ],
-      "tbc": [
+      "tbc": [],
+      "pending": [
         "CC",
         "Daniel",
         "Kit",
@@ -676,6 +687,25 @@
         "Rohit",
         "Benjamin",
         "Kostiantyn"
+      ]
+    },
+    "knockout-cup-nov30": {
+      "going": [],
+      "cantGo": [
+        "Kit"
+      ],
+      "tbc": [],
+      "pending": [
+        "CC",
+        "Daniel",
+        "James",
+        "Rohit",
+        "Peter",
+        "Ajay",
+        "Benjamin",
+        "Kostiantyn",
+        "Hojeong",
+        "Brandon"
       ]
     }
   },
