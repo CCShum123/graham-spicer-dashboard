@@ -690,7 +690,9 @@
       ]
     },
     "knockout-cup-nov30": {
-      "going": [],
+      "going": [
+        "Peter"
+      ],
       "cantGo": [
         "Kit"
       ],
@@ -700,7 +702,6 @@
         "Daniel",
         "James",
         "Rohit",
-        "Peter",
         "Ajay",
         "Benjamin",
         "Kostiantyn",
